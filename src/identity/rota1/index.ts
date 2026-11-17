@@ -118,12 +118,16 @@ export const rota1: Identity = {
     label: { min: 10, vw: 0.0075, max: 12, track: 0.08 },
     /* sayılar: "H" harfinin yüksekliği okuma metninkine eşit (fontlar yüklenince canvas ile ölçülür) */
     number: { capOf: 'H' },
-    /* künye: başlık, tanıtım, altında satırlar; satırların üstünde ve aralarında 2px düz siyah çizgi */
+    /* sol üst: başlık ve altında tanıtım; künye çizgileri 2px düz siyah */
     info: {
-      left: 0.012, top: 0.02, width: 0.21, minWidth: 300, title: { web: 0.032, mobile: 0.075 },
+      left: 0.012, width: 0.21, minWidth: 300, title: { web: 0.032, mobile: 0.075 }, titleLh: 1.05,
       rule: 2, descLines: 6, mobilePad: 0.02,
     },
-    quote: { top: 0.05, size: { web: 0.024, mobile: 0.055 }, lh: 1.15, maxW: { web: 0.5, mobile: 0.86 } },
+    /* künye sağ altta: 0.21W (mobilde başlığın altında 0.92W) */
+    credits: { width: { web: 0.21, mobile: 0.92 } },
+    /* alıntı: tür satırı yok; masaüstünde ilk satırın büyük harf üstü başlığınkiyle ve Üye Ol / Giriş'in üstüyle
+       aynı çizgide; 0.018W (mobil 0.045W), en fazla 0.42W (mobil 0.86W), 0.50W'de ortalı */
+    quote: { top: 0.05, size: { web: 0.018, mobile: 0.045 }, lh: 1.15, maxW: { web: 0.42, mobile: 0.86 } },
     stage: { gap: 0.015 },
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },

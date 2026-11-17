@@ -68,10 +68,13 @@ img, video { -webkit-user-drag: none; }
 /* üst orta: tür + alıntı */
 .gq-top { position: absolute; left: 50%; top: var(--gq-top); width: var(--gq-maxw); transform: translateX(-50%); }
 .gq-top > .gx { top: 0; text-align: center; }
-/* alt orta: sahne adı, altında Bilet Al */
+/* künye: masaüstünde sağ altta, alttan yukarı büyür; mobilde başlığın altında ortada */
+.gk { position: absolute; right: var(--gk-right); bottom: var(--gk-bottom); width: var(--gk-w); }
+.gk > .gx { bottom: 0; }
+.is-mobile .gk { right: auto; bottom: auto; left: var(--gk-left); top: var(--gk-top); }
+.is-mobile .gk > .gx { top: 0; bottom: auto; }
+/* alt orta: yalnızca Bilet Al */
 .gc { position: absolute; left: 0; right: 0; bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
-.gs { position: relative; width: 100%; height: var(--fs-label-px); margin-bottom: var(--gs-gap); }
-.gs > .gx { top: 0; text-align: center; }
 .ln { will-change: transform, opacity; }
 /* künye çizgisi: düz, tam genişlik */
 .rl { height: var(--gi-rule, 2px); background: currentColor; }

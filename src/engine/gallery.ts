@@ -6,13 +6,13 @@
    Daireler: her öğe düz, kenarsız bir daire (yalnızca dairesel görsel; odak noktası merkezde, normal
    kaplamanın photoZoom katı). Duruştaki yerleşim (layout) ekrandaki yazılardan hesaplanır:
    - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H); temel çap, eğik hâlinin sınır kutusu alıntının altı
-     ile sahne adının üstü arasına (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana
+     ile Bilet Al'ın üstündeki alt sınır arasına (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana
      daire bunun mainScale katı;
    - p = +1 köşegen üzerinde, ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W; sığmayan
      kısmı sağ kenarda kesilir;
    - p = −3 sol kenarda kesilir (merkezi x = 0), köşegen üzerinde; logoya değecekse alt kenarı logonun
      logoClear·H üstünde. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde, bütün komşular arası
-     eşit boşlukla (künye / tanıtımın altına girebilirler; yazı üstte kalır);
+     eşit boşlukla (tanıtımın altına girebilirler; yazı üstte kalır);
    - uzaktakiler aynı adımla sürer. Ara konumlar Catmull-Rom eğrisiyle, ölçek s(p) anahtarlarından.
    Ana daire en önde. Eğim rotateX · rotateY · rotateZ; rotateY eğri üzerindeki konuma göre değişir.
    Ana daire renkli, diğerleri duotone; ana yuvaya gelen colorFade sn'de renklenir.
@@ -28,13 +28,13 @@
 
    Açık hâl (ana daireye tıklama): diğer daireler yerinde kalır. t = 0'da ana daire düzleşir (eğimsiz), en önde
    kalır ve yerinden, yarıçapı ekranın en uzak köşesine ulaşana kadar büyür (open.dur, open.ease); renkli kalır,
-   gölgesi kaybolur. Aynı anda uzun logo kısa logoya çapraz geçer, künyede başlık dışındaki her şey kaybolup
-   kapanır, alıntı kaybolur; sahne adı ve Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
+   gölgesi kaybolur. Aynı anda uzun logo kısa logoya çapraz geçer, sol üstte başlığın altındaki tanıtım kaybolup
+   kapanır, alıntı ve künye kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
    kırpımdaki keskin görsel altına yerleşir. Video ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
    belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
    birlikte döner.
 
-   Yazılar (künye bloğu, tür + alıntı, sahne adı) ana daireye göre değişir: eski satırlar yukarı
+   Yazılar (sol üstte başlık + tanıtım, alıntı, künye) ana daireye göre değişir: eski satırlar yukarı
    kayarak kaybolur, yeniler aşağıdan gelir (satırlar arası gecikmeyle). */
 import { gsap } from './motion';
 import type { Motion } from './motion';
@@ -227,11 +227,11 @@ export function createGallery(o: {
 
   /* ---------- yazılar: iskelet ---------- */
   dom.ui.innerHTML =
-    '<div class="gi"></div><div class="gq-top"></div>' +
-    `<div class="gc"><div class="gs"></div>${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
+    '<div class="gi"></div><div class="gq-top"></div><div class="gk"></div>' +
+    `<div class="gc">${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
   const gInfo = dom.ui.querySelector<HTMLElement>('.gi')!;
   const gCap = dom.ui.querySelector<HTMLElement>('.gq-top')!;
-  const gStage = dom.ui.querySelector<HTMLElement>('.gs')!;
+  const gKun = dom.ui.querySelector<HTMLElement>('.gk')!;
   // Bilet Al şimdilik işlevsiz; tıklama galeriye geçmez
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk')!;
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -262,26 +262,31 @@ export function createGallery(o: {
     const gap = GL.gap * H;
     const mpad = T.info.mobilePad * H;
 
-    // üst orta: tür + alıntı (en uzun gösteri)
+    // üst orta: alıntı (en uzun gösteri)
     const qTop = css('--gq-top');
     const q = measureMax(gCap, (s) => id.templates.caption(s, ctx));
     const qBottom = qTop + q.h;
-    // künye: mobilde alıntının altında
-    if (S.mobile) root.style.setProperty('--gi-top', `${(qBottom + mpad).toFixed(2)}px`);
-    const kTop = css('--gi-top');
-    const k = measureMax(gInfo, (s) => id.templates.info(s, ctx));
-    // alt orta: sahne adı + Bilet Al
+    // mobilde: alıntının altında başlık, onun altında künye; daireler künyenin altında
+    let kBottom = 0;
+    if (S.mobile) {
+      root.style.setProperty('--gi-top', `${(qBottom + mpad).toFixed(2)}px`);
+      const k = measureMax(gInfo, (s) => id.templates.info(s, ctx));
+      const kkTop = qBottom + mpad + k.h + mpad;
+      root.style.setProperty('--gk-top', `${kkTop.toFixed(2)}px`);
+      kBottom = kkTop + measureMax(gKun, (s) => id.templates.credits(s, ctx)).h;
+    }
+    // alt sınır: Bilet Al'ın üstünden stage.gap ve bir etiket satırı yukarısı (eski sahne adı yeri)
     const tD = T.ticket.d * H;
     const gcBottom = css('--gc-bottom');
-    const stageTop = H - gcBottom - tD - css('--gs-gap') - css('--gs-fs');
+    const stageTop = H - gcBottom - tD - css('--gs-gap') - css('--fs-label-px');
 
     const logoEl = (S.mobile ? lgShort : lgLong).querySelector('svg')?.getBoundingClientRect();
     const logoTop = logoEl && logoEl.width > 0 ? logoEl.top : null;
 
     // ana daire: sınır kutusunun merkezi (mainX, mainY). Temel çap, eğik hâlinin sınır kutusu alıntının altı
-    // (mobilde künyenin altı) ile sahne adının üstü arasına her iki yanda gap boşlukla sığan en büyük değer
+    // (mobilde künyenin altı) ile alt sınır arasına her iki yanda gap boşlukla sığan en büyük değer
     // (en fazla cap); ana daire bunun mainScale katı
-    const top = (S.mobile ? kTop + k.h : qBottom) + gap;
+    const top = (S.mobile ? kBottom : qBottom) + gap;
     const bottom = stageTop - gap;
     const cap = (S.mobile ? GL.cap.mobile : GL.cap.web) * W;
     const mx = (S.mobile ? GL.mainX.mobile : GL.mainX.web) * W;
@@ -505,7 +510,7 @@ export function createGallery(o: {
     const ctx = o.tctx();
     swap(gInfo, id.templates.info(show, ctx), animate);
     swap(gCap, id.templates.caption(show, ctx), animate);
-    swap(gStage, id.templates.stageName(show, ctx), animate);
+    swap(gKun, id.templates.credits(show, ctx), animate);
   }
 
   /* ---------- × ---------- */
@@ -565,10 +570,10 @@ export function createGallery(o: {
       tl.to(lgLong, { opacity: on ? 0 : 1, ...all }, t0);
       tl.to(lgShort, { opacity: on ? 1 : 0, ...all }, t0);
     }
-    // künyede başlık dışındaki her şey kaybolup kapanır
+    // sol üstte başlık dışındaki her şey (tanıtım) kaybolup kapanır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to([gCap, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to([gCap, gKun, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -655,7 +660,8 @@ export function createGallery(o: {
         it.sh.style.filter = `blur(${f(blur / Math.max(0.05, q), 1)}px)`;
       }
     }
-    const cur = gInfo.lastElementChild;
+    // sayaç künyede: yalnızca güncel içerik
+    const cur = gKun.lastElementChild;
     visibleEls = cur ? [cur] : [];
   }
 
@@ -673,10 +679,10 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gCap, dom.members, lgLong, lgShort]);
+      gsap.killTweensOf([dom.close, ...layers(), gCap, gKun, dom.members, lgLong, lgShort]);
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([gCap, dom.members], { autoAlpha: 1 });
+      gsap.set([gCap, gKun, dom.members], { autoAlpha: 1 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -686,7 +692,7 @@ export function createGallery(o: {
       textFor = null;
       swaps.forEach((t) => t.kill());
       swaps.clear();
-      for (const g of [gInfo, gCap, gStage]) g.innerHTML = '';
+      for (const g of [gInfo, gCap, gKun]) g.innerHTML = '';
     },
     render,
     hit(x, y) {

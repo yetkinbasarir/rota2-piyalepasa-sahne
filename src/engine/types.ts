@@ -99,12 +99,12 @@ export interface TemplateContext {
 }
 
 export interface Templates {
-  /** Sol üst künye bloğu: başlık; .gi-rest içinde elmaslı çizgiler, YÖNETEN / TARİH (+ sayaç) / OYUNCULAR
-      satırları ve tanıtım. Satır satır geçiş için her satır .ln taşır; mobilde oyuncular ve tanıtım yok */
+  /** Sol üst: başlık; .gi-rest içinde tanıtım. Satır satır geçiş için her satır .ln taşır; mobilde tanıtım yok */
   info(show: Show, ctx: TemplateContext): string;
-  /** Alt ortadaki sahne adı (.ln); sahne yoksa '' */
-  stageName(show: Show, ctx: TemplateContext): string;
-  /** Üst ortadaki tür satırı ve alıntı (.ln satırları) */
+  /** Sağ alt künye (mobilde başlığın altında): çizgilerle ayrılmış TÜR / TARİH (+ sayaç) / SAHNE / YÖNETEN /
+      OYUNCULAR satırları (.ln); mobilde oyuncular yok */
+  credits(show: Show, ctx: TemplateContext): string;
+  /** Üst ortadaki alıntı (.ln) */
   caption(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
@@ -216,15 +216,21 @@ export interface ScreenTokens {
   label: { min: number; vw: number; max: number; track: number };
   /** Sayılar: büyük harf yüksekliği okuma metninkine eşitlenir (canvas ile ölçülen harf) */
   number: { capOf: string };
-  /** Künye bloğu: sol (W), üst, genişlik (W, en az px), başlık (W; web / mobil), çizgi kalınlığı (px),
-      tanıtımın en fazla satırı; mobilde kenar boşluğu (H) */
+  /** Sol üst blok (başlık + tanıtım): sol (W), genişlik (W, en az px), başlık (W; web / mobil), başlığın satır
+      aralığı, künye çizgisi kalınlığı (px), tanıtımın en fazla satırı; mobilde kenar boşluğu (H). Masaüstünde
+      başlığın büyük harf üstü Üye Ol / Giriş düğmelerinin üstüyle aynı çizgide */
   info: {
-    left: number; top: number; width: number; minWidth: number; title: { web: number; mobile: number };
+    left: number; width: number; minWidth: number; title: { web: number; mobile: number }; titleLh: number;
     rule: number; descLines: number; mobilePad: number;
   };
-  /** Üst orta: tür satırının üstü (H), alıntı boyu (W), satır aralığı, en fazla genişlik (W) */
+  /** Künye: genişlik (W; masaüstünde sağ altta, sağ kenarı Giriş düğmesinin, altı logonun altıyla hizalı, yukarı
+      büyür; mobilde başlığın altında ortada) */
+  credits: { width: { web: number; mobile: number } };
+  /** Üst orta alıntı: mobilde üstü (H; masaüstünde ilk satırın büyük harf üstü başlığınkiyle hizalı), boyu (W),
+      satır aralığı, en fazla genişlik (W) */
   quote: { top: number; size: { web: number; mobile: number }; lh: number; maxW: { web: number; mobile: number } };
-  /** Alt orta sahne adı: Bilet Al ile arası (yazı boyu etiket boyu) */
+  /** Dairelerin sığdırıldığı alt sınır: Bilet Al'ın üstünden bu kadar (H) ve bir etiket satırı yukarısı
+      (eski sahne adı yeri; daire ölçüleri değişmesin) */
   stage: { gap: number };
   /** Bilet Al: çap, alt boşluk (yazı boyu etiket boyu) */
   ticket: { d: number; bottom: number };

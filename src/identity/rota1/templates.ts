@@ -1,14 +1,13 @@
-/* ROTA1 şablonları: galeri yazıları (künye bloğu, tür + alıntı, sahne adı),
+/* ROTA1 şablonları: galeri yazıları (sol üstte başlık + tanıtım, sağ altta künye, üst ortada alıntı),
    daire düğmeler ve kapatma ikonu. Ölçüleri ve yazı rollerini motor CSS değişkenleriyle verir.
-   Bütün sayılar (tarih, saat, sayaç ve metin içindeki rakamlar) sayı rolünde (.num / .cd). */
+   Sayı rolü (.num / .cd) yalnızca künyedeki tarih / saat ve sayaçta; akan metindeki rakamlar metnin fontunda. */
 import type { Show, Templates, TemplateContext } from '../../engine/types';
 import { SURFACE } from './surface';
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
-/** Kaçışlı metindeki sayıları sayı rolüne al */
-const nums = (html: string) => html.replace(/\d+(?:[.,:]\d+)*/g, '<span class="num">$&</span>');
-const txt = (ctx: TemplateContext, s: string) => nums(ctx.esc(s));
+/** Akan metin: içindeki sayılar (ör. "1950") metnin kendi fontunda kalır; sayı rolü yalnızca künye tarihi ve sayaçta */
+const txt = (ctx: TemplateContext, s: string) => ctx.esc(s);
 
 /** Sayaç: her karakter konumu ayrı span (motor saniye saniye günceller) */
 function counterChars(s: Show, ctx: TemplateContext) {
@@ -25,41 +24,43 @@ const rule = () => '<div class="rl ln" aria-hidden="true"></div>';
 /** İçerikte gerçek değer yoksa (boş, "—", "Belirtilmedi") gösterilmez */
 const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowerCase('tr') !== 'belirtilmedi';
 
-/* ---------- künye bloğu ---------- */
+/* ---------- sol üst: başlık ve altında tanıtım ---------- */
 function info(s: Show, ctx: TemplateContext) {
-  const rows: string[] = [];
-  const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');
-  if (director) rows.push(`<div class="gr ln"><span class="lb">Yöneten</span><span class="gv">${txt(ctx, director.people.join(', '))}</span></div>`);
-  const at = nextAt(s);
-  if (at) {
-    const d = new Date(at);
-    const date = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-    rows.push(
-      `<div class="gr ln"><span class="lb">Tarih</span><span class="gv"><span class="num">${date}</span>` +
-        `<span class="gcd"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></span></span></div>`,
-    );
-  }
-  if (!ctx.mobile && s.cast.length) {
-    const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
-    rows.push(`<div class="gr ln"><span class="lb">Oyuncular</span><span class="gv gv-col">${names}</span></div>`);
-  }
-  // sıra: başlık, tanıtım (en fazla birkaç satır, kalanı "…"), altında çizgilerle ayrılmış künye satırları
+  // tanıtım (en fazla birkaç satır, kalanı "…"); açık hâlde kaybolup kapanır, başlık kalır
   const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
-  const list = rows.length ? rule() + rows.join(rule()) : '';
-  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${desc}${list}</div>`;
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${desc}</div>`;
 }
 
-/* ---------- sahne adı ---------- */
+/* ---------- sağ alt künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları; aralarda 2px çizgi ---------- */
 const STAGE: Record<string, string> = {
   'Ana Sahne': 'Büyük Sahne',
   'Küçük Sahne': 'Küçük Sahne',
 };
-function stageName(s: Show, ctx: TemplateContext) {
-  const name = STAGE[s.stage];
-  return name ? `<div class="gs-t ln">${ctx.esc(name)}</div>` : '';
+/** Tür değeri büyük harfe çevrilmez: yalnızca kelimelerin ilk harfi büyük */
+const initials = (v: string) =>
+  v.toLocaleLowerCase('tr').replace(/(^|[\s\-/(])(\S)/g, (_m, a: string, b: string) => a + b.toLocaleUpperCase('tr'));
+const row = (label: string, value: string, cls = '') => `<div class="gr ln"><span class="lb">${label}</span><span class="gv${cls}">${value}</span></div>`;
+function credits(s: Show, ctx: TemplateContext) {
+  const rows: string[] = [];
+  if (present(s.genre)) rows.push(row('Tür', txt(ctx, initials(s.genre))));
+  const at = nextAt(s);
+  if (at) {
+    const d = new Date(at);
+    const date = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    rows.push(row('Tarih', `<span class="num">${date}</span><span class="gcd"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></span>`));
+  }
+  const stage = STAGE[s.stage];
+  if (stage) rows.push(row('Sahne', txt(ctx, stage)));
+  const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');
+  if (director) rows.push(row('Yöneten', txt(ctx, director.people.join(', '))));
+  if (!ctx.mobile && s.cast.length) {
+    const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
+    rows.push(row('Oyuncular', names, ' gv-col'));
+  }
+  return rows.length ? rule() + rows.join(rule()) : '';
 }
 
-/* ---------- tür + alıntı ---------- */
+/* ---------- üst orta: alıntı ---------- */
 /** "alinti" varsa o; yoksa tanıtımın ilk cümlesi (en fazla `quoteChars` karakter, kelime sınırında "…") */
 function quoteOf(s: Show) {
   if (s.quote) return s.quote;
@@ -73,9 +74,8 @@ function quoteOf(s: Show) {
   return `${(sp > 0 ? cut.slice(0, sp) : cut).replace(/[\s,;:.–—-]+$/, '')}…`;
 }
 function caption(s: Show, ctx: TemplateContext) {
-  const label = present(s.genre) ? `<div class="gl ln">${txt(ctx, s.genre)}</div>` : '';
   const q = quoteOf(s);
-  return label + (q ? `<p class="gq ln">“${txt(ctx, q)}”</p>` : '');
+  return q ? `<p class="gq ln">“${txt(ctx, q)}”</p>` : '';
 }
 
 /* ---------- düğmeler ---------- */
@@ -98,7 +98,7 @@ function closeIcon(_ctx: TemplateContext) {
 
 export const templates: Templates = {
   info,
-  stageName,
+  credits,
   caption,
   circleButtons,
   closeIcon,

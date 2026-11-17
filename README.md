@@ -2,8 +2,8 @@
 
 Çapraz 3B daire galerisi (CSS 3B): daireler bir köşegen boyunca dizilir. Ana daire (p = 0 yuvası: en büyük, renkli,
 en önde; konumu serbest kompozisyon değeri mainX / mainY) renkli, diğerleri duotone; ana daireye tıklanınca diğer daireler
-yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda künye başlığı, kısa
-logo, sahne adı, Bilet Al ve × kalır. Web + mobil PWA.
+yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda gösteri başlığı, kısa
+logo, Bilet Al ve × kalır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
 ```bash
@@ -28,7 +28,7 @@ src/
     index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
                           hareket, açık hâlin ağı, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), ×,
                           yükleme ekranı, süreler, logo
-    templates.ts          künye bloğu (+ tanıtım), tür + alıntı, sahne adı, daire düğmeler, ×
+    templates.ts          başlık + tanıtım, sağ alt künye (tür, tarih, sahne, emek), alıntı, daire düğmeler, ×
     styles.css            görsel dil
   engine/
     types.ts              motor ↔ kimlik/içerik sözleşmesi

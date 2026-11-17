@@ -2,11 +2,11 @@
    Bütün ölçüler kimliğin `screen` token'ları (H'nin, belirtilenler W'nin oranı).
    Masaüstü: uzun logo sol altta, ilk harfi soldan `letter`·W'de, çizgilerin başı ekranın sol kenarında
    kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol alt noktaya oturur ve çizgi aralığı uzun
-   logonunkine eşittir. Mobil: yalnızca kısa logo; künye bloğu alıntının altında tam genişlikte. */
+   logonunkine eşittir. Mobil: yalnızca kısa logo; alıntının altında başlık, onun altında künye (0.92W). */
 import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
-import type { Identity, TemplateContext } from './types';
+import type { Identity, TemplateContext, TypeRole } from './types';
 
 export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateContext) {
   const T = id.screen;
@@ -41,22 +41,36 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   }
   const membersBottom = S.safeTop + pad + d;
 
-  /* üst orta: tür + alıntı (mobilde üye düğmelerinin altında başlar) */
-  const quoteTop = S.mobile ? Math.max(S.safeTop + T.quote.top * H, membersBottom + mpad) : T.quote.top * H;
+  /* üst orta alıntı ve sol üst başlık. Masaüstünde ikisinin ilk satırının büyük harf üstü Üye Ol / Giriş
+     düğmelerinin üstüyle aynı çizgide; mobilde alıntı üye düğmelerinin altında başlar (başlığın üstünü galeri verir) */
+  const quoteFs = (S.mobile ? T.quote.size.mobile : T.quote.size.web) * W;
+  const titleFs = (S.mobile ? T.info.title.mobile : T.info.title.web) * W;
+  const line = S.safeTop + pad;
+  const quoteTop = S.mobile
+    ? Math.max(S.safeTop + T.quote.top * H, membersBottom + mpad)
+    : line - capOffset(T.type.quote, quoteFs, T.quote.lh);
   px('--gq-top', quoteTop);
-  px('--gq-fs', (S.mobile ? T.quote.size.mobile : T.quote.size.web) * W);
+  px('--gq-fs', quoteFs);
   root.style.setProperty('--gq-lh', String(T.quote.lh));
   px('--gq-maxw', (S.mobile ? T.quote.maxW.mobile : T.quote.maxW.web) * W);
 
-  /* künye bloğu: masaüstünde sol üst; mobilde alıntının altında tam genişlik (üst kenarını galeri verir) */
   px('--gi-left', S.mobile ? mpad : T.info.left * W);
-  if (!S.mobile) px('--gi-top', T.info.top * H);
+  if (!S.mobile) px('--gi-top', line - capOffset(T.type.title, titleFs, T.info.titleLh));
   px('--gi-w', S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth));
-  px('--gi-title', (S.mobile ? T.info.title.mobile : T.info.title.web) * W);
+  px('--gi-title', titleFs);
+  root.style.setProperty('--gi-title-lh', String(T.info.titleLh));
   px('--gi-rule', T.info.rule);
   root.style.setProperty('--gi-lines', String(T.info.descLines));
 
-  /* alt orta: sahne adı, altında Bilet Al */
+  /* künye: masaüstünde sağ altta (sağ kenarı Giriş düğmesinin sağ kenarı, altı logonun altı; yukarı büyür);
+     mobilde başlığın altında ortada (üstünü galeri verir) */
+  const kw = (S.mobile ? T.credits.width.mobile : T.credits.width.web) * W;
+  px('--gk-w', kw);
+  px('--gk-left', (W - kw) / 2);
+  px('--gk-right', pad);
+  px('--gk-bottom', S.safeBottom + T.logo.bottom * H);
+
+  /* alt orta: yalnızca Bilet Al */
   px('--gs-gap', T.stage.gap * H);
   px('--gc-bottom', S.safeBottom + T.ticket.bottom * H);
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk');
@@ -96,6 +110,19 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     short.style.opacity = '0';
   }
   fitButtons(document.body, T.button.fit);
+}
+
+/** Bir yazı rolünün satır kutusunun üstünden ilk satırın büyük harf ("H") üstüne uzaklık (px): yarım satır
+    aralığı + fontun üst payı − büyük harf yüksekliği (canvas measureText) */
+function capOffset(role: TypeRole, fs: number, lh: number) {
+  const c = document.createElement('canvas').getContext('2d');
+  if (!c) return 0;
+  c.font = `${role.style ?? 'normal'} ${role.weight} ${fs}px ${role.family}`;
+  const m = c.measureText('H');
+  const a = m.fontBoundingBoxAscent;
+  const d = m.fontBoundingBoxDescent;
+  if (!(a > 0) || !(m.actualBoundingBoxAscent > 0)) return 0;
+  return (lh * fs - (a + d)) / 2 + a - m.actualBoundingBoxAscent;
 }
 
 /** Sayıların okuma metnine oranı: aynı boyda okuma fontunun ve sayı fontunun büyük harf yüksekliği (canvas
