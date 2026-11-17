@@ -1,0 +1,1944 @@
+{
+ "alan_sirasi": [
+  "Uyarlandığı Eser",
+  "Yazan",
+  "Uyarlayan",
+  "Kitap",
+  "Müzik",
+  "Şarkı Sözleri",
+  "Yöneten",
+  "Koreografi",
+  "Müzik Direktörü",
+  "Orkestra Şefi",
+  "Dekor Tasarımı",
+  "Kostüm Tasarımı",
+  "Işık Tasarımı",
+  "Ses Tasarımı",
+  "Video Tasarımı",
+  "İllüzyon Tasarımı",
+  "Kukla Tasarımı",
+  "Hareket Yönetmeni",
+  "Sanatçı",
+  "Eşlik",
+  "Müzisyenler",
+  "Düzenleyen",
+  "Küratör",
+  "Yapım"
+ ],
+ "gosteriler": [
+  {
+   "no": 1,
+   "id": "lukus-hayat",
+   "baslik": "Lüküs Hayat",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Operet",
+   "sure": "2 sa 30 dk, iki perde",
+   "yas": "9+",
+   "tanitim": "Ekrem Reşit ve Cemal Reşit Rey kardeşlerin 1933 tarihli opereti, Türk müzikli tiyatrosunun en sevilen eserlerinden biri. Küçük hırsızlıklarla geçinen Rıza ile Fıstık'ın bir zengin konağına girip kendilerini bir kıyafet balosunun ortasında bulmasıyla başlayan oyun, Batılılaşma özentisini kahkahayla sorgular. Haldun Dormen'in sahnelemesi, canlı orkestrası ve kalabalık kadrosuyla eserin zamansız şarkılarını bugüne taşıyor.",
+   "kunye": [
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Ekrem Reşit Rey"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Cemal Reşit Rey"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "Nazım Hikmet Ran",
+      "Ekrem Reşit Rey"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Haldun Dormen"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Selçuk Borak"
+     ]
+    },
+    {
+     "alan": "Orkestra Şefi",
+     "kisiler": [
+      "Aytuğ Ülgen",
+      "Orhun Orhon"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Barış Dinçel"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Tülay Kale"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Ersen Tunççekiç"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Eskişehir Büyükşehir Belediyesi Şehir Tiyatroları"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Berkay Akın",
+     "rol": ""
+    },
+    {
+     "ad": "Devrim Özder Akın",
+     "rol": ""
+    },
+    {
+     "ad": "Elif Savran Perk Akyol",
+     "rol": ""
+    },
+    {
+     "ad": "Elçin Tezcan Balcı",
+     "rol": ""
+    },
+    {
+     "ad": "Gamze Demirer",
+     "rol": ""
+    },
+    {
+     "ad": "Ezgi Coşkun Göllü",
+     "rol": ""
+    },
+    {
+     "ad": "Elif Melda Yılmaz Hatipoğlu",
+     "rol": ""
+    },
+    {
+     "ad": "Mustafa Kılıkcı",
+     "rol": ""
+    },
+    {
+     "ad": "Özgür Onan",
+     "rol": ""
+    },
+    {
+     "ad": "Serhat Onbul",
+     "rol": ""
+    },
+    {
+     "ad": "Alp Sunaoğlu",
+     "rol": ""
+    },
+    {
+     "ad": "Sermet Yeşil",
+     "rol": ""
+    },
+    {
+     "ad": "Atakan Celbiş",
+     "rol": ""
+    },
+    {
+     "ad": "Derya Daşlı",
+     "rol": ""
+    },
+    {
+     "ad": "İsa Can Dinç",
+     "rol": ""
+    },
+    {
+     "ad": "Eda Eğilmez",
+     "rol": ""
+    },
+    {
+     "ad": "Birsu Metin",
+     "rol": ""
+    },
+    {
+     "ad": "Emel Alnady",
+     "rol": ""
+    },
+    {
+     "ad": "Ahmet Barut",
+     "rol": ""
+    },
+    {
+     "ad": "Nigar Berktin",
+     "rol": ""
+    },
+    {
+     "ad": "Onur Birgi",
+     "rol": ""
+    },
+    {
+     "ad": "Kutan Gökkaya",
+     "rol": ""
+    },
+    {
+     "ad": "Ceyda Çınar Onbul",
+     "rol": ""
+    },
+    {
+     "ad": "Yağmur Sena Kayar",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "Eskişehir Büyükşehir Belediyesi Şehir Tiyatroları, 2024",
+   "kaynaklar": [
+    "https://tiyatro.eskisehir.bel.tr/oyundetay.php?oyunumuz=159",
+    "https://tiyatro.eskisehir.bel.tr/oyundetay.php?oyunumuz=42"
+   ],
+   "not": "Orkestrasyon ve müzik düzenleme de Aytuğ Ülgen'e ait; yardımcı yönetmen Mete Ayhan."
+  },
+  {
+   "no": 2,
+   "id": "sunset-bulvari",
+   "baslik": "Sunset Bulvarı",
+   "ozgun_ad": "Sunset Blvd.",
+   "sahne": "Ana Sahne",
+   "tur": "Müzikal",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Andrew Lloyd Webber'in Billy Wilder'ın 1950 tarihli klasik filminden uyarladığı müzikal, Hollywood'un unutulmuş sessiz film yıldızı Norma Desmond'un hikâyesini anlatır. Genç senarist Joe Gillis'in yolu Norma'nın konağıyla kesişince şöhret, saplantı ve yalnızlık iç içe geçer. Jamie Lloyd'un yalın sahnesi, siyah-beyaz canlı kamera görüntüleri ve modern kostümlerle yeniden kurduğu yapım, 2024'te Broadway'de açıldı.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Billy Wilder, Sunset Boulevard (film, 1950)"
+     ]
+    },
+    {
+     "alan": "Kitap",
+     "kisiler": [
+      "Don Black",
+      "Christopher Hampton"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Andrew Lloyd Webber"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "Don Black",
+      "Christopher Hampton"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Jamie Lloyd"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Fabian Aloise"
+     ]
+    },
+    {
+     "alan": "Müzik Direktörü",
+     "kisiler": [
+      "Alan Williams"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Soutra Gilmour"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Soutra Gilmour"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Jack Knowles"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Adam Fisher"
+     ]
+    },
+    {
+     "alan": "Video Tasarımı",
+     "kisiler": [
+      "Nathan Amzi",
+      "Joe Ransom"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "The Jamie Lloyd Company"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Nicole Scherzinger",
+     "rol": "Norma Desmond"
+    },
+    {
+     "ad": "Tom Francis",
+     "rol": "Joe Gillis"
+    },
+    {
+     "ad": "Grace Hodgett Young",
+     "rol": "Betty Schaefer"
+    },
+    {
+     "ad": "David Thaxton",
+     "rol": "Max von Mayerling"
+    }
+   ],
+   "referans_yapim": "Broadway, St. James Theatre, 2024",
+   "kaynaklar": [
+    "https://broadwaydirect.com/first-look-nicole-scherzinger-stars-in-sunset-blvd-on-broadway/",
+    "https://thejamielloydcompany.com/productions/sunset-boulevard"
+   ],
+   "not": "B fotoğrafı (Glenn Close) farklı bir yapımdan: 1994 özgün Broadway yapımı."
+  },
+  {
+   "no": 3,
+   "id": "paranormal-activity",
+   "baslik": "Paranormal Activity",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Tiyatro (gerilim)",
+   "sure": "2 sa 10 dk, bir ara",
+   "yas": "15+",
+   "tanitim": "Dünyaca ünlü korku filmi serisinden esinlenen, sahne için yazılmış yepyeni bir hikâye. Geçmişlerinden kaçmak için Chicago'dan Londra'ya taşınan James ve Lou'nun yeni evinde başlayan tuhaflıklar, kaçtıkları şeyin peşlerini bırakmadığını gösterir. Punchdrunk'ın kurucusu Felix Barrett'ın yönettiği yapım, sahne illüzyonları ve ses tasarımıyla seyirciyi karanlığın içine çekiyor; 2024'te Leeds'te prömiyer yapıp West End'e taşındı.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Oren Peli, Paranormal Activity film serisi"
+     ]
+    },
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Levi Holloway"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Felix Barrett"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Fly Davis"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Fly Davis"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Anna Watson"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Gareth Fry"
+     ]
+    },
+    {
+     "alan": "Video Tasarımı",
+     "kisiler": [
+      "Luke Halls"
+     ]
+    },
+    {
+     "alan": "İllüzyon Tasarımı",
+     "kisiler": [
+      "Chris Fisher"
+     ]
+    },
+    {
+     "alan": "Hareket Yönetmeni",
+     "kisiler": [
+      "Kath Duggan"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Melting Pot",
+      "Leeds Playhouse"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Melissa James",
+     "rol": ""
+    },
+    {
+     "ad": "Patrick Heusinger",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "West End, Ambassadors Theatre, Aralık 2025",
+   "kaynaklar": [
+    "https://officiallondontheatre.com/show/paranormal-activity-111466203/",
+    "https://www.londontheatre.co.uk/reviews/paranormal-activity-review-ambassadors-theatre",
+    "https://www.mpot.co.uk/paranormal-activity"
+   ],
+   "not": "Rol eşleşmesi kaynaklarda net değil. Resmî sayfadaki fotoğraflarda sonraki kadro var: Ty Fanning (James), Ami Okumura Jones (Lou)."
+  },
+  {
+   "no": 4,
+   "id": "karagoz-ve-hacivat",
+   "baslik": "Karagöz ve Hacivat",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Sahne gösterisi",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Geleneksel Türk gölge oyununun iki ölümsüz karakteri, perdeden çıkıp canlı oyuncularla sahneye taşınıyor. Karagöz'ün saf zekâsı ile Hacivat'ın kitabi bilgiçliği arasındaki atışmalar, İstanbul silüetinin önünde bugünün diliyle yeniden hayat buluyor. Gölge perdesi estetiğini sahne ışığıyla buluşturan gösteri, her yaştan seyirciye sesleniyor.",
+   "kunye": [],
+   "oynayanlar": [],
+   "referans_yapim": "Sunumun 28. sayfasındaki özgün sahne görseli",
+   "kaynaklar": [],
+   "not": "Kaynak sayfası yok; künye açıklanmadı. Tanıtım metni görsellerden yola çıkıyor, yapım bilgisi geldiğinde güncellenmeli. B görseli yapay zekâyla üretildi."
+  },
+  {
+   "no": 5,
+   "id": "we-will-rock-you",
+   "baslik": "We Will Rock You",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Müzikal",
+   "sure": "2 sa 46 dk, 20 dk ara",
+   "yas": "",
+   "tanitim": "Queen'in en sevilen 24 şarkısı üzerine Ben Elton'ın yazdığı rock müzikali, 2002'den bu yana dünya çapında sahneleniyor. Müziğin yasaklandığı ve her şeyin tek tipleştiği bir gelecekte Galileo ile Scaramouche, rock'n roll'u yeniden keşfetmek için isyancılara katılır. London Coliseum'daki 2023 yapımı, gösterinin ilk yapımından 21 yıl sonra Londra'ya dönüşüydü.",
+   "kunye": [
+    {
+     "alan": "Kitap",
+     "kisiler": [
+      "Ben Elton"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Queen"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "Queen"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Ben Elton"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Jacob Fearey"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Ian McIntosh",
+     "rol": "Galileo Figaro"
+    },
+    {
+     "ad": "Elena Skye",
+     "rol": "Scaramouche"
+    },
+    {
+     "ad": "Brenda Edwards",
+     "rol": "Killer Queen"
+    },
+    {
+     "ad": "Lee Mead",
+     "rol": "Khashoggi"
+    },
+    {
+     "ad": "Christine Allado",
+     "rol": "Meat"
+    },
+    {
+     "ad": "Adrian Hansel",
+     "rol": "Brit"
+    },
+    {
+     "ad": "Ben Elton",
+     "rol": "Rebel Leader"
+    }
+   ],
+   "referans_yapim": "West End, London Coliseum, 2 Haziran – 27 Ağustos 2023",
+   "kaynaklar": [
+    "https://www.londontheatre.co.uk/show/27103-we-will-rock-you",
+    "https://www.davidspicer.com.au/shows/we-will-rock-you"
+   ],
+   "not": "B fotoğrafı 2016 Avustralya yapımından (David Spicer Productions)."
+  },
+  {
+   "no": 6,
+   "id": "cats",
+   "baslik": "Cats",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Müzikal",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Andrew Lloyd Webber'in T.S. Eliot'ın kedi şiirlerinden yarattığı müzikal, 1981'den bu yana dünyanın en uzun soluklu yapımlarından biri. Jellicle kedileri yılda bir kez düzenlenen balolarında bir araya gelir; gecenin sonunda içlerinden biri yeni bir hayata doğmak üzere seçilecektir. Trevor Nunn'ın sahnelemesi ve Andy Blankenbuehler'in Gillian Lynne'den yola çıkan yeni koreografisiyle yenilenen yapım, Broadway'den sonra Kuzey Amerika'yı dolaştı.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "T.S. Eliot, Old Possum's Book of Practical Cats"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Andrew Lloyd Webber"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Trevor Nunn"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Andy Blankenbuehler (Gillian Lynne'in özgün koreografisinden)"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "John Napier"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "John Napier"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Natasha Katz"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Mick Potter"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "2016 Broadway canlandırmasının Kuzey Amerika turnesi, 2019–2023",
+   "kaynaklar": [
+    "https://www.xroadslive.com/project/cats/na",
+    "https://www.digitalspy.com/showbiz/theatre-news/a616206/cats-review-nicole-scherzinger-rekindles-the-madness-and-memory/"
+   ],
+   "not": "Turne kadrosu dönem dönem değiştiği için oynayanlar yazılmadı. B fotoğrafı 2014 Londra Palladium yapımından (Nicole Scherzinger, Grizabella)."
+  },
+  {
+   "no": 7,
+   "id": "slavas-snowshow",
+   "baslik": "Slava's Snowshow",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Görsel tiyatro / palyaço gösterisi",
+   "sure": "1 sa 40 dk",
+   "yas": "8+",
+   "tanitim": "Rus palyaço Slava Polunin'in 1993'te Moskova'da yarattığı gösteri, sözsüz tiyatronun dünyada en çok izlenen örneklerinden biri. Sarı tulumlu palyaço ve yol arkadaşları; kar fırtınaları, dev balonlar ve salonu saran örümcek ağlarıyla seyirciyi çocukluğun oyun alanına davet eder. Olivier ödüllü ve Tony adayı gösteri, 2019'da Broadway'e ikinci kez geldi.",
+   "kunye": [
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Slava Polunin"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Slava Polunin",
+      "Viktor Kramer"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Slava Polunin",
+      "Viktor Plotnikov"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Slava Polunin"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Roman Dubinnikov",
+      "Slava Polunin"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Slava Polunin",
+     "rol": ""
+    },
+    {
+     "ad": "Artem Zhimo",
+     "rol": ""
+    },
+    {
+     "ad": "Vanya Polunin",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "Broadway, Stephen Sondheim Theatre, 13 Kasım 2019 – 5 Ocak 2020",
+   "kaynaklar": [
+    "https://www.broadwayworld.com/article/Photo-Coverage-Get-a-Sneak-Peek-of-SLAVAS-SNOWSHOW-on-Broadway-20191113",
+    "https://www.ilrossetti.it/it/spettacoli/slava-s-snowshow-3114"
+   ],
+   "not": "'Yazan' alanı bu gösteride yaratıcıyı karşılıyor."
+  },
+  {
+   "no": 8,
+   "id": "the-snowman",
+   "baslik": "The Snowman",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Dans gösterisi",
+   "sure": "1 sa 50 dk, 20 dk ara",
+   "yas": "",
+   "tanitim": "Raymond Briggs'in sevilen resimli kitabından ve 1982 tarihli animasyon filminden uyarlanan dans gösterisi. Bir çocuğun yaptığı kardan adam gece canlanır; ikili, Noel Baba'yla buluşmak için karlı gökyüzünde unutulmaz bir yolculuğa çıkar. Howard Blake'in 'Walking in the Air' şarkısını da içeren müziği canlı orkestrayla çalınan Birmingham Rep yapımı, Londra'da neredeyse otuz yıldır her kış sahneleniyor.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Raymond Briggs, The Snowman"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Howard Blake"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "Howard Blake"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Bill Alexander"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Robert North"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Ruari Murchison"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Ruari Murchison"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Tim Mitchell"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Richard Brooker"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Birmingham Repertory Theatre"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Andrew Ashton",
+     "rol": "Kardan Adam"
+    },
+    {
+     "ad": "Martin Fenton",
+     "rol": "Kardan Adam"
+    },
+    {
+     "ad": "Federico Casadei",
+     "rol": "Noel Baba / Baba"
+    }
+   ],
+   "referans_yapim": "Birmingham Rep, Peacock Theatre (Sadler's Wells), 2024",
+   "kaynaklar": [
+    "https://www.sadlerswells.com/whats-on/the-snowman-2024/",
+    "https://www.westendbestfriend.co.uk/news/bham-reps-the-snowman-returns-to-peacock-theatre-this-xmas"
+   ],
+   "not": "Senaryo Howard Blake, Bill Alexander ve Robert North'a ait."
+  },
+  {
+   "no": 9,
+   "id": "riverdance",
+   "baslik": "Riverdance",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Dans gösterisi",
+   "sure": "yaklaşık 2 sa",
+   "yas": "",
+   "tanitim": "1994 Eurovision Şarkı Yarışması'nın ara gösterisinde doğan Riverdance, İrlanda dansını dünya sahnelerine taşıyan bir fenomene dönüştü. Bill Whelan'ın müziği eşliğinde İrlanda step dansı, flamenko ve farklı dans gelenekleri bir araya gelerek İrlanda'nın kültürel hikâyesini anlatır. 1995'te Dublin'de prömiyer yapan gösteri, o günden bu yana dünyanın dört bir yanında sahneleniyor.",
+   "kunye": [
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Bill Whelan"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "John McColgan"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Michael Flatley (özgün baş İrlanda dansı koreografisi)"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Moya Doherty"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Riverdance dünya turnesi",
+   "kaynaklar": [
+    "https://riverdance.com/tours/",
+    "https://riverdance.com/blog/2012/03/15/after-15-years-riverdance-continues-to-kick-up-a-storm/"
+   ],
+   "not": "Kadro turneye göre değiştiği için oynayanlar yazılmadı."
+  },
+  {
+   "no": 10,
+   "id": "uyuyan-guzel",
+   "baslik": "Uyuyan Güzel",
+   "ozgun_ad": "The Sleeping Beauty",
+   "sahne": "Ana Sahne",
+   "tur": "Bale",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Çaykovski'nin üç büyük balesinden biri olan Uyuyan Güzel, Perrault masalını görkemli bir saray dünyasında anlatır. Doğum gününde lanetlenen Prenses Aurora yüz yıllık bir uykuya dalar ve bir prensin öpücüğüyle uyanır; iyi ile kötü perinin mücadelesi baleye masalsı bir gerilim katar. Macar Ulusal Balesi'nin Sir Peter Wright koreografisi ve Philip Prowse tasarımıyla sahnelediği yapım, 2016'da Macar Devlet Operası'nda prömiyer yaptı.",
+   "kunye": [
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Pyotr İlyiç Çaykovski"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Sir Peter Wright (Marius Petipa'dan)",
+      "Sir Frederick Ashton (ek koreografi)"
+     ]
+    },
+    {
+     "alan": "Orkestra Şefi",
+     "kisiler": [
+      "David Coleman"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Philip Prowse"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Philip Prowse"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Peter Teigen"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Macar Ulusal Balesi, Macar Devlet Operası"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Tatyjana Melnyik",
+     "rol": "Aurora"
+    },
+    {
+     "ad": "Ármin Gergő Balázsi",
+     "rol": "Florimund"
+    }
+   ],
+   "referans_yapim": "Macar Devlet Operası, prömiyer 17 Nisan 2016",
+   "kaynaklar": [
+    "https://www.opera.hu/en/news/the-sleeping-beauty-8211-premiere-at-the-opera-on-17-april/",
+    "https://www.opera.hu/en/news/april-at-the-hungarian-state-opera-a-focus-on-dance/"
+   ],
+   "not": "Yapım dört farklı kadroyla oynanıyor; yazılan ikili 2026 dönüşündeki kadro."
+  },
+  {
+   "no": 11,
+   "id": "findikkiran",
+   "baslik": "Fındıkkıran",
+   "ozgun_ad": "The Nutcracker",
+   "sahne": "Ana Sahne",
+   "tur": "Bale",
+   "sure": "iki perde",
+   "yas": "",
+   "tanitim": "Çaykovski'nin müziğiyle her yıl Noel döneminin vazgeçilmezi olan Fındıkkıran, E.T.A. Hoffmann'ın masalından doğan bir peri masalı balesidir. Marie'nin Drosselmeier'den hediye aldığı fındıkkıran oyuncağı gece canlanır, Fareler Kralı'nı yener ve Marie'yi Kar Ülkesi'nden tatlılar diyarına uzanan bir yolculuğa çıkarır. Wayne Eagling ile Tamás Solymosi'nin Macar Ulusal Balesi için yarattığı koreografi, 2015'te Macar Devlet Operası'nda prömiyer yaptı.",
+   "kunye": [
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Pyotr İlyiç Çaykovski"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Wayne Eagling",
+      "Tamás Solymosi"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Beáta Vavrinecz (Gusztáv Oláh'tan)"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Nóra Rományi"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Macar Ulusal Balesi, Macar Devlet Operası"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Gergely Leblanc",
+     "rol": "Fındıkkıran Prens"
+    },
+    {
+     "ad": "Karina Sarkissova",
+     "rol": "Prenses Marie"
+    }
+   ],
+   "referans_yapim": "Macar Devlet Operası, prömiyer 28 Kasım 2015",
+   "kaynaklar": [
+    "https://www.opera.hu/en/news/a-new-nutcracker-to-premiere-at-the-hungarian-state-opera/",
+    "https://welovebudapest.com/program/wayne-eagling-solymosi-tamas-pjotr-iljics-csajkovszkij-a-diotoro"
+   ],
+   "not": "Oynayanlar B fotoğrafındaki ikili. Prömiyer kadrosunda ayrıca Lili Felméry, Aliya Tanykpayeva, Zoltán Oláh ve Tatiana Melnik var."
+  },
+  {
+   "no": 12,
+   "id": "kugu-golu",
+   "baslik": "Kuğu Gölü",
+   "ozgun_ad": "Swan Lake",
+   "sahne": "Ana Sahne",
+   "tur": "Bale",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Çaykovski'nin ilk balesi Kuğu Gölü, klasik bale repertuvarının en tanınmış eserlerinden biri. Büyücü Rothbart'ın lanetiyle gündüzleri kuğuya dönüşen Odette'e âşık olan Prens Siegfried, kara kuğu Odile'in oyununa düşer. American Ballet Theatre'ın Petipa ve Ivanov'un koreografisinden yola çıkan Kevin McKenzie versiyonu, her yaz Metropolitan Opera House'da sahneleniyor.",
+   "kunye": [
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Pyotr İlyiç Çaykovski"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Kevin McKenzie (Marius Petipa ve Lev Ivanov'dan)"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Zack Brown"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Zack Brown"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Duane Schuler"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "American Ballet Theatre"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Catherine Hurlin",
+     "rol": "Odette / Odile"
+    },
+    {
+     "ad": "Joo Won Ahn",
+     "rol": "Prens Siegfried"
+    }
+   ],
+   "referans_yapim": "American Ballet Theatre, Metropolitan Opera House, New York",
+   "kaynaklar": [
+    "https://www.metopera.org/season/2023-abt/swan-lake",
+    "https://fjordreview.com/blogs/all/three-afternoons-at-swan-lake"
+   ],
+   "not": "Oynayanlar B fotoğrafındaki ikili."
+  },
+  {
+   "no": 13,
+   "id": "tarkan",
+   "baslik": "Tarkan",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Konser",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Türk popunun uluslararası yıldızı Tarkan, otuz yılı aşan kariyerinin şarkılarını sahneye taşıyor. Kuzu Kuzu, Şımarık ve Kış Güneşi gibi klasiklerin yanında 2024'te çıkan on birinci stüdyo albümü Kuantum 51'in şarkıları da repertuvarda. Sanatçı, 2019'da Harbiye'de yedi gece süren konser serisinde yaklaşık 50 bin dinleyiciyi ağırlamıştı.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Tarkan"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Tarkan konserleri",
+   "kaynaklar": [
+    "https://businessandlife.com.tr/bu-yaza-tarkanla-giriyoruz-kuantum-51/",
+    "https://www.turkiyehaberajansi.com/tarkan-i-yedi-gun-boyunca-yaklasik-50-bin-kisi-dinledi/115985/"
+   ],
+   "not": "B fotoğrafı 2019 Harbiye konserinden."
+  },
+  {
+   "no": 14,
+   "id": "sertab-erener",
+   "baslik": "Sertab Erener",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Konser",
+   "sure": "",
+   "yas": "",
+   "tanitim": "2003'te Everyway That I Can ile Eurovision Şarkı Yarışması'nı kazanan ilk Türk sanatçı olan Sertab Erener, pop ile Doğu ezgilerini buluşturan sesiyle tanınıyor. Konserlerinde kariyerinin farklı dönemlerinden şarkıları güçlü bir sahne kurgusuyla bir araya getiriyor. Eurovision'dan bu yana uluslararası sahnelerde de konser veren sanatçının Türkçe ve İngilizce şarkılardan oluşan geniş bir repertuvarı var.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Sertab Erener"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Sertab Erener konserleri",
+   "kaynaklar": [
+    "https://www.dergy.com/pop/",
+    "https://www.behance.net/gallery/149774567/Sertab-Erener-Harbiye-2022"
+   ],
+   "not": "B fotoğrafı 2022 Harbiye konserinden."
+  },
+  {
+   "no": 15,
+   "id": "luka-sulic",
+   "baslik": "Luka Šulić",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Konser (çello)",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Dünyaca ünlü çello ikilisi 2CELLOS'un kurucularından Sloven çellist Luka Šulić, klasik müzikle popüler müzik arasındaki sınırları kaldıran yorumlarıyla tanınıyor. Solo kariyerinde Vivaldi'nin Dört Mevsim'ini baştan sona çello için yeniden yorumlayan sanatçı, piyanist Evgeny Genchev ile birlikte sahne alıyor. Çellonun hem lirik hem de enerjik yüzünü gösteren konserleri dünyanın dört bir yanında ilgiyle izleniyor.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Luka Šulić (çello)"
+     ]
+    },
+    {
+     "alan": "Eşlik",
+     "kisiler": [
+      "Evgeny Genchev (piyano)"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Luka Šulić & Evgeny Genchev, Euritmica, 2021",
+   "kaynaklar": [
+    "https://www.euritmica.it/eventi/luka-sulic-the-world-cello-star-and-co-founder-of-2cellos-in-a-special-performance-with-evgeny-genchev/",
+    "https://www.sonymusic.co.jp/artist/lukasulic/info/566042"
+   ],
+   "not": ""
+  },
+  {
+   "no": 16,
+   "id": "tony-ann",
+   "baslik": "Tony Ann",
+   "ozgun_ad": "",
+   "sahne": "Ana Sahne",
+   "tur": "Konser (piyano)",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Kanadalı piyanist ve besteci Tony Ann, klasik piyano tekniğini çağdaş pop melodileriyle buluşturan besteleriyle dünya çapında milyonlarca dinleyiciye ulaştı. Berklee'de öğrenciyken sosyal medyada yayılan yorumlarıyla tanınan sanatçı, Decca Records'tan çıkan Emotions serisi ve 360° albümüyle neoklasik piyano müziğinin yeni seslerinden biri oldu. Konserlerinde yalnızca bir piyanoyla, duyguları renklerle eşleştiren kendi bestelerini seslendiriyor.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Tony Ann (piyano)"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Tony Ann dünya turnesi",
+   "kaynaklar": [
+    "https://universalmusic.fr/artistes/32749617540",
+    "https://www.teamwass.com/music/tony-ann/"
+   ],
+   "not": ""
+  },
+  {
+   "no": 17,
+   "id": "fazil-say",
+   "baslik": "Fazıl Say",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Resital (piyano)",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Dünyanın önde gelen piyanistlerinden ve çağımızın en çok seslendirilen Türk bestecilerinden Fazıl Say, bir piyano resitaliyle sahnede. Mozart, Bach ve Beethoven yorumlarının yanı sıra kendi besteleriyle de tanınan sanatçının kayıtları Warner Classics etiketiyle yayımlanıyor. Doğaçlamaya açık, enerjik çalışı ve piyanonun içinden ses arayan tekniği, her resitali kendine özgü bir deneyime dönüştürüyor.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Fazıl Say (piyano)"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Fazıl Say resitalleri",
+   "kaynaklar": [
+    "https://www.warnerclassics.com/br/artist/fazil-say",
+    "https://www.preludium.nl/pianist-fazil-say-ik-ben-altijd-een-dromer-gebleven"
+   ],
+   "not": ""
+  },
+  {
+   "no": 18,
+   "id": "cabaret",
+   "baslik": "Cabaret – Kit Kat Club",
+   "ozgun_ad": "Cabaret at the Kit Kat Club",
+   "sahne": "Küçük Sahne",
+   "tur": "Müzikal",
+   "sure": "2 sa 45 dk, ara dahil",
+   "yas": "13+",
+   "tanitim": "Kander ve Ebb'in klasik müzikali Cabaret, 1930'ların başında Berlin'deki Kit Kat Club'ı ve dışarıda yükselen Nazizmin gölgesini anlatır. Amerikalı yazar Clifford Bradshaw ile kulübün yıldızı Sally Bowles'un hikâyesi, eğlencenin ve inkârın sınırında Emcee'nin şarkılarıyla ilerler. Rebecca Frecknall'ın seyirciyi kulübün içine alan Londra yapımı, West End tarihinin en uzun soluklu Cabaret'si oldu.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "John Van Druten, I Am a Camera",
+      "Christopher Isherwood, Berlin öyküleri"
+     ]
+    },
+    {
+     "alan": "Kitap",
+     "kisiler": [
+      "Joe Masteroff"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "John Kander"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "Fred Ebb"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Rebecca Frecknall"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Julia Cheng"
+     ]
+    },
+    {
+     "alan": "Müzik Direktörü",
+     "kisiler": [
+      "Jennifer Whyte",
+      "Ben van Tienen"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Tom Scutt"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Tom Scutt"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Isabella Byrd"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Nick Lidster"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Katie Hall",
+     "rol": "Sally Bowles"
+    },
+    {
+     "ad": "Matt Willis",
+     "rol": "Emcee"
+    },
+    {
+     "ad": "Baker Mukasa",
+     "rol": "Clifford Bradshaw"
+    },
+    {
+     "ad": "Ruthie Henshall",
+     "rol": "Fräulein Schneider"
+    },
+    {
+     "ad": "Robert Hands",
+     "rol": "Herr Schultz"
+    },
+    {
+     "ad": "Lucas Koch",
+     "rol": "Ernst Ludwig"
+    }
+   ],
+   "referans_yapim": "Kit Kat Club, Playhouse Theatre, Londra, 26 Ocak – 23 Mayıs 2026 kadrosu",
+   "kaynaklar": [
+    "https://kitkat.club/cabaret-london/gallery/",
+    "https://playbill.com/article/photos-matt-willis-and-katie-hall-star-in-london-cabaret"
+   ],
+   "not": "Jennifer Whyte müzik süpervizörü, Ben van Tienen müzik direktörü."
+  },
+  {
+   "no": 19,
+   "id": "ucurtma-avcisi",
+   "baslik": "Uçurtma Avcısı",
+   "ozgun_ad": "The Kite Runner",
+   "sahne": "Küçük Sahne",
+   "tur": "Tiyatro",
+   "sure": "2 sa 30 dk, 20 dk ara",
+   "yas": "",
+   "tanitim": "Khaled Hosseini'nin dünya çapında çok satan romanından Matthew Spangler'ın uyarladığı oyun, Kabil'de geçen bir dostluk ve kefaret hikâyesi. Uçurtma turnuvasının gölgesinde yaşanan bir olay Amir ile Hassan'ın yollarını ayırır; yıllar sonra Amir geçmişiyle yüzleşmek için Afganistan'a döner. Canlı tabla müziğiyle desteklenen Giles Croft yapımı, West End ve Broadway'in ardından 2024'te Birleşik Krallık turnesine çıktı.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Khaled Hosseini, Uçurtma Avcısı (roman)"
+     ]
+    },
+    {
+     "alan": "Uyarlayan",
+     "kisiler": [
+      "Matthew Spangler"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Jonathan Girling"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Giles Croft"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Barney George"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Elizabeth Dennis"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Charles Balfour"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Drew Baumohl"
+     ]
+    },
+    {
+     "alan": "Video Tasarımı",
+     "kisiler": [
+      "William Simpson"
+     ]
+    },
+    {
+     "alan": "Hareket Yönetmeni",
+     "kisiler": [
+      "Kitty Winter"
+     ]
+    },
+    {
+     "alan": "Müzisyenler",
+     "kisiler": [
+      "Hanif Khan (tabla)"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "UK Productions",
+      "Kilimanjaro Productions"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Stuart Vincent",
+     "rol": "Amir"
+    },
+    {
+     "ad": "Yazdan Qafouri",
+     "rol": "Hassan / Sohrab"
+    },
+    {
+     "ad": "Dean Rehman",
+     "rol": "Baba"
+    },
+    {
+     "ad": "Daphne Kouma",
+     "rol": "Soraya"
+    },
+    {
+     "ad": "Bhavin Bhatt",
+     "rol": "Assef"
+    },
+    {
+     "ad": "Ian Abeyesekera",
+     "rol": "General Taheri"
+    },
+    {
+     "ad": "Christopher Glover",
+     "rol": "Rahim Khan"
+    }
+   ],
+   "referans_yapim": "Birleşik Krallık turnesi, The Lowry, 7–11 Mayıs 2024",
+   "kaynaklar": [
+    "https://www.creativetourist.com/event/the-kite-runner-at-the-lowry/",
+    "https://www.thekiterunnerplay.com/"
+   ],
+   "not": "William Simpson'ın görevi projeksiyon tasarımı; Video Tasarımı alanına yazıldı."
+  },
+  {
+   "no": 20,
+   "id": "sanat",
+   "baslik": "Sanat",
+   "ozgun_ad": "Art",
+   "sahne": "Küçük Sahne",
+   "tur": "Tiyatro (komedi)",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Yasmina Reza'nın Molière ve Tony ödüllü komedisi Sanat, beyaz bir tablonun üç eski dostun arasını nasıl açtığını anlatır. Serge'in bembeyaz bir tuvale servet ödemesiyle başlayan tartışma, kısa sürede zevk, kibir ve dostluğun kendisi üzerine acımasız ve komik bir hesaplaşmaya dönüşür. Cihan Ünal ve Can Gürzap'ın 1997'de Cüneyt Türel'le oynadığı oyun, 20 yıl sonra Mutlu Güney'in katılımıyla Türel'in anısına yeniden sahnelendi.",
+   "kunye": [
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Yasmina Reza"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Gencay Gürün"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Aysa Prodüksiyon Tiyatrosu"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Cihan Ünal",
+     "rol": ""
+    },
+    {
+     "ad": "Can Gürzap",
+     "rol": ""
+    },
+    {
+     "ad": "Mutlu Güney",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "Aysa Prodüksiyon, 2017 sahnelemesi",
+   "kaynaklar": [
+    "https://www.istanbulhaber.com.tr/20-yil-sonra-yeniden-sahnelenen-sanat-oyununda-duygusal-anlar-haber-809484.htm",
+    "https://www.concordtheatricals.com/p/13005/art"
+   ],
+   "not": "Çevirmen ve tasarım ekibi kaynakta yok. Kaynak haberde yapım şirketinin adı kesik görünüyor ('Aysa Prodüksiyon Tiyatro…'); teyit edilmeli. A fotoğrafı Concord Theatricals'tan."
+  },
+  {
+   "no": 21,
+   "id": "medea",
+   "baslik": "Medea",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Tiyatro (tragedya)",
+   "sure": "yaklaşık 1 sa 15 dk",
+   "yas": "",
+   "tanitim": "Euripides'in ölümsüz tragedyası, şair ve oyun yazarı Liz Lochhead'in İskoç diliyle örülü güncel uyarlamasında yeniden hayat buluyor. Kocası Jason tarafından kralın kızıyla evlenmek uğruna terk edilen Medea, onurunu ve varlığını korumak için korkunç bir intikama yönelir. Michael Boyd'un yönettiği ve Adura Onashile'nin başrolünü üstlendiği National Theatre of Scotland yapımı, 2022 Edinburgh Uluslararası Festivali'nde sahnelendi.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Euripides, Medea"
+     ]
+    },
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Liz Lochhead"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "James Jones"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Michael Boyd"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Tom Piper"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Tom Piper"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Colin Grenfell"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Josh Robins"
+     ]
+    },
+    {
+     "alan": "Hareket Yönetmeni",
+     "kisiler": [
+      "Janice Parker"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "National Theatre of Scotland"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Adura Onashile",
+     "rol": "Medea"
+    },
+    {
+     "ad": "Robert Jack",
+     "rol": "Jason"
+    },
+    {
+     "ad": "Stephen McCole",
+     "rol": "Kreon"
+    },
+    {
+     "ad": "Alana Jackson",
+     "rol": "Glauke"
+    },
+    {
+     "ad": "Anne Lacey",
+     "rol": "Dadı"
+    },
+    {
+     "ad": "Adam Robertson",
+     "rol": "Ulak"
+    }
+   ],
+   "referans_yapim": "National Theatre of Scotland, Edinburgh Uluslararası Festivali, The Hub, 10–28 Ağustos 2022",
+   "kaynaklar": [
+    "https://www.thestage.co.uk/reviews/medea-review-adapted-by-liz-lochhead-starring-adura-onashile-at-the-hub-edinburgh",
+    "https://www.nationaltheatrescotland.com/events/medea"
+   ],
+   "not": "James Jones aynı zamanda müzik direktörü."
+  },
+  {
+   "no": 22,
+   "id": "guess-how-much-i-love-you",
+   "baslik": "Guess How Much I Love You",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Çocuk tiyatrosu (kukla)",
+   "sure": "55 dk",
+   "yas": "3+",
+   "tanitim": "Sam McBratney ve Anita Jeram'ın dünyaca sevilen resimli kitabından uyarlanan, en küçük seyirciler için tasarlanmış bir kukla tiyatrosu. Küçük ve Büyük Kahverengi Tavşan, birbirlerini ne kadar sevdiklerini anlatmanın en büyük yolunu ararken mevsimlerin değişimine tanıklık eder. Richard Tulloch'un uyarlaması, Avustralyalı CDP Kids yapımında müzik ve kuklalarla sahneye taşınıyor.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "Sam McBratney ve Anita Jeram, Guess How Much I Love You"
+     ]
+    },
+    {
+     "alan": "Uyarlayan",
+     "kisiler": [
+      "Richard Tulloch"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Liesel Badorrek"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Isla Shaw"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Isla Shaw"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "CDP Theatre Producers (CDP Kids)"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "CDP Kids, Avustralya turnesi",
+   "kaynaklar": [
+    "https://cdp.com.au/guesshowmuchiloveyou.html",
+    "https://www.londontheatredirect.com/musical/guess-how-much-i-love-you-tickets"
+   ],
+   "not": "Kaynakta 'Designer: Isla Shaw' yazıyor; dekor ve kostüm alanlarına aynı isim yazıldı. Oyuncular kaynakta yok. B fotoğrafı İngiltere yapımından."
+  },
+  {
+   "no": 23,
+   "id": "madagascar",
+   "baslik": "Madagascar",
+   "ozgun_ad": "Madagascar The Musical",
+   "sahne": "Küçük Sahne",
+   "tur": "Aile müzikali",
+   "sure": "1 sa 45 dk",
+   "yas": "",
+   "tanitim": "DreamWorks'ün 2005 tarihli animasyon filminden uyarlanan aile müzikali. New York'taki Central Park Hayvanat Bahçesi'nin yıldızları Aslan Alex, Zebra Marty, Su Aygırı Gloria ve Zürafa Melman, kendilerini bir anda Madagaskar'ın vahşi doğasında bulur. Kral Julien ve penguenlerin de eşlik ettiği yapım, 'I Like to Move It' gibi şarkılarıyla her yaştan seyirciyi dans ettiriyor.",
+   "kunye": [
+    {
+     "alan": "Uyarlandığı Eser",
+     "kisiler": [
+      "DreamWorks Animation, Madagascar (film, 2005)"
+     ]
+    },
+    {
+     "alan": "Kitap",
+     "kisiler": [
+      "Kevin Del Aguila"
+     ]
+    },
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "George Noriega",
+      "Joel Someillan"
+     ]
+    },
+    {
+     "alan": "Şarkı Sözleri",
+     "kisiler": [
+      "George Noriega",
+      "Joel Someillan"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Kirk Jameson"
+     ]
+    },
+    {
+     "alan": "Koreografi",
+     "kisiler": [
+      "Fabian Aloise"
+     ]
+    },
+    {
+     "alan": "Müzik Direktörü",
+     "kisiler": [
+      "Mark Crossland"
+     ]
+    },
+    {
+     "alan": "Dekor Tasarımı",
+     "kisiler": [
+      "Tom Rogers"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Howard Hudson"
+     ]
+    },
+    {
+     "alan": "Ses Tasarımı",
+     "kisiler": [
+      "Chris Whybrow"
+     ]
+    },
+    {
+     "alan": "Kukla Tasarımı",
+     "kisiler": [
+      "Max Humphries"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Selladoor Worldwide",
+      "Theatre Royal Plymouth"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Karim Zeroual",
+     "rol": "King Julien"
+    },
+    {
+     "ad": "Joseph Hewlett",
+     "rol": "Alex"
+    },
+    {
+     "ad": "Francisco Gomes",
+     "rol": "Marty"
+    },
+    {
+     "ad": "Jarnéia Richard-Noel",
+     "rol": "Gloria"
+    },
+    {
+     "ad": "Joshua Oakes-Rogers",
+     "rol": "Melman"
+    },
+    {
+     "ad": "Laura Marie Benson",
+     "rol": "Kowalski"
+    },
+    {
+     "ad": "Ella Howlett",
+     "rol": "Rico"
+    },
+    {
+     "ad": "Connor Keetley",
+     "rol": "Skipper / Maurice"
+    }
+   ],
+   "referans_yapim": "Birleşik Krallık ve İrlanda turnesi, 2023–2024",
+   "kaynaklar": [
+    "https://www.aberdeenperformingarts.com/whats-on/madagascar/"
+   ],
+   "not": "Mark Crossland müzik süpervizörü; kukla yönetimi Emma Brunton. 2023 turnesinin dekoru Tom Rogers'ın özgün tasarımına dayanıyor; ışık ve ses ekibi 2018 turnesinden."
+  },
+  {
+   "no": 24,
+   "id": "iksv-istanbul-tiyatro-festivali",
+   "baslik": "İKSV İstanbul Tiyatro Festivali",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Festival",
+   "sure": "",
+   "yas": "",
+   "tanitim": "İstanbul Kültür Sanat Vakfı'nın düzenlediği İstanbul Tiyatro Festivali, Türkiye'den ve dünyadan seçkin yapımları İstanbul seyircisiyle buluşturuyor. 29. festival, Mehmet Birkiye küratörlüğünde 20 Ekim – 22 Kasım 2025 arasında düzenlendi; açılışı Marcos Morau'nun Scapino Ballet Rotterdam için yarattığı Katedral yaptı. Festivalde ayrıca Flaman Kraliyet Tiyatrosu KVS'nin, Madame Bovary'yi feminist bir bakışla yeniden yorumlayan Bovary'si sahnelendi.",
+   "kunye": [
+    {
+     "alan": "Düzenleyen",
+     "kisiler": [
+      "İstanbul Kültür Sanat Vakfı (İKSV)"
+     ]
+    },
+    {
+     "alan": "Küratör",
+     "kisiler": [
+      "Mehmet Birkiye"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "29. İstanbul Tiyatro Festivali, 2025",
+   "kaynaklar": [
+    "https://t24.com.tr/kultur-sanat/29-istanbul-tiyatro-festivali-nin-ilk-surprizleri-katedral-ve-biz-kimiz%2C1244936",
+    "https://www.artfulliving.com.tr/gundem/flaman-kraliyet-tiyatrosunun-bovarysi-29-istanbul-tiyatro-festivalinde-i-33553"
+   ],
+   "not": "Görseller önceki edisyondan; yeni sezonun temsilleri olarak duyurulmamalı. A fotoğrafı: Katedral, Arvo Pärt'le Bir Akşam (koreografi Marcos Morau, Scapino Ballet Rotterdam). B fotoğrafı: Bovary (yöneten Carme Portaceli ve Michael De Cock, KVS)."
+  },
+  {
+   "no": 25,
+   "id": "june-carter-cash",
+   "baslik": "June Carter Cash",
+   "ozgun_ad": "June Carter Cash: The Woman, Her Music and Me",
+   "sahne": "Küçük Sahne",
+   "tur": "Müzikli tek kişilik oyun",
+   "sure": "1 sa 20 dk",
+   "yas": "16+",
+   "tanitim": "Country müziğin efsanevi sesi June Carter Cash'in hayatını, onu yıllarca sahnede canlandıran oyuncu Charlene Boyd'un kendi hikâyesiyle iç içe anlatan müzikli bir oyun. Boyd, Nashville'den Appalaş Dağları'na uzanan araştırma yolculuğundan yola çıkarak, sahne hayatı ile annelik arasında gidip gelen iki kadının ortak deneyimlerini paylaşır. National Theatre of Scotland ile Grid Iron'un ortak yapımı, canlı bir grupla 2024 Edinburgh Fringe'de dünya prömiyerini yaptı.",
+   "kunye": [
+    {
+     "alan": "Yazan",
+     "kisiler": [
+      "Charlene Boyd"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Cora Bissett"
+     ]
+    },
+    {
+     "alan": "Müzisyenler",
+     "kisiler": [
+      "Harry Ward",
+      "Ray Aggs",
+      "Amy Duncan"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "National Theatre of Scotland",
+      "Grid Iron Theatre Company"
+     ]
+    }
+   ],
+   "oynayanlar": [
+    {
+     "ad": "Charlene Boyd",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "National Theatre of Scotland & Grid Iron, Summerhall, Edinburgh Fringe, Ağustos 2024",
+   "kaynaklar": [
+    "https://gridiron.org.uk/portfolio-item/june-carter-cash/",
+    "https://www.imdb.com/name/nm3538316/mediaviewer/rm3661693953"
+   ],
+   "not": "Galeri notunda yönetmen belirtilmemişti; kaynaklara göre yöneten Cora Bissett."
+  },
+  {
+   "no": 26,
+   "id": "isabelle-huppert-ve-jeremy-irons",
+   "baslik": "Isabelle Huppert & Jeremy Irons",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Belirtilmedi",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Fransız sinemasının ve tiyatrosunun en güçlü oyuncularından Isabelle Huppert ile Oscar ödüllü İngiliz oyuncu Jeremy Irons aynı sahnede buluşuyor. Huppert La Pianiste ve Elle gibi filmlerdeki cesur rolleriyle, Irons ise Reversal of Fortune'daki Oscar'lı performansı ve uzun tiyatro kariyeriyle tanınıyor. İki oyuncunun ortak programının içeriği ve künyesi açıklanacak.",
+   "kunye": [],
+   "oynayanlar": [
+    {
+     "ad": "Isabelle Huppert",
+     "rol": ""
+    },
+    {
+     "ad": "Jeremy Irons",
+     "rol": ""
+    }
+   ],
+   "referans_yapim": "Ortak bir yapım kaynağı yok",
+   "kaynaklar": [
+    "https://exhibition-magazine.com/articles/isabelle-hupert",
+    "https://www.thefashionisto.com/photo-shoot/jeremy-irons-2016-cover-icon-panorama/",
+    "https://www.unifrance.org/annuaires/personne/18828/isabelle-huppert",
+    "https://commons.wikimedia.org/wiki/File%3AJeremy_Irons_face.jpg"
+   ],
+   "not": "Kaynak sayfalar portre çekimleri; ortak gösterinin türü ve künyesi bekleniyor."
+  },
+  {
+   "no": 27,
+   "id": "circa",
+   "baslik": "Circa — Humans 2.0",
+   "ozgun_ad": "Humans 2.0",
+   "sahne": "Küçük Sahne",
+   "tur": "Çağdaş sirk",
+   "sure": "70 dk, ara yok",
+   "yas": "8+",
+   "tanitim": "Avustralyalı Circa topluluğu, akrobasiyi çağdaş dansla buluşturan çalışmalarıyla çağdaş sirkin öncülerinden. Humans 2.0'da akrobatlar, insan bedeninin sınırlarını ve birbirlerine duydukları güveni sınayan kuleler, atlayışlar ve taşımalarla nefes kesen bir koreografi kurar. Yaron Lifschitz'in yarattığı gösteri, Ori Lichtik'in elektronik müziği ve Paul Jackson'ın ışık tasarımıyla 2021'de Sydney'de prömiyer yaptı.",
+   "kunye": [
+    {
+     "alan": "Müzik",
+     "kisiler": [
+      "Ori Lichtik"
+     ]
+    },
+    {
+     "alan": "Yöneten",
+     "kisiler": [
+      "Yaron Lifschitz"
+     ]
+    },
+    {
+     "alan": "Kostüm Tasarımı",
+     "kisiler": [
+      "Libby McDonnell"
+     ]
+    },
+    {
+     "alan": "Işık Tasarımı",
+     "kisiler": [
+      "Paul Jackson"
+     ]
+    },
+    {
+     "alan": "Yapım",
+     "kisiler": [
+      "Circa"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "Circa, Humans 2.0, dünya prömiyeri Sydney, Ocak 2021",
+   "kaynaklar": [
+    "https://hop.dartmouth.edu/events/humans-20",
+    "https://www.flolondon.co.uk/all-posts/humans-20-to-premiere-at-the-southbank-centre-this-april"
+   ],
+   "not": "Gösteri Yaron Lifschitz ve Circa topluluğunun ortak yaratımı. Sahnedeki akrobat sayısı kaynaklarda 7 ile 10 arasında değişiyor."
+  },
+  {
+   "no": 28,
+   "id": "bubble-man",
+   "baslik": "Bubble Man",
+   "ozgun_ad": "The Amazing Bubble Man",
+   "sahne": "Küçük Sahne",
+   "tur": "Aile gösterisi",
+   "sure": "yaklaşık 1 sa",
+   "yas": "Her yaş",
+   "tanitim": "Dünyanın önde gelen baloncuk sanatçılarından Louis Pearl, otuz yılı aşkın süredir sabun köpüğünü sanata, bilime ve sihire dönüştürüyor. Kare baloncuklardan içinde sis dolaşan dev baloncuklara, seyirciyi içine alan köpük kubbelere uzanan gösteri, kahkaha ve hayranlığı bir arada yaşatıyor. Seyirci katılımına açık gösteri, Edinburgh Fringe'in her yıl biletleri tükenen aile programlarından.",
+   "kunye": [
+    {
+     "alan": "Sanatçı",
+     "kisiler": [
+      "Louis Pearl"
+     ]
+    }
+   ],
+   "oynayanlar": [],
+   "referans_yapim": "The Amazing Bubble Man, Louis Pearl",
+   "kaynaklar": [
+    "https://columbiaplayproject.org/events/wiggles-giggles",
+    "https://redgravetheatre.com/event/2025/04/the-amazing-bubble-man/1594/"
+   ],
+   "not": "Briefte yalnızca 'Bubble Man' yazıyor; sanatçı eşleşmesi teyit edilmeli. Bazı gösterilerde Jet Black Pearl canlı müzikle eşlik ediyor."
+  },
+  {
+   "no": 29,
+   "id": "stand-up-geceleri",
+   "baslik": "Stand-up Geceleri",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Seri",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Küçük Sahne'nin samimi atmosferinde, güldüren yeni ve deneyimli sesleri ağırlayan stand-up gecesi serisi. Her gece farklı bir komedyenin ya da ortak bir kadronun sahne aldığı programda bir mikrofon ve bir tabure yetiyor. Sanatçılar ve tarihler program takviminde ayrıca duyurulur.",
+   "kunye": [],
+   "oynayanlar": [],
+   "referans_yapim": "Seri",
+   "kaynaklar": [
+    "https://www.backstage.com/magazine/article/want-comedian-tips-get-started-1117/",
+    "https://www.aisge.es/imprimir.php?print=ok&v=el-auge-de-los-monologos"
+   ],
+   "not": "Fotoğraflar atmosfer referansı. Seri için künye yok; tanıtım metni yer tutucu."
+  },
+  {
+   "no": 30,
+   "id": "caz-geceleri",
+   "baslik": "Caz Geceleri",
+   "ozgun_ad": "",
+   "sahne": "Küçük Sahne",
+   "tur": "Seri",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Küçük Sahne, Caz Geceleri boyunca bir caz kulübünün sıcak atmosferine bürünüyor. Yerli ve uluslararası müzisyenlerin standartlardan çağdaş caza uzanan repertuvarı, sahneye yakın ve samimi bir dinleme deneyimi sunuyor. Kadro ve tarihler program takviminde ayrıca duyurulur.",
+   "kunye": [],
+   "oynayanlar": [],
+   "referans_yapim": "Seri",
+   "kaynaklar": [
+    "https://jazzinorge.no/anmeldelse/flagget-til-topps-frode-gjerstad/",
+    "https://www.beithaamudim.com/contact"
+   ],
+   "not": "Fotoğraflardaki müzisyenler örnek kadro. Seri için künye yok; tanıtım metni yer tutucu."
+  },
+  {
+   "no": 31,
+   "id": "turk-ve-yunan-geceleri",
+   "baslik": "Türk & Yunan Geceleri",
+   "ozgun_ad": "",
+   "sahne": "—",
+   "tur": "Seri",
+   "sure": "",
+   "yas": "",
+   "tanitim": "Ege'nin iki yakasının ortak müzik mirasını buluşturan konser serisi. Rebetikodan Türk sanat ve halk müziğine uzanan şarkılar, buzuki, bağlama ve udun eşliğinde iki kültürün ortak hafızasını sahneye taşıyor. Kadro ve tarihler program takviminde ayrıca duyurulur.",
+   "kunye": [],
+   "oynayanlar": [],
+   "referans_yapim": "Seri",
+   "kaynaklar": [
+    "https://www.onassis.org/whats-on/the-hellenic-project-2022-23-the-panagiotis-toundas-treasures-and-the-new-rebetiko",
+    "https://www.salom.com.tr/haber/139275/rebetikonun-unutulmus-kadinlarina-saygi-durusu"
+   ],
+   "not": "Sahnesi atanmadı. Fotoğraflardaki müzisyenler örnek kadro. Seri için künye yok; tanıtım metni yer tutucu."
+  }
+ ]
+}

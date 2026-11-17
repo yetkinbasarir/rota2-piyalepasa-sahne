@@ -1,0 +1,209 @@
+{
+ "lukus-hayat": {
+  "tur": "youtube",
+  "id": "iyvAy-b2afU",
+  "baslangic": 34,
+  "acik": true,
+  "bitis": 51.5
+ },
+ "sunset-bulvari": {
+  "tur": "youtube",
+  "id": "rgTbfYF5cHk",
+  "baslangic": 30,
+  "acik": true,
+  "bitis": 53.2
+ },
+ "paranormal-activity": {
+  "tur": "mp4",
+  "url": "https://www.theatermania.com/wp-content/uploads/sites/4/2026/08/paranormal-activity-trailer-1.mp4",
+  "baslangic": 1.8,
+  "acik": true,
+  "bitis": 20
+ },
+ "karagoz-ve-hacivat": {
+  "tur": "youtube",
+  "id": "nz-JyVxb7nM",
+  "baslangic": 68,
+  "acik": true,
+  "bitis": 90.8
+ },
+ "we-will-rock-you": {
+  "tur": "youtube",
+  "id": "Zgqy_758lKI",
+  "baslangic": 69.4,
+  "acik": true,
+  "bitis": 102.7
+ },
+ "cats": {
+  "tur": "youtube",
+  "id": "wLlFAlxeL1Y",
+  "baslangic": 6.8,
+  "acik": true,
+  "bitis": 40.7
+ },
+ "slavas-snowshow": {
+  "tur": "sayfa",
+  "url": "https://www.rtp.pt/play/palco/p13551/e776265/slavas-snowshow",
+  "baslangic": 0,
+  "acik": false,
+  "not": "RTP Play gömmeye izin vermiyor olabilir; alternatif gerekli"
+ },
+ "the-snowman": {
+  "tur": "youtube",
+  "id": "0g3fBJSPUGw",
+  "baslangic": 78,
+  "acik": true,
+  "bitis": 112
+ },
+ "riverdance": {
+  "tur": "youtube",
+  "id": "zy79KKpQ988",
+  "baslangic": 113,
+  "acik": true,
+  "bitis": 146.8
+ },
+ "uyuyan-guzel": {
+  "tur": "youtube",
+  "id": "MoSENoO2BI8",
+  "baslangic": 3.7,
+  "acik": true,
+  "bitis": 38.7
+ },
+ "findikkiran": {
+  "tur": "youtube",
+  "id": "zV1qLYukTH8",
+  "baslangic": 4.2,
+  "acik": true,
+  "bitis": 24.3
+ },
+ "kugu-golu": {
+  "tur": "youtube",
+  "id": "0GsajWIF3ws",
+  "baslangic": 0,
+  "acik": true
+ },
+ "tarkan": {
+  "tur": "youtube",
+  "id": "EwWnmF0s5N0",
+  "baslangic": 0,
+  "acik": true
+ },
+ "sertab-erener": {
+  "tur": "youtube",
+  "id": "ikQg1CO9WMI",
+  "baslangic": 0,
+  "acik": true
+ },
+ "luka-sulic": {
+  "tur": "youtube",
+  "id": "RFMK952kBRA",
+  "baslangic": 2201,
+  "acik": true
+ },
+ "tony-ann": {
+  "tur": "youtube",
+  "id": "A8cdEt-raX0",
+  "baslangic": 0,
+  "acik": true
+ },
+ "fazil-say": {
+  "tur": "youtube",
+  "id": "KG9wifgWdAQ",
+  "baslangic": 80.5,
+  "acik": true
+ },
+ "cabaret": {
+  "tur": "youtube",
+  "id": "1HOuaShfFG8",
+  "baslangic": 0,
+  "acik": true
+ },
+ "ucurtma-avcisi": {
+  "tur": "sayfa",
+  "url": "https://www.thekiterunnerplay.com/trailer",
+  "baslangic": 0,
+  "acik": false,
+  "not": "fragman sayfası; gömülebilir video bağlantısı bulunmalı"
+ },
+ "sanat": {
+  "tur": "youtube",
+  "id": "GR7ksh32amA",
+  "baslangic": 5.9,
+  "acik": true,
+  "bitis": 25.1
+ },
+ "medea": {
+  "tur": "youtube",
+  "id": "URiN5PdqkOE",
+  "baslangic": 0,
+  "acik": true
+ },
+ "guess-how-much-i-love-you": {
+  "tur": "youtube",
+  "id": "vb9C0H7pE5E",
+  "baslangic": 0,
+  "acik": true
+ },
+ "madagascar": {
+  "tur": "youtube",
+  "id": "tFMy_aYafME",
+  "baslangic": 0,
+  "acik": true
+ },
+ "iksv-istanbul-tiyatro-festivali": {
+  "tur": "vimeo",
+  "id": "1226888872",
+  "baslangic": 0,
+  "acik": true
+ },
+ "june-carter-cash": {
+  "tur": "youtube",
+  "id": "XMWTOSd0TIU",
+  "baslangic": 0,
+  "acik": true
+ },
+ "isabelle-huppert-ve-jeremy-irons": {
+  "tur": "vimeo",
+  "id": "819249224",
+  "baslangic": 0,
+  "acik": false,
+  "yedek": {
+   "tur": "vimeo",
+   "id": "260281970",
+   "baslangic": 0,
+   "acik": true
+  },
+  "not": "Vimeo videoları (ana ve yedek) oynamıyor"
+ },
+ "circa": {
+  "tur": "vimeo",
+  "id": "900255531",
+  "baslangic": 0,
+  "acik": false,
+  "not": "Vimeo PrivacyError; gömmeye kapalı"
+ },
+ "bubble-man": {
+  "tur": "youtube",
+  "id": "Zo4MNuKFTGs",
+  "baslangic": 0,
+  "acik": true
+ },
+ "stand-up-geceleri": {
+  "tur": "youtube",
+  "id": "gcURMXE1h9Y",
+  "baslangic": 0,
+  "acik": true
+ },
+ "caz-geceleri": {
+  "tur": "youtube",
+  "id": "O_U2EN85rSo",
+  "baslangic": 0,
+  "acik": true
+ },
+ "turk-ve-yunan-geceleri": {
+  "tur": "youtube",
+  "id": "abObNV19kAs",
+  "baslangic": 0,
+  "acik": true
+ }
+}

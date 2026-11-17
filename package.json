@@ -1,0 +1,29 @@
+{
+  "name": "rota2-piyalepasa-sahne",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "photos:download": "node scripts/download-photos.mjs",
+    "photos:build": "node scripts/build-images.mjs",
+    "icons": "node scripts/build-icons.mjs"
+  },
+  "dependencies": {
+    "gsap": "^3.15.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.22.0",
+    "@types/qrcode": "^1.5.5",
+    "@vladmandic/face-api": "^1.7.15",
+    "node-vibrant": "^4.0.4",
+    "sharp": "^0.35.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0"
+  }
+}

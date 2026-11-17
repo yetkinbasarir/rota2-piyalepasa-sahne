@@ -1,0 +1,194 @@
+/* ROTA1 görsel dili. Motor yapısı src/engine/engine.css içinde.
+   Font rolleri ve renkler motor tarafından CSS değişkeni olarak yazılır
+   (--c-*, --role-<rol>-family|weight|ls|var, --type-*). */
+
+body {
+  font-family: var(--role-light-family), 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: var(--role-light-weight);
+  color: var(--c-ink);
+}
+b { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); }
+button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
+
+/* ---------- kart: renk kutusu (isim + sayaç) ---------- */
+.nmw { position: absolute; left: 0; top: 0; right: 0; line-height: 1.08; }
+/* isim: Light, renk kutusu başlık puntosu */
+.nm {
+  font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--lines, 3); overflow: hidden;
+  overflow-wrap: break-word; hyphens: auto;
+}
+/* " & " ile ayrılan isim: yan yana iki sütun */
+.nm-2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: .6em; }
+.nm-2 > span { overflow-wrap: break-word; }
+/* sayaç: tek satır, etiketsiz, renk kutusunun tam genişliği (motor data-fit ile oturtur) */
+.cdw { position: absolute; left: 0; right: 0; bottom: 0; }
+.cd {
+  display: inline-flex; align-items: baseline; line-height: 1;
+  font-family: var(--role-counter-family); font-weight: var(--role-counter-weight);
+  font-variation-settings: var(--role-counter-var);
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; white-space: nowrap;
+}
+/* her karakter konumu ayrı: boşluklar da yer kaplar (tarih "GG / AA / YYYY") */
+.cd > span { white-space: pre; }
+
+/* ---------- açılmış öğe: renk paneli ---------- */
+.pnl { display: flex; flex-direction: column; gap: .9em; color: inherit; }
+/* başlık: büyük, Light */
+.pt { font-family: var(--role-light-family); font-weight: var(--role-light-weight); line-height: 1.04; letter-spacing: -.01em; overflow-wrap: break-word; }
+/* tanıtım: Light; sığmayan kısım yumuşakça kaybolur */
+.pin {
+  flex: 1; min-height: 0; overflow: hidden; line-height: 1.34;
+  -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent);
+}
+/* düğmeler: çerçevesiz, düz beyaz, siyah yazı (Light); basılıyken hafifçe kararır.
+   Künye açıkken Detay siyah zemin, beyaz yazı */
+.pbt { display: flex; flex-wrap: wrap; gap: .5em; }
+.pbt button {
+  font: inherit; font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  color: #000; line-height: 1.2; padding: .4em .9em;
+  border: 0; border-radius: 999px; background: #fff; white-space: nowrap; transition: background-color .15s;
+}
+.pbt button:active { background: #d9d9d9; }
+.pbt button[aria-pressed="true"] { background: #000; color: #fff; }
+.pbt button[aria-pressed="true"]:active { background: #262626; }
+.pcw { line-height: 0; }
+
+/* ---------- logo kutusu ---------- */
+.brand { color: #fff; }
+
+/* ---------- detay ve bilet ----------
+   Tek punto (--fs) ve satır aralığı (--lh) kimlik token'ından gelir.
+   Hiyerarşi yalnızca <b> (Bold) ile; geri kalan her şey Light. Renk, opaklık,
+   harf aralığı ve büyük harf farkı yok. Dikey boşluklar --lh'nin katlarıdır.
+   Izgara: kutu içinde 12 kolon. */
+.dw {
+  --gut: 1.4vw;     /* kolon çizgisinden metin içe girişi */
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start;
+  padding: calc(var(--lh) * 2) 0 calc(var(--lh) * 5);
+  font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  font-size: var(--fs); line-height: var(--lh); letter-spacing: normal; font-style: normal; text-transform: none;
+}
+.dw :is(h2, h3, p, dt, dd, button, span) { font: inherit; line-height: var(--lh); margin: 0; }
+.dw b { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); }
+.dw .hd { grid-column: 1 / span 3; padding-inline: var(--gut); }
+.dw .bd { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; row-gap: calc(var(--lh) * 2); }
+.dw .sec { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
+.dw .sec > * { grid-column: 1 / -1; padding-inline: var(--gut); }
+.dw .prose { text-wrap: pretty; }
+
+/* künye: alan adı solda 3 kolon, kişiler kalan kolonlarda; kişiler virgülle akar */
+.dw .crs { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; padding: 0; }
+.dw .crs > .cr { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; padding: 0; }
+.dw .cr dt { grid-column: 1 / 4; padding-inline: var(--gut); }
+.dw .cr dd { grid-column: 4 / -1; padding-inline: var(--gut); }
+
+/* tarih / saat / fiyat: 3 eşit hücre (web 9 kolonda 3'er, mobil 12 kolonda 4'er) */
+.dw .dtp > p { grid-column: span 3; }
+
+/* aksiyon satırı: yüksekliği taban ızgarasına yuvarlanır */
+.dw .row {
+  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+  height: round(up, 48px, var(--lh)); padding: 0 var(--gut); border: 0;
+}
+.dw .ic { width: 48px; height: 48px; }
+.dw .row .pr { font: inherit; line-height: var(--lh); letter-spacing: normal; }
+
+/* bilet */
+.dw .ds { display: flex; flex-wrap: wrap; gap: var(--lh) var(--gut); padding-top: var(--lh); }
+.dw .ds button, .dw .qt button, .dw .go {
+  padding: calc(var(--lh) / 2) var(--gut); line-height: var(--lh); min-height: 0;
+  box-shadow: inset 0 0 0 1px var(--c-ink); background: none; color: var(--c-ink);
+}
+.dw .ds button[aria-pressed=true] { box-shadow: inset 0 0 0 3px var(--c-ink); }
+.dw .qt { display: flex; align-items: center; gap: var(--gut); padding-top: var(--lh); }
+.dw .qt button { width: calc(var(--lh) * 2); height: calc(var(--lh) * 2); padding: 0; }
+.dw .go { justify-self: start; width: auto; box-shadow: inset 0 0 0 2px var(--c-ink); }
+.dw .sec > .go { grid-column: 1 / span 3; margin-left: var(--gut); }
+.dw .msg { padding-top: var(--lh); }
+
+/* kutu dar: tüm içerik 12 kolonun tamamında, alt alta */
+
+/* ---------- açılmış hâl: metin kutusu (tek punto; iç kaydırma yok, içerikle uzar) ---------- */
+.tw {
+  --gut: max(12px, calc(var(--card-w) * .05));
+  padding: var(--lh) var(--gut) calc(var(--lh) * 1.5); color: inherit;
+  font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  font-size: var(--fs); line-height: var(--lh); letter-spacing: normal;
+}
+.tw p { margin: 0; }
+.tw .in { margin-bottom: var(--lh); text-wrap: pretty; }
+/* liste: 2px siyah çizgiler (ilk satırın üstünde ve son satırın altında da), kutunun iç genişliğinde */
+.ls { list-style: none; border-bottom: 2px solid #000; }
+.ls > li { border-top: 2px solid #000; }
+.lr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: var(--gut); padding: calc(var(--lh) / 2) 0; }
+/* açılır-kapanır satır: satırın tamamı tıklanır; sağda aynı puntoda Light + / − */
+.acc-h {
+  display: flex; width: 100%; justify-content: space-between; align-items: baseline; gap: var(--gut);
+  padding: calc(var(--lh) / 2) 0; font: inherit; line-height: var(--lh); color: inherit; text-align: left; cursor: pointer;
+}
+.acc-h .pm { font-family: var(--role-light-family); font-weight: var(--role-light-weight); }
+.acc-b { height: 0; overflow: hidden; }
+.acc-i { opacity: 0; padding-bottom: calc(var(--lh) / 2); }
+
+/* ---------- arayüz ---------- */
+/* alt bant düğmeleri: sahne etiketiyle aynı biçim ve boyut; aralarındaki boşluk panel düğmelerinin 1.6 katı
+   (aynı em, 1.6 kat punto); basılıyken hafifçe kararır */
+.bnb { display: flex; gap: .5em; }
+/* zemin saydam, ince beyaz kontur (--bnb-line; dış ölçüye dahil: dolgu konturu kadar azaltılır, düğme büyümez),
+   yazı beyaz Light; fare üzerindeyken ve basılıyken içi beyaz dolar, yazı siyah olur */
+.bnb button {
+  font: inherit; box-sizing: border-box; border: var(--bnb-line, 1px) solid #fff; background: transparent; color: #fff;
+  padding: calc(.4em - var(--bnb-line, 1px)) calc(.9em - var(--bnb-line, 1px)); text-align: center;
+  transition: background-color .2s, color .2s;
+}
+.bnb button:hover, .bnb button:active { background: #fff; color: #000; }
+/* kapatma ikonu: fare üzerindeyken / basılıyken daire beyaz dolar, × siyah olur */
+/* kapatma ikonu hiçbir durumda dolgu almaz; geri bildirim yalnızca opaklıkla */
+.xcl svg { transition: opacity .2s; }
+.xcl:hover svg { opacity: .7; }
+.xcl:active svg { opacity: .5; }
+
+/* ---------- tam ekran başlığı ve sayacı (beyaz) ---------- */
+.fst-t {
+  font-family: var(--role-light-family), 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: var(--role-light-weight); line-height: 1; white-space: nowrap; color: #fff;
+}
+.fst-c { line-height: 1; color: #fff; }
+
+/* ---------- web: künye (fotoğraf alanını kaplar) ---------- */
+.kn {
+  background: #fff; color: #000; overflow: hidden;
+  font-family: var(--role-light-family); font-weight: var(--role-light-weight); line-height: 1.34;
+}
+.knl { list-style: none; margin: 0; padding: 0; }
+/* satır: solda alan adı (sabit genişlik, kelime kelime alt satıra; son çare olarak kelime içinden),
+   sağda kişiler; kolonlar arası p / 2. Dar künyede alan adı kişilerin üstünde */
+.knl > li {
+  display: grid; grid-template-columns: var(--kl) minmax(0, 1fr); column-gap: calc(var(--gut) / 2);
+  border-top: 2px solid #000; padding: .45em 0;
+}
+.kn-stack .knl > li { grid-template-columns: minmax(0, 1fr); }
+.knl > li > b { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); min-width: 0; overflow-wrap: anywhere; }
+.knl > li > span { min-width: 0; overflow-wrap: anywhere; }
+/* oynayanlar: her oyuncu ayrı satırda; sığmazsa rol bütün olarak alt satıra geçer */
+.knl .cm { display: block; }
+.knl .cm > span { display: inline-block; max-width: 100%; }
+
+/* tam ekran sahne etiketi: panel düğmeleriyle aynı biçim (çerçevesiz, düz beyaz, siyah Light), tıklanamaz */
+.fsl-b {
+  display: inline-block; font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  color: #000; background: #fff; line-height: 1.2; padding: .4em .9em; border-radius: 999px; white-space: nowrap;
+}
+
+/* ---------- mobil açılmış öğe: renk paneli (içerik kadar uzar) ve altında künye ---------- */
+.mpanel .pnl { height: auto !important; }
+.mpanel .pin { flex: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+.mpanel .mkn[hidden] { display: none; }
+/* mobil panel puntoları: başlık (Bold), tanıtım ve künye --m-fs, satır aralığı 1.35 */
+.mpanel .pt {
+  font-size: var(--m-fs) !important; line-height: 1.35;
+  font-family: var(--role-bold-family); font-weight: var(--role-bold-weight);
+}
+.mpanel .pin { font-size: var(--m-fs) !important; line-height: 1.35; }
+.mpanel .kn { font-size: var(--m-fs) !important; line-height: 1.35; }

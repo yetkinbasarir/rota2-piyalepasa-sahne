@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video bölüm editörü — ROTA1</title>
+<link rel="stylesheet" href="https://use.typekit.net/fpj2hxb.css">
+<style>
+  :root { --bg:#000; --fg:#fff; --dim:#8a8a8a; --line:#2a2a2a; --acc:#7FA9EE; --ok:#7bd88f; --warn:#EBD97A; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+    font-family: akzidenz-grotesk-pro, system-ui, sans-serif; font-size:14px; }
+  .mono { font-family: config-mono-vf, ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  #app { display:grid; grid-template-columns: 260px 1fr; height:100%; }
+  aside { border-right:1px solid var(--line); overflow:auto; }
+  aside h1 { font-size:13px; font-weight:700; margin:0; padding:14px 14px 10px; }
+  aside button { all:unset; display:flex; gap:10px; align-items:center; width:100%; padding:8px 14px; cursor:pointer; box-sizing:border-box; }
+  aside button:hover { background:#111; }
+  aside button.on { background:#1c1c1c; }
+  aside .dot { width:8px; height:8px; border-radius:50%; flex:none; background:#444; }
+  aside .dot.ok { background:var(--ok); } aside .dot.part { background:var(--warn); } aside .dot.off { background:#333; outline:1px solid #555; }
+  aside .t { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  aside .r { color:var(--dim); font-size:11px; }
+  main { display:flex; flex-direction:column; overflow:auto; padding:16px 20px 24px; gap:12px; }
+  .head { display:flex; align-items:baseline; gap:12px; }
+  .head h2 { margin:0; font-size:22px; font-weight:400; }
+  .head .src { color:var(--dim); }
+  #stage { position:relative; width:100%; max-width:1280px; aspect-ratio:16/9; background:#111; }
+  #player, #player iframe, #player video { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  #crop { position:absolute; inset:0; pointer-events:none; }
+  #crop .shade { position:absolute; background:rgba(0,0,0,.62); }
+  #crop .frame { position:absolute; outline:1px solid #fff; }
+  #crop .lbl { position:absolute; left:6px; top:4px; font-size:11px; color:#fff; text-shadow:0 0 3px #000; }
+  #empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--dim); text-align:center; padding:20px; }
+  .row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  button.b, select, input[type=text] { background:transparent; color:var(--fg); border:1px solid #fff; border-radius:999px;
+    padding:7px 14px; font:inherit; cursor:pointer; }
+  input[type=text] { border-radius:6px; cursor:text; }
+  button.b:hover { background:#fff; color:#000; }
+  button.b.pri { background:#fff; color:#000; } button.b.pri:hover { opacity:.8; }
+  button.b.sm { padding:4px 9px; font-size:12px; }
+  .now { font-size:28px; min-width:150px; }
+  .mark { display:flex; align-items:center; gap:6px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; }
+  .mark .k { color:var(--dim); width:64px; }
+  .mark input { width:96px; text-align:center; }
+  .dim { color:var(--dim); }
+  #status { margin-left:auto; color:var(--dim); font-size:12px; }
+  .help { color:var(--dim); font-size:12px; line-height:1.6; max-width:1280px; }
+  .help b { color:#ccc; font-weight:700; }
+  label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside><h1>Videolar</h1><div id="list"></div></aside>
+  <main>
+    <div class="head"><h2 id="title">—</h2><span class="src" id="src"></span><span id="status"></span></div>
+    <div class="row">
+      <span class="dim">Kadraj önizlemesi:</span>
+      <select id="aspect">
+        <option value="screen">Bu ekran</option>
+        <option value="1.7778">16:9</option>
+        <option value="1.6">16:10</option>
+        <option value="0.4621">Telefon (dikey)</option>
+        <option value="none">Kapalı</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="acik"> Sitede açık</label>
+    </div>
+    <div id="stage"><div id="player"></div><div id="crop"></div><div id="empty">Soldan bir video seç.</div></div>
+    <div class="row">
+      <button class="b" id="back5">−5 sn</button>
+      <button class="b" id="back1">−1 sn</button>
+      <button class="b pri" id="play">Oynat / Durdur</button>
+      <button class="b" id="fwd1">+1 sn</button>
+      <button class="b" id="fwd5">+5 sn</button>
+      <span class="now mono" id="now">00:00.0</span>
+      <span class="dim mono" id="dur"></span>
+    </div>
+    <div class="row">
+      <div class="mark"><span class="k">Başlangıç</span><input type="text" class="mono" id="in"><button class="b sm" id="setIn">Şu an (I)</button><button class="b sm" id="goIn">Git</button></div>
+      <div class="mark"><span class="k">Bitiş</span><input type="text" class="mono" id="out"><button class="b sm" id="setOut">Şu an (O)</button><button class="b sm" id="goOut">Git</button><button class="b sm" id="clrOut">Sil</button></div>
+      <span class="dim mono" id="len"></span>
+      <button class="b pri" id="preview">Bölümü önizle (P)</button>
+    </div>
+    <div class="row">
+      <span class="dim">Video bağlantısını değiştir:</span>
+      <input type="text" id="url" style="flex:1;min-width:280px" placeholder="YouTube, Vimeo ya da .mp4 bağlantısı yapıştır">
+      <button class="b" id="applyUrl">Uygula</button>
+    </div>
+    <div class="help">
+      <b>Kullanım:</b> Videoyu oynat, yazısız ve jeneriksiz bölümün başında <b>I</b>, sonunda <b>O</b> tuşuna bas (ya da butonlara). Beyaz çerçeve, sitede tam ekranda görünecek alanı gösterir; çerçevenin içine yazı girmemeli. <b>P</b> seçilen bölümü döngüde oynatır.
+      Kısayollar: <b>Boşluk</b> oynat/durdur · <b>← →</b> 1 sn · <b>Shift + ← →</b> 5 sn · <b>, .</b> 0,1 sn · <b>↑ ↓</b> önceki/sonraki video.
+      Değişiklikler otomatik olarak <span class="mono">src/content/videos.json</span> dosyasına kaydedilir. Bu sayfa yalnızca geliştirme sunucusunda çalışır.
+    </div>
+  </main>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://player.vimeo.com/api/player.js"></script>
+<script>
+(() => {
+  // sitedeki tam ekran video kuralı (src/identity/rota1/index.ts ile aynı olmalı)
+  const ZOOM = 1.5, ORIGIN_Y = 0.42, VIDEO_AR = 16 / 9;
+
+  const $ = (id) => document.getElementById(id);
+  let videos = {}, names = {}, order = [], cur = null;
+  let P = null; // { kind, get(), seek(t), play(), pause(), playing(), dur() , destroy() }
+  let previewing = false, saveTimer = null;
+
+  const fmt = (t) => {
+    if (t == null || isNaN(t)) return '';
+    const m = Math.floor(t / 60), s = t - m * 60;
+    return String(m).padStart(2, '0') + ':' + s.toFixed(1).padStart(4, '0');
+  };
+  const parse = (v) => {
+    v = String(v).trim().replace(',', '.');
+    if (!v) return null;
+    const parts = v.split(':').map(Number);
+    if (parts.some(isNaN)) return null;
+    return parts.reduce((a, b) => a * 60 + b, 0);
+  };
+  const status = (s) => { $('status').textContent = s; };
+
+  async function load() {
+    const [v, k] = await Promise.all([
+      fetch('/__videos', { cache: 'no-store' }).then((r) => r.json()),
+      fetch('/icerik_kunye.json', { cache: 'no-store' }).then((r) => r.json()).catch(() => null),
+    ]);
+    videos = v;
+    order = Object.keys(videos);
+    if (k && Array.isArray(k.gosteriler)) {
+      k.gosteriler.forEach((g) => { names[g.id] = g.baslik; });
+      const pos = Object.fromEntries(k.gosteriler.map((g, i) => [g.id, i]));
+      order.sort((a, b) => (pos[a] ?? 999) - (pos[b] ?? 999));
+    }
+    renderList();
+  }
+
+  function stateOf(v) {
+    if (!v.acik || v.tur === 'sayfa') return 'off';
+    return v.baslangic > 0 && v.bitis > v.baslangic ? 'ok' : 'part';
+  }
+
+  function renderList() {
+    const el = $('list');
+    el.innerHTML = '';
+    order.forEach((id) => {
+      const v = videos[id];
+      const b = document.createElement('button');
+      b.className = id === cur ? 'on' : '';
+      const r = v.bitis > v.baslangic ? fmt(v.baslangic) + '–' + fmt(v.bitis) : (v.tur === 'sayfa' ? 'video yok' : '');
+      b.innerHTML = `<span class="dot ${stateOf(v)}"></span><span class="t"></span><span class="r mono"></span>`;
+      b.querySelector('.t').textContent = names[id] || id;
+      b.querySelector('.r').textContent = r;
+      b.onclick = () => select(id);
+      el.appendChild(b);
+    });
+  }
+
+  function save() {
+    clearTimeout(saveTimer);
+    status('kaydediliyor…');
+    saveTimer = setTimeout(async () => {
+      try {
+        const r = await fetch('/__videos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(videos) });
+        status(r.ok ? 'kaydedildi' : 'kaydedilemedi');
+      } catch { status('kaydedilemedi'); }
+      renderList();
+    }, 350);
+  }
+
+  /* ---------- oynatıcılar ---------- */
+  function ytReady() { return window.YT && YT.Player; }
+  function makeYouTube(id) {
+    return new Promise((resolve) => {
+      const host = document.createElement('div');
+      $('player').appendChild(host);
+      const start = () => {
+        const p = new YT.Player(host, {
+          videoId: id, width: '100%', height: '100%',
+          playerVars: { controls: 1, rel: 0, modestbranding: 1, playsinline: 1, iv_load_policy: 3, cc_load_policy: 0 },
+          events: {
+            onReady: () => resolve({
+              kind: 'youtube',
+              get: () => p.getCurrentTime() || 0,
+              seek: (t) => p.seekTo(Math.max(0, t), true),
+              play: () => p.playVideo(), pause: () => p.pauseVideo(),
+              playing: () => p.getPlayerState() === 1,
+              dur: () => p.getDuration() || 0,
+              destroy: () => p.destroy(),
+            }),
+          },
+        });
+      };
+      if (ytReady()) start(); else { const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { prev && prev(); start(); }; }
+    });
+  }
+  function makeVimeo(id) {
+    return new Promise((resolve) => {
+      const host = document.createElement('div');
+      host.style.cssText = 'position:absolute;inset:0';
+      $('player').appendChild(host);
+      const p = new Vimeo.Player(host, { id: Number(id), responsive: false, width: 1280, controls: true });
+      let t = 0, d = 0, on = false;
+      p.on('timeupdate', (e) => { t = e.seconds; d = e.duration; });
+      p.on('play', () => { on = true; }); p.on('pause', () => { on = false; }); p.on('ended', () => { on = false; });
+      p.getDuration().then((x) => { d = x; }).catch(() => {});
+      const fr = () => host.querySelector('iframe');
+      p.ready().then(() => { const f = fr(); if (f) { f.style.width = '100%'; f.style.height = '100%'; } resolve({
+        kind: 'vimeo', get: () => t,
+        seek: (x) => { t = Math.max(0, x); p.setCurrentTime(t).catch(() => {}); },
+        play: () => p.play().catch(() => {}), pause: () => p.pause().catch(() => {}),
+        playing: () => on, dur: () => d, destroy: () => p.destroy().catch(() => {}),
+      }); }).catch(() => resolve(null));
+    });
+  }
+  function makeMp4(url) {
+    const v = document.createElement('video');
+    v.src = url; v.controls = true; v.playsInline = true; v.preload = 'auto';
+    $('player').appendChild(v);
+    return Promise.resolve({
+      kind: 'mp4', get: () => v.currentTime, seek: (t) => { v.currentTime = Math.max(0, t); },
+      play: () => v.play().catch(() => {}), pause: () => v.pause(), playing: () => !v.paused,
+      dur: () => v.duration || 0, destroy: () => { v.pause(); v.removeAttribute('src'); v.load(); },
+    });
+  }
+
+  async function select(id) {
+    if (P) { try { P.destroy(); } catch {} P = null; }
+    $('player').innerHTML = '';
+    previewing = false;
+    cur = id;
+    const v = videos[id];
+    $('title').textContent = names[id] || id;
+    $('src').textContent = v.tur === 'youtube' ? 'YouTube · ' + v.id : v.tur === 'vimeo' ? 'Vimeo · ' + v.id : v.tur === 'mp4' ? 'mp4' : 'video yok';
+    $('acik').checked = !!v.acik;
+    $('in').value = v.baslangic > 0 ? fmt(v.baslangic) : '';
+    $('out').value = v.bitis > 0 ? fmt(v.bitis) : '';
+    $('url').value = '';
+    renderList(); updateLen();
+    $('empty').style.display = 'none';
+    if (v.tur === 'youtube') P = await makeYouTube(v.id);
+    else if (v.tur === 'vimeo') P = await makeVimeo(v.id);
+    else if (v.tur === 'mp4') P = await makeMp4(v.url);
+    else { $('empty').style.display = 'flex'; $('empty').textContent = 'Bu gösteri için video yok. Aşağıya bir YouTube, Vimeo ya da .mp4 bağlantısı yapıştırıp "Uygula"ya bas.'; return; }
+    if (!P) { $('empty').style.display = 'flex'; $('empty').textContent = 'Video yüklenemedi (gizli ya da gömmeye kapalı olabilir). Başka bir bağlantı dene.'; return; }
+    if (v.baslangic > 0) P.seek(v.baslangic);
+    drawCrop();
+  }
+
+  function setField(k, val) {
+    const v = videos[cur]; if (!v) return;
+    if (val == null) delete v[k]; else v[k] = Math.round(val * 10) / 10;
+    if (k === 'baslangic' && val == null) v.baslangic = 0;
+    $('in').value = v.baslangic > 0 ? fmt(v.baslangic) : '';
+    $('out').value = v.bitis > 0 ? fmt(v.bitis) : '';
+    updateLen(); save();
+  }
+  function updateLen() {
+    const v = videos[cur];
+    $('len').textContent = v && v.bitis > v.baslangic ? 'süre ' + (v.bitis - v.baslangic).toFixed(1) + ' sn' : '';
+  }
+
+  /* ---------- kadraj çerçevesi ---------- */
+  function drawCrop() {
+    const box = $('crop'); box.innerHTML = '';
+    const sel = $('aspect').value;
+    if (sel === 'none' || !cur) return;
+    const A = sel === 'screen' ? screen.width / screen.height : Number(sel);
+    // görünen alan: video, A oranlı ekranı kaplar (cover), sonra ZOOM kat büyür; merkez x 0.5, y ORIGIN_Y
+    const W = A, H = 1;                       // ekran (birim)
+    const vw = VIDEO_AR, vh = 1;
+    const s0 = Math.max(W / vw, H / vh);
+    const k = s0 * ZOOM;
+    const x0 = 0.5, y0 = 0.5 + ((ORIGIN_Y - 0.5) * H) / (vh * s0);
+    let L = x0 - (0.5 * W) / (vw * k), R = x0 + (0.5 * W) / (vw * k);
+    let T = y0 - (ORIGIN_Y * H) / (vh * k), B = y0 + ((1 - ORIGIN_Y) * H) / (vh * k);
+    L = Math.max(0, L); R = Math.min(1, R); T = Math.max(0, T); B = Math.min(1, B);
+    const pct = (x) => (x * 100).toFixed(3) + '%';
+    const add = (cls, css) => { const d = document.createElement('div'); d.className = cls; d.style.cssText = css; box.appendChild(d); return d; };
+    add('shade', `left:0;top:0;width:100%;height:${pct(T)}`);
+    add('shade', `left:0;top:${pct(B)};width:100%;height:${pct(1 - B)}`);
+    add('shade', `left:0;top:${pct(T)};width:${pct(L)};height:${pct(B - T)}`);
+    add('shade', `left:${pct(R)};top:${pct(T)};width:${pct(1 - R)};height:${pct(B - T)}`);
+    const f = add('frame', `left:${pct(L)};top:${pct(T)};width:${pct(R - L)};height:${pct(B - T)}`);
+    const l = document.createElement('span'); l.className = 'lbl'; l.textContent = 'sitede görünen alan'; f.appendChild(l);
+  }
+
+  /* ---------- döngü: zaman göstergesi + önizleme ---------- */
+  setInterval(() => {
+    if (!P) return;
+    const t = P.get(), d = P.dur();
+    $('now').textContent = fmt(t);
+    $('dur').textContent = d ? '/ ' + fmt(d) : '';
+    const v = videos[cur];
+    if (previewing && v) {
+      const a = v.baslangic > 0 ? v.baslangic : 0;
+      const b = v.bitis > a ? v.bitis : null;
+      if (b != null && t >= b) P.seek(a);
+    }
+  }, 100);
+
+  /* ---------- denetimler ---------- */
+  const nudge = (d) => { if (P) P.seek(P.get() + d); };
+  $('back5').onclick = () => nudge(-5); $('back1').onclick = () => nudge(-1);
+  $('fwd1').onclick = () => nudge(1); $('fwd5').onclick = () => nudge(5);
+  $('play').onclick = () => { if (!P) return; previewing = false; P.playing() ? P.pause() : P.play(); };
+  $('setIn').onclick = () => { if (P) setField('baslangic', P.get()); };
+  $('setOut').onclick = () => { if (P) setField('bitis', P.get()); };
+  $('clrOut').onclick = () => setField('bitis', null);
+  $('goIn').onclick = () => { const v = videos[cur]; if (P && v) P.seek(v.baslangic || 0); };
+  $('goOut').onclick = () => { const v = videos[cur]; if (P && v && v.bitis) P.seek(v.bitis); };
+  $('preview').onclick = () => { const v = videos[cur]; if (!P || !v) return; previewing = true; P.seek(v.baslangic || 0); P.play(); };
+  $('in').onchange = () => setField('baslangic', parse($('in').value));
+  $('out').onchange = () => setField('bitis', parse($('out').value));
+  $('acik').onchange = () => { if (!cur) return; videos[cur].acik = $('acik').checked; save(); };
+  $('aspect').onchange = drawCrop;
+  addEventListener('resize', drawCrop);
+
+  $('applyUrl').onclick = () => {
+    const u = $('url').value.trim(); if (!u || !cur) return;
+    let m, nv = null;
+    if ((m = u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/))) nv = { tur: 'youtube', id: m[1] };
+    else if ((m = u.match(/vimeo\.com\/(?:video\/)?(\d+)/))) nv = { tur: 'vimeo', id: m[1] };
+    else if (/\.(mp4|m4v|webm)(\?|$)/i.test(u)) nv = { tur: 'mp4', url: u };
+    if (!nv) { status('bağlantı tanınmadı'); return; }
+    const old = videos[cur] || {};
+    videos[cur] = { ...nv, baslangic: 0, acik: true, ...(old.yedek ? { yedek: old.yedek } : {}) };
+    save(); select(cur);
+  };
+
+  addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    const k = e.key;
+    if (k === ' ') { e.preventDefault(); $('play').click(); }
+    else if (k === 'i' || k === 'I') $('setIn').click();
+    else if (k === 'o' || k === 'O') $('setOut').click();
+    else if (k === 'p' || k === 'P') $('preview').click();
+    else if (k === 'ArrowLeft') { e.preventDefault(); nudge(e.shiftKey ? -5 : -1); }
+    else if (k === 'ArrowRight') { e.preventDefault(); nudge(e.shiftKey ? 5 : 1); }
+    else if (k === ',') nudge(-0.1);
+    else if (k === '.') nudge(0.1);
+    else if (k === 'ArrowDown' || k === 'ArrowUp') {
+      e.preventDefault();
+      const i = order.indexOf(cur), n = order[(i + (k === 'ArrowDown' ? 1 : -1) + order.length) % order.length];
+      select(n);
+    }
+  });
+
+  load().catch((e) => { status('videos.json okunamadı: ' + e); });
+})();
+</script>
+</body>
+</html>

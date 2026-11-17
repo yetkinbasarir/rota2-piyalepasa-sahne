@@ -1,0 +1,149 @@
+/* Motor yapısı — kimlikten bağımsız yerleşim. Görsel dil kimlik katmanındadır. */
+:root { color-scheme: dark;
+  /* tek punto (--fs) ve taban ızgarası (--lh): kimliğin type token'ından */
+  --fs: var(--type-web-size, 16px); --lh: calc(var(--fs) * var(--type-web-lh, 1.35)); }
+:root.is-mobile { --fs: var(--type-mobile-size, 15px); --lh: calc(var(--fs) * var(--type-mobile-lh, 1.4)); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+/* html / body her zaman siyah (Safari üst çubuk alanını sayfa rengine boyamasın); esneme ve dikey kayma yok */
+html, body { height: 100%; overflow: hidden; background: #000 !important; overscroll-behavior: none; }
+body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img, video { -webkit-user-drag: none; }
+
+/* kanvas: duvar, karartma, açık öğe katmanı */
+#surface { position: fixed; inset: 0; overflow: hidden; contain: strict; cursor: grab; background: #000; }
+/* ortak delikli doku (ölçüler texture.ts): siyah yüzey, kare ızgarada yuvarlak delikler */
+.holes {
+  background-image: radial-gradient(circle, transparent var(--tex-r), #000 calc(var(--tex-r) + .5px));
+  background-size: var(--tex-p) var(--tex-p);
+}
+.layer { position: absolute; inset: 0; pointer-events: none; }
+/* en altta tam genişlikte siyah bant: kartların altında, açık öğenin (tam ekran fotoğraf) altında */
+.band { position: absolute; left: 0; right: 0; bottom: 0; height: var(--band-h); background: #000; pointer-events: none; }
+
+/* kart: iki kalıcı parça (fotoğraf .pw, renk kutusu .kc); pencereler en büyük hâllerinde kurulur,
+   transform ile taşınıp ölçeklenir. Fotoğraf renk kutusunun önünde durur ve ona 1px taşar. */
+.card { position: absolute; left: 0; top: 0; pointer-events: auto; }
+.pw, .kc { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; }
+.pw { will-change: transform; }
+.pwi, .pwm, .kci { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+/* renk kutusu: kartın kendi rengi. Perforaj: her iki kenarda tek daire, renk kutusunun dikey
+   ortasında; merkezi kutunun dışında, kartlar arası boşluğun tam ortasında (sol: x = −g/2,
+   sağ: x = W + g/2). Çap D = W × oran (--perf). Yan yana iki kartın karşılıklı oyukları aradaki
+   boşlukla birlikte tek bir tam daire olarak görünür; oyuk derinliği (D − g) / 2. Sol ve sağ maske
+   intersect ile birleşir. Açılırken panel zemini (.pbg) gelir. */
+.kbg, .ccard, .pnlw { position: absolute; left: 0; top: 0; }
+.kbg {
+  --r: calc(var(--card-w) * var(--perf, .15) / 2);
+  --hole-l: radial-gradient(circle at calc(var(--gap) / -2) 50%, transparent var(--r), #000 calc(var(--r) + .5px));
+  --hole-r: radial-gradient(circle at calc(100% + var(--gap) / 2) 50%, transparent var(--r), #000 calc(var(--r) + .5px));
+  -webkit-mask: var(--hole-l), var(--hole-r);
+  -webkit-mask-composite: source-in;
+  mask: var(--hole-l), var(--hole-r);
+  mask-composite: intersect;
+}
+.pbg { position: absolute; inset: 0; opacity: 0; }
+/* uzun künyenin kaydırma çubuğu: kanal görünmez, çubuk düz köşeli; üzerindeyken grab / grabbing */
+.ksb { pointer-events: auto; touch-action: none; }
+.ksbt { cursor: grab; will-change: transform; }
+.ksb.drag, .ksb.drag .ksbt { cursor: grabbing; }
+/* parlama şeridi: kartın tamamından geçer (renk kutusunda perforaj maskesiyle kesilir, isim ve sayacın
+   altında; fotoğrafta görselin üstünde, yavaş zoom'dan bağımsız). Yalnızca translateX ile hareket eder */
+.shn {
+  position: absolute; left: calc(-1 * var(--shn-w)); top: 0; width: var(--shn-w); height: var(--shn-h);
+  background: var(--shn-bg); mix-blend-mode: soft-light; pointer-events: none; will-change: transform;
+}
+/* mobil metin kutusu: aşağı doğru büyür */
+.tpanel { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; visibility: hidden; }
+.tps { position: relative; transform-origin: 0 0; }
+
+/* tam ekran videosu: açık öğenin üstünde, logonun altında; tıklamaları geçirir. Video 16:9 kabul
+   edilir; ekranı kaplayan cover boyutunun --fv-k katına büyütülür, büyütmenin merkezi yatayda orta,
+   dikeyde ekranın üstünden --fv-oy (alt kenardan daha çok kesilir: gömülü alt yazılar dışarıda) */
+#fv { pointer-events: none; overflow: hidden; }
+.fv { position: absolute; inset: 0; overflow: hidden; pointer-events: none; background: #000; }
+.fv-in {
+  /* ekran yüksekliği: görünür alan (--vvh; mobilde 100dvh / visualViewport) */
+  --cvw: max(100vw, calc(var(--vvh, 100vh) * 16 / 9));
+  --cvh: max(var(--vvh, 100vh), calc(100vw * 9 / 16));
+  position: absolute; pointer-events: none;
+  width: calc(var(--cvw) * var(--fv-k, 1)); height: calc(var(--cvh) * var(--fv-k, 1));
+  left: calc(50vw - var(--cvw) * var(--fv-k, 1) / 2);
+  top: calc(var(--fv-oy, .5) * var(--vvh, 100vh) + var(--fv-k, 1) * ((.5 - var(--fv-oy, .5)) * var(--vvh, 100vh) - var(--cvh) / 2));
+}
+/* tam ekran delikli doku: fotoğraf ve videonun üstünde, logonun altında; ekrana sabit, dönüşümsüz.
+   Siyah yüzeyde kare ızgaraya dizilmiş saydam yuvarlak delikler (aralık --tex-p, yarıçap --tex-r) */
+/* tam ekran başlığı ve sayacı: dokunun ve videonun üstünde, logonun altında; ekranın ortasında */
+.fst {
+  position: fixed; inset: 0; z-index: 9; pointer-events: none; visibility: hidden; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.fst > * { will-change: transform; }
+.fst > :nth-child(n + 2) { position: absolute; left: 0; right: 0; text-align: center; }
+/* tam ekran sahne etiketi: üst ortada, logo-pad kadar aşağıda; doku, video ve başlık grubunun üstünde
+   (logo ile aynı seviye); tıklanamaz */
+.fsl {
+  position: fixed; left: 0; right: 0; top: var(--logo-pad); z-index: 10; pointer-events: none;
+  display: flex; justify-content: center; visibility: hidden;
+}
+/* mobilde en üstte siyah şerit (y = 0): üst bant (güvenli alan dahil). Kartlar, paneller ve tam ekran
+   görüntüsü altında kalır; logo, düğmeler ve sahne etiketi üstünde */
+.topstrip { position: fixed; left: 0; right: 0; top: 0; background: #000; z-index: 10; pointer-events: none; display: none; }
+/* web'de şerit yok (tam ekran görüntü ekranın en üst pikselinden başlar); mobilde üst bant */
+.is-mobile .topstrip { display: block; height: var(--band-h); }
+/* mobil: sahne etiketi üst bandın hemen altında (logoya binmesin) */
+.is-mobile .fsl { top: auto; bottom: calc(env(safe-area-inset-bottom) + var(--mpad)); }
+.tex { position: fixed; inset: 0; z-index: 9; pointer-events: none; opacity: 0; visibility: hidden; }
+/* açılmış öğenin fotoğraf dokusu: fotoğraf kutusuyla aynı alanda, ölçeklenmez; yalnızca kutu dururken */
+.pov { position: absolute; left: 0; top: 0; pointer-events: none; opacity: 0; visibility: hidden; transform-origin: 0 0; }
+.fv-in iframe, .fv-in video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; display: block; object-fit: cover; }
+
+/* görsel doğal oranında; kutu içindeki yerleşimi crop.ts hesaplar, yavaş zoom görselin kendisinde */
+.phn { position: absolute; left: 0; top: 0; display: block; max-width: none; }
+/* grid'de tek renkli fotoğraf: zemin bilet rengi, görsel siyah beyaz ve multiply (gölgeler koyu, açık
+   tonlar bilet renginde). Renkli kopya (.phc) üstte, normal karışımla; açılırken opaklıkla belirir */
+.phz { position: absolute; left: 0; top: 0; }
+.phm { filter: grayscale(1) contrast(var(--mono-contrast, 1.05)); mix-blend-mode: multiply; }
+.phc { mix-blend-mode: normal; }
+
+/* görsel: odak noktası üst üçte bir */
+.media { position: absolute; inset: 0; }
+.media .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 33%; display: block; }
+
+/* logo: bandın içinde sol altta, beyaz; sabit, her şeyin (tam ekran fotoğraf dahil) önünde */
+.brand {
+  position: fixed; left: var(--logo-pad); bottom: var(--logo-pad);
+  height: calc(var(--band-h) - 2 * var(--logo-pad)); z-index: 10; pointer-events: none; line-height: 0; color: #fff;
+}
+.brand svg { height: 100%; width: auto; display: block; }
+/* alt bandın sağındaki düğmeler: bant içinde dikeyde ortalı, sağ boşluk logo-pad; sabit */
+.bnd {
+  position: fixed; right: var(--logo-pad); bottom: 0; height: var(--band-h); z-index: 10;
+  display: flex; align-items: center; pointer-events: none;
+}
+.bnd button { pointer-events: auto; cursor: pointer; }
+/* mobil (tek kolon): bant ekranın üstünde (üst güvenli alan dahil), açık öğenin de üstünde; logo solda,
+   düğmeler sağda, ikisi de bandın güvenli alan dışındaki kısmında dikeyde ortalı (boşluk --mpad) */
+.is-mobile .band { top: 0; bottom: auto; z-index: 5; }
+.is-mobile .brand {
+  left: var(--mpad); top: calc(var(--safe-top) + var(--mpad)); bottom: auto;
+  height: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad));
+}
+/* telefonda yatay ekran katmanı: bütün içeriğin üstünde, güvenli alanlar dahil tam ekran düz siyah */
+.rot {
+  position: fixed; inset: 0; z-index: 1000; background: #000; display: none;
+  align-items: center; justify-content: center; pointer-events: auto; touch-action: none;
+}
+.rot.rot--on { display: flex; }
+/* kapatma ikonu: sağ üst köşe, ekrana sabit, en üst katmanda; açılmış öğede ve tam ekranda görünür */
+.xcl {
+  position: fixed; top: var(--logo-pad); right: var(--logo-pad); z-index: 12; width: var(--xcl-d, 56px); height: var(--xcl-d, 56px);
+  padding: 0; border: 0; background: none; cursor: pointer; line-height: 0; opacity: 0; visibility: hidden; pointer-events: auto;
+}
+.xcl svg { width: 100%; height: 100%; display: block; overflow: visible; }
+/* mobil: üst banttaki üye düğmelerinin yerinde, dikeyde bandın içinde ortalı; çap logo yüksekliği */
+.is-mobile .xcl {
+  top: calc(var(--safe-top) + var(--mpad)); right: var(--mpad);
+  width: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad)); height: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad));
+}
+.is-mobile .bnd { right: var(--mpad); top: var(--safe-top); bottom: auto; height: calc(var(--band-h) - var(--safe-top)); }

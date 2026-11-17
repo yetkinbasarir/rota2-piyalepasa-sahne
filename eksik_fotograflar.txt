@@ -1,0 +1,27 @@
+İndirilemeyen fotoğraflar
+Oluşturma: 2026-11-16 · scripts/download-photos.mjs + scripts/build-images.mjs
+A fotoğrafı eksikse yerine B kullanılır; ikisi de eksikse içerik renkli zeminle (fotoğrafsız) görünür.
+
+Renkli zeminle görünen (A ve B yok): —
+A yerine B kullanılan: 13_Tarkan, 18_Cabaret_Kit_Kat, 24_IKSV_Istanbul_Tiyatro_Festivali
+
+07_Slavas_Snowshow · Slavas_Snowshow_B · B
+    https://www.ilrossetti.it/uploads/cache/gallery_original/2022/06/21/9df6d-f23cf-158cc-47685-dd900-8767b-47-2-clown-nella-bolle-foto-di-veronique-vial-ridotta.jpeg  →  HTTP 403
+12_Kugu_Golu · Kugu_Golu_B · B
+    https://cdn.shopify.com/s/files/1/0551/3989/3334/files/Catherine-Hurlin-and-Joo-Won-Ahn-in-Swan-Lake_-Photo-Rosalie-OConnor-819x1024.jpg  →  HTTP 403
+13_Tarkan · Tarkan_A · A
+    https://businessandlife.com.tr/wp-content/uploads/2024/06/1718297813_Tarkan_Kuantun51_ekfoto.jpg  →  fetch failed
+    https://businessandlife.com.tr/wp-content/uploads/2024/06/1718297813_Tarkan_Kuantun51_ekfoto-scaled.jpg  →  fetch failed
+17_Fazil_Say · Fazil_Say_B · B
+    https://www.preludium.nl/media/cache/image_in_page/media/slide/artiesten/eduarduslee_fazil_say_aan_de_piano_sjabl3.jpg  →  HTTP 404
+18_Cabaret_Kit_Kat · Cabaret_Kit_Kat_A · A
+    https://kitkat.club/content/uploads/2023/06/Cabaret-MASON-and-MAUDE-0074.jpg  →  HTTP 404
+    https://kitkat.club/content/uploads/2023/06/Cabaret-MASON-and-MAUDE-0074-scaled.jpg  →  HTTP 404
+24_IKSV_Istanbul_Tiyatro_Festivali · IKSV_Istanbul_Tiyatro_Festivali_A · A
+    https://media-cdn.t24.com.tr/media/library/2025/06/1750063112516-04-cathedral-selectie-bart-grietens-88.jpg  →  fetch failed
+26_Isabelle_Huppert_ve_Jeremy_Irons · Isabelle_Huppert_B · B
+    https://medias.unifrance.org/medias/32/115/291616/format_page/isabelle-huppert.jpg  →  HTTP 403
+28_Bubble_Man · Bubble_Man_B · B
+    https://redgravetheatre.com/userfiles/images/MiriAirSquare.jpg  →  HTTP 404
+29_Stand_up_Geceleri · Stand_up_Geceleri_B · B
+    https://www.aisge.es/media/fotos/images/5035_01.jpg  →  fetch failed

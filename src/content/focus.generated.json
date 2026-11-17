@@ -1,0 +1,479 @@
+{
+ "Lukus_Hayat_A": {
+  "x": 77.3,
+  "y": 30.7,
+  "kaynak": "yuz",
+  "yuz": 12,
+  "yuzUst": 23.2,
+  "yuzYukseklik": 16.7,
+  "kutudakiYuz": 12
+ },
+ "Lukus_Hayat_B": {
+  "x": 47.9,
+  "y": 47.1,
+  "kaynak": "yuz",
+  "yuz": 4,
+  "yuzUst": 44.3,
+  "yuzYukseklik": 8.9,
+  "kutudakiYuz": 4
+ },
+ "Sunset_Bulvari_A": {
+  "x": 47.9,
+  "y": 50.4,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 9.8,
+  "yuzYukseklik": 81.4,
+  "kutudakiYuz": 1
+ },
+ "Sunset_Bulvari_B": {
+  "x": 71.6,
+  "y": 38.6,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 27.7,
+  "yuzYukseklik": 21.7,
+  "kutudakiYuz": 1
+ },
+ "Paranormal_Activity_A": {
+  "x": 59.8,
+  "y": 21.7,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 11.5,
+  "yuzYukseklik": 20.3,
+  "kutudakiYuz": 1
+ },
+ "Paranormal_Activity_B": {
+  "x": 61.3,
+  "y": 25.1,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 16.2,
+  "yuzYukseklik": 17.4,
+  "kutudakiYuz": 2
+ },
+ "Karagoz_ve_Hacivat_A": {
+  "x": 22.1,
+  "y": 29.5,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Karagoz_ve_Hacivat_B": {
+  "x": 65.8,
+  "y": 28.1,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 22.8,
+  "yuzYukseklik": 18.4,
+  "kutudakiYuz": 2
+ },
+ "We_Will_Rock_You_A": {
+  "x": 34.7,
+  "y": 36.8,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 29.5,
+  "yuzYukseklik": 14.6,
+  "kutudakiYuz": 1
+ },
+ "We_Will_Rock_You_B": {
+  "x": 43.3,
+  "y": 29.7,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 19.3,
+  "yuzYukseklik": 20.9,
+  "kutudakiYuz": 2
+ },
+ "Cats_A": {
+  "x": 68.7,
+  "y": 84.2,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Cats_B": {
+  "x": 9.6,
+  "y": 17.6,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Slavas_Snowshow_A": {
+  "x": 27.4,
+  "y": 13.8,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 1.4,
+  "yuzYukseklik": 24.7,
+  "kutudakiYuz": 1
+ },
+ "The_Snowman_A": {
+  "x": 75.5,
+  "y": 48.3,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 45.1,
+  "yuzYukseklik": 6.5,
+  "kutudakiYuz": 1
+ },
+ "The_Snowman_B": {
+  "x": 45.2,
+  "y": 29.1,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 22.8,
+  "yuzYukseklik": 23.8,
+  "kutudakiYuz": 2
+ },
+ "Riverdance_A": {
+  "x": 29.9,
+  "y": 19.9,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 15,
+  "yuzYukseklik": 19.1,
+  "kutudakiYuz": 3
+ },
+ "Riverdance_B": {
+  "x": 49.6,
+  "y": 47.6,
+  "kaynak": "yuz",
+  "yuz": 11,
+  "yuzUst": 44.9,
+  "yuzYukseklik": 12.7,
+  "kutudakiYuz": 11
+ },
+ "Uyuyan_Guzel_A": {
+  "x": 52.3,
+  "y": 61,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 52.5,
+  "yuzYukseklik": 11.8,
+  "kutudakiYuz": 3
+ },
+ "Uyuyan_Guzel_B": {
+  "x": 82.3,
+  "y": 75.8,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 73.4,
+  "yuzYukseklik": 4.8,
+  "kutudakiYuz": 1
+ },
+ "Findikkiran_A": {
+  "x": 38.7,
+  "y": 75.5,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 73.5,
+  "yuzYukseklik": 3.9,
+  "kutudakiYuz": 1
+ },
+ "Findikkiran_B": {
+  "x": 89,
+  "y": 16.9,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 12.8,
+  "yuzYukseklik": 8.1,
+  "kutudakiYuz": 1
+ },
+ "Kugu_Golu_A": {
+  "x": 55.6,
+  "y": 31.2,
+  "kaynak": "yuz",
+  "yuz": 4,
+  "yuzUst": 25.8,
+  "yuzYukseklik": 32.5,
+  "kutudakiYuz": 4
+ },
+ "Tarkan_B": {
+  "x": 52.8,
+  "y": 65.1,
+  "kaynak": "yuz",
+  "yuz": 15,
+  "yuzUst": 25,
+  "yuzYukseklik": 45,
+  "kutudakiYuz": 15
+ },
+ "Sertab_Erener_A": {
+  "x": 50.2,
+  "y": 38.2,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 19.5,
+  "yuzYukseklik": 37.3,
+  "kutudakiYuz": 1
+ },
+ "Sertab_Erener_B": {
+  "x": 47.6,
+  "y": 22.5,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 12.3,
+  "yuzYukseklik": 38.7,
+  "kutudakiYuz": 2
+ },
+ "Luka_Sulic_A": {
+  "x": 38.1,
+  "y": 33.5,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 19.9,
+  "yuzYukseklik": 27.1,
+  "kutudakiYuz": 1
+ },
+ "Luka_Sulic_B": {
+  "x": 22.7,
+  "y": 8.5,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Tony_Ann_A": {
+  "x": 59.6,
+  "y": 30,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 15.5,
+  "yuzYukseklik": 28.9,
+  "kutudakiYuz": 1
+ },
+ "Tony_Ann_B": {
+  "x": 47.6,
+  "y": 20.8,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 14.9,
+  "yuzYukseklik": 11.7,
+  "kutudakiYuz": 1
+ },
+ "Fazil_Say_A": {
+  "x": 58.1,
+  "y": 35.9,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 19.8,
+  "yuzYukseklik": 32.3,
+  "kutudakiYuz": 1
+ },
+ "Cabaret_Kit_Kat_B": {
+  "x": 47.8,
+  "y": 25,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 16.3,
+  "yuzYukseklik": 17.3,
+  "kutudakiYuz": 1
+ },
+ "Ucurtma_Avcisi_A": {
+  "x": 44.7,
+  "y": 21.9,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 17.2,
+  "yuzYukseklik": 16.6,
+  "kutudakiYuz": 2
+ },
+ "Ucurtma_Avcisi_B": {
+  "x": 17.3,
+  "y": 29.6,
+  "kaynak": "yuz",
+  "yuz": 4,
+  "yuzUst": 24.3,
+  "yuzYukseklik": 22.7,
+  "kutudakiYuz": 4
+ },
+ "Sanat_A": {
+  "x": 84.4,
+  "y": 15.4,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 9.4,
+  "yuzYukseklik": 16.6,
+  "kutudakiYuz": 3
+ },
+ "Sanat_B": {
+  "x": 66.3,
+  "y": 33.4,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 29.7,
+  "yuzYukseklik": 35.5,
+  "kutudakiYuz": 3
+ },
+ "Medea_A": {
+  "x": 51.3,
+  "y": 20.4,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 10.9,
+  "yuzYukseklik": 82.3,
+  "kutudakiYuz": 3
+ },
+ "Medea_B": {
+  "x": 9.3,
+  "y": 63.8,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 54.5,
+  "yuzYukseklik": 31.2,
+  "kutudakiYuz": 2
+ },
+ "Guess_How_Much_I_Love_You_A": {
+  "x": 86.5,
+  "y": 29.6,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 23.2,
+  "yuzYukseklik": 18.5,
+  "kutudakiYuz": 2
+ },
+ "Guess_How_Much_I_Love_You_B": {
+  "x": 41.3,
+  "y": 60.5,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Madagascar_A": {
+  "x": 64.2,
+  "y": 30.9,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 24,
+  "yuzYukseklik": 20.8,
+  "kutudakiYuz": 2
+ },
+ "Madagascar_B": {
+  "x": 51.2,
+  "y": 35.5,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 30.2,
+  "yuzYukseklik": 10.5,
+  "kutudakiYuz": 1
+ },
+ "IKSV_Istanbul_Tiyatro_Festivali_B": {
+  "x": 30.7,
+  "y": 49.4,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 46.8,
+  "yuzYukseklik": 5.1,
+  "kutudakiYuz": 1
+ },
+ "June_Carter_Cash_A": {
+  "x": 26.9,
+  "y": 23.5,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 16.1,
+  "yuzYukseklik": 49.7,
+  "kutudakiYuz": 2
+ },
+ "June_Carter_Cash_B": {
+  "x": 47.3,
+  "y": 36.7,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 17.3,
+  "yuzYukseklik": 38.8,
+  "kutudakiYuz": 1
+ },
+ "Isabelle_Huppert_A": {
+  "x": 55.5,
+  "y": 27.7,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 11.8,
+  "yuzYukseklik": 31.7,
+  "kutudakiYuz": 1
+ },
+ "Jeremy_Irons_A": {
+  "x": 47.3,
+  "y": 49.7,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 20.6,
+  "yuzYukseklik": 58.2,
+  "kutudakiYuz": 1
+ },
+ "Jeremy_Irons_B": {
+  "x": 48.5,
+  "y": 49.2,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 26,
+  "yuzYukseklik": 46.4,
+  "kutudakiYuz": 1
+ },
+ "Circa_A": {
+  "x": 43.9,
+  "y": 42.8,
+  "kaynak": "yuz",
+  "yuz": 5,
+  "yuzUst": 36.8,
+  "yuzYukseklik": 11.9,
+  "kutudakiYuz": 1
+ },
+ "Circa_B": {
+  "x": 57.2,
+  "y": 53.3,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 51.1,
+  "yuzYukseklik": 8.9,
+  "kutudakiYuz": 3
+ },
+ "Bubble_Man_A": {
+  "x": 58.3,
+  "y": 37,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 33.2,
+  "yuzYukseklik": 7.8,
+  "kutudakiYuz": 1
+ },
+ "Stand_up_Geceleri_A": {
+  "x": 32.5,
+  "y": 63,
+  "kaynak": "dikkat",
+  "yuz": 0
+ },
+ "Caz_Geceleri_A": {
+  "x": 28.8,
+  "y": 28.2,
+  "kaynak": "yuz",
+  "yuz": 2,
+  "yuzUst": 23.2,
+  "yuzYukseklik": 12.8,
+  "kutudakiYuz": 2
+ },
+ "Caz_Geceleri_B": {
+  "x": 4.7,
+  "y": 68.5,
+  "kaynak": "yuz",
+  "yuz": 4,
+  "yuzUst": 32.1,
+  "yuzYukseklik": 45.9,
+  "kutudakiYuz": 2
+ },
+ "Turk_ve_Yunan_Geceleri_A": {
+  "x": 28.3,
+  "y": 27.3,
+  "kaynak": "yuz",
+  "yuz": 1,
+  "yuzUst": 14.5,
+  "yuzYukseklik": 25.6,
+  "kutudakiYuz": 1
+ },
+ "Turk_ve_Yunan_Geceleri_B": {
+  "x": 20.6,
+  "y": 40.8,
+  "kaynak": "yuz",
+  "yuz": 3,
+  "yuzUst": 18.7,
+  "yuzYukseklik": 32.4,
+  "kutudakiYuz": 2
+ }
+}

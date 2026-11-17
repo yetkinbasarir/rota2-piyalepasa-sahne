@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dev-dist/
+.vercel/
+.DS_Store
+# indirilen ham fotoğraflar (npm run photos:download ile yeniden alınır)
+photos-raw/
+ROTA1_dosyalar.zip

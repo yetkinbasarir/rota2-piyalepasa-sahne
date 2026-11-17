@@ -1,0 +1,540 @@
+{
+ "Lukus_Hayat_A": {
+  "w": 1000,
+  "h": 677,
+  "widths": [
+   480,
+   960,
+   1000
+  ],
+  "alt": "Balo merdiveninde fuşya ve sarı kostümlü dansçı"
+ },
+ "Lukus_Hayat_B": {
+  "w": 1000,
+  "h": 677,
+  "widths": [
+   480,
+   960,
+   1000
+  ],
+  "alt": "Mor elbise ve maskeli oyuncuyla salon sahnesi"
+ },
+ "Sunset_Bulvari_A": {
+  "w": 2000,
+  "h": 1333,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Dev siyah-beyaz projeksiyon önünde iki siluet"
+ },
+ "Sunset_Bulvari_B": {
+  "w": 576,
+  "h": 450,
+  "widths": [
+   480,
+   576
+  ],
+  "alt": "Glenn Close, Norma Desmond kostümüyle merdiven başında"
+ },
+ "Paranormal_Activity_A": {
+  "w": 1200,
+  "h": 600,
+  "widths": [
+   480,
+   960,
+   1200
+  ],
+  "alt": "Merdiven başında tek oyuncu ve uzun gölgeler"
+ },
+ "Paranormal_Activity_B": {
+  "w": 8640,
+  "h": 5760,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "El feneriyle karanlığa bakan ikili"
+ },
+ "Karagoz_ve_Hacivat_A": {
+  "w": 1505,
+  "h": 847,
+  "widths": [
+   480,
+   960,
+   1505
+  ],
+  "alt": "Sunumun 27. sayfasındaki orijinal sahne görseli"
+ },
+ "Karagoz_ve_Hacivat_B": {
+  "w": 1536,
+  "h": 1024,
+  "widths": [
+   480,
+   960,
+   1536
+  ],
+  "alt": "Aynı sahne atmosferinde yakın plan · Yapay zekâyla üretilmiş afiş alternatifi"
+ },
+ "We_Will_Rock_You_A": {
+  "w": 3505,
+  "h": 5257,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Scaramouche gitarla dizlerinin üzerinde"
+ },
+ "We_Will_Rock_You_B": {
+  "w": 829,
+  "h": 553,
+  "widths": [
+   480,
+   829
+  ],
+  "alt": "Scaramouche ve Galileo, endüstriyel dekor içinde"
+ },
+ "Cats_A": {
+  "w": 2200,
+  "h": 1467,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Sıçrayan dansçı ve gerideki kedi topluluğu"
+ },
+ "Cats_B": {
+  "w": 3307,
+  "h": 2196,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Grizabella ve Londra sahnesinin gece dekoru"
+ },
+ "Slavas_Snowshow_A": {
+  "w": 1250,
+  "h": 625,
+  "widths": [
+   480,
+   960,
+   1250
+  ],
+  "alt": "Konfeti karında tek başına sarı kostümlü palyaço"
+ },
+ "The_Snowman_A": {
+  "w": 960,
+  "h": 960,
+  "widths": [
+   480,
+   960
+  ],
+  "alt": "Uçan kardan adam ve çocuk"
+ },
+ "The_Snowman_B": {
+  "w": 1059,
+  "h": 717,
+  "widths": [
+   480,
+   960,
+   1059
+  ],
+  "alt": "Sarı motosikletin sepetinde çocuk"
+ },
+ "Riverdance_A": {
+  "w": 1024,
+  "h": 731,
+  "widths": [
+   480,
+   960,
+   1024
+  ],
+  "alt": "Kırmızı etekli baş dansçının sıçrayışı"
+ },
+ "Riverdance_B": {
+  "w": 5323,
+  "h": 3542,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Gün batımı renkleri önünde sıra halinde dansçılar"
+ },
+ "Uyuyan_Guzel_A": {
+  "w": 800,
+  "h": 1206,
+  "widths": [
+   480,
+   800
+  ],
+  "alt": "İki solist, beyaz tütü ve saray dekoru"
+ },
+ "Uyuyan_Guzel_B": {
+  "w": 3000,
+  "h": 2008,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Pastel renkli topluluk ve simetrik koreografi"
+ },
+ "Findikkiran_A": {
+  "w": 1600,
+  "h": 1067,
+  "widths": [
+   480,
+   960,
+   1600
+  ],
+  "alt": "Gece mavisi bir kış sahnesi"
+ },
+ "Findikkiran_B": {
+  "w": 1980,
+  "h": 1320,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Beyaz ve altın kostümlerle iki solist"
+ },
+ "Kugu_Golu_A": {
+  "w": 1280,
+  "h": 720,
+  "widths": [
+   480,
+   960,
+   1280
+  ],
+  "alt": "Koyu fon önünde kuğuların yatay dizilimi"
+ },
+ "Tarkan_B": {
+  "w": 1024,
+  "h": 683,
+  "widths": [
+   480,
+   960,
+   1024
+  ],
+  "alt": "Siyah ceketle açık hava konserinden sahne karesi"
+ },
+ "Sertab_Erener_A": {
+  "w": 1200,
+  "h": 808,
+  "widths": [
+   480,
+   960,
+   1200
+  ],
+  "alt": "Koyu fonda yakın plan portre"
+ },
+ "Sertab_Erener_B": {
+  "w": 5623,
+  "h": 3163,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Kırmızı sahne ışığında mikrofon başında"
+ },
+ "Luka_Sulic_A": {
+  "w": 2000,
+  "h": 1335,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Göl kıyısında çelloyla performans"
+ },
+ "Luka_Sulic_B": {
+  "w": 2700,
+  "h": 1757,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Açık fonda smokin ve çello"
+ },
+ "Tony_Ann_A": {
+  "w": 1200,
+  "h": 840,
+  "widths": [
+   480,
+   960,
+   1200
+  ],
+  "alt": "Doygun kırmızı fonda stüdyo portresi"
+ },
+ "Tony_Ann_B": {
+  "w": 720,
+  "h": 720,
+  "widths": [
+   480,
+   720
+  ],
+  "alt": "Piyano başında, seyirciyle çevrili sahne"
+ },
+ "Fazil_Say_A": {
+  "w": 7952,
+  "h": 4738,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Nötr fonda doğrudan kameraya bakan portre"
+ },
+ "Cabaret_Kit_Kat_B": {
+  "w": 1500,
+  "h": 1000,
+  "widths": [
+   480,
+   960,
+   1500
+  ],
+  "alt": "Sally Bowles beyaz kostümle sahne dumanında"
+ },
+ "Ucurtma_Avcisi_A": {
+  "w": 2048,
+  "h": 1863,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Mavi fonda beyaz uçurtmalar"
+ },
+ "Ucurtma_Avcisi_B": {
+  "w": 1167,
+  "h": 778,
+  "widths": [
+   480,
+   960,
+   1167
+  ],
+  "alt": "Tahta çit önünde sapanla yüzleşme sahnesi"
+ },
+ "Sanat_A": {
+  "w": 1065,
+  "h": 600,
+  "widths": [
+   480,
+   960,
+   1065
+  ],
+  "alt": "Beyaz tuval etrafında üç oyuncu"
+ },
+ "Sanat_B": {
+  "w": 670,
+  "h": 446,
+  "widths": [
+   480,
+   670
+  ],
+  "alt": "Türkiye sahnelemesinden üç oyunculu salon sahnesi"
+ },
+ "Medea_A": {
+  "w": 700,
+  "h": 455,
+  "widths": [
+   480,
+   700
+  ],
+  "alt": "Medea ve ardındaki koyu giyimli koro"
+ },
+ "Medea_B": {
+  "w": 700,
+  "h": 455,
+  "widths": [
+   480,
+   700
+  ],
+  "alt": "Adura Onashile’nin öne çıktığı ikinci sahne karesi"
+ },
+ "Guess_How_Much_I_Love_You_A": {
+  "w": 900,
+  "h": 600,
+  "widths": [
+   480,
+   900
+  ],
+  "alt": "Ağaç dekoru önünde tavşan kuklaları"
+ },
+ "Guess_How_Much_I_Love_You_B": {
+  "w": 392,
+  "h": 600,
+  "widths": [
+   392
+  ],
+  "alt": "Dolunay altında el ele iki tavşan"
+ },
+ "Madagascar_A": {
+  "w": 4500,
+  "h": 3000,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Alex ve Marty hareket halinde"
+ },
+ "Madagascar_B": {
+  "w": 4500,
+  "h": 3000,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Gloria ve Melman ile renkli topluluk sahnesi"
+ },
+ "IKSV_Istanbul_Tiyatro_Festivali_B": {
+  "w": 835,
+  "h": 586,
+  "widths": [
+   480,
+   835
+  ],
+  "alt": "Bovary’den beyaz kostümlü iki oyuncu"
+ },
+ "June_Carter_Cash_A": {
+  "w": 1500,
+  "h": 1000,
+  "widths": [
+   480,
+   960,
+   1500
+  ],
+  "alt": "Charlene Boyd, seyircinin ortasında sahne alırken"
+ },
+ "June_Carter_Cash_B": {
+  "w": 3648,
+  "h": 5472,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Oyuncu Charlene Boyd’un yakın plan portresi"
+ },
+ "Isabelle_Huppert_A": {
+  "w": 5356,
+  "h": 7143,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "A1 · Isabelle Huppert, koyu fonda yakın plan"
+ },
+ "Jeremy_Irons_A": {
+  "w": 1000,
+  "h": 750,
+  "widths": [
+   480,
+   960,
+   1000
+  ],
+  "alt": "A2 · Jeremy Irons, siyah-beyaz stüdyo portresi"
+ },
+ "Jeremy_Irons_B": {
+  "w": 1053,
+  "h": 1389,
+  "widths": [
+   480,
+   960,
+   1053
+  ],
+  "alt": "B2 · Jeremy Irons, doğal ışıkta yakın plan"
+ },
+ "Circa_A": {
+  "w": 2400,
+  "h": 1350,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Karanlık sahnede insan kulesi"
+ },
+ "Circa_B": {
+  "w": 2000,
+  "h": 1333,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Havaya kaldırılan akrobat ve onu taşıyan üçlü"
+ },
+ "Bubble_Man_A": {
+  "w": 2500,
+  "h": 1962,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Siyah fon üzerinde dev, renkli baloncuk"
+ },
+ "Stand_up_Geceleri_A": {
+  "w": 7360,
+  "h": 4912,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Serin spot ışığında mikrofon, tabure ve perde"
+ },
+ "Caz_Geceleri_A": {
+  "w": 1500,
+  "h": 1114,
+  "widths": [
+   480,
+   960,
+   1500
+  ],
+  "alt": "Saksafon ve iki kontrbasla canlı dörtlü"
+ },
+ "Caz_Geceleri_B": {
+  "w": 6720,
+  "h": 4480,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Dinleyiciler arasında, sıcak ışıklı caz kulübü"
+ },
+ "Turk_ve_Yunan_Geceleri_A": {
+  "w": 2560,
+  "h": 1706,
+  "widths": [
+   480,
+   960,
+   1920
+  ],
+  "alt": "Buzukiyle Grigoris Vasilas’ın solo performansı"
+ },
+ "Turk_ve_Yunan_Geceleri_B": {
+  "w": 1600,
+  "h": 1066,
+  "widths": [
+   480,
+   960,
+   1600
+  ],
+  "alt": "Rebetiko üçlüsü, vokal ve telli çalgılar"
+ }
+}
