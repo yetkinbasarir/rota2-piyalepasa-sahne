@@ -5,14 +5,14 @@
 
    Daireler: her öğe düz, kenarsız bir daire (yalnızca dairesel görsel; odak noktası merkezde, normal
    kaplamanın photoZoom katı). Duruştaki yerleşim (layout) ekrandaki yazılardan hesaplanır:
-   - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H); temel çap, eğik hâlinin sınır kutusu üye düğmelerinin altı
-     ile Bilet Al'ın üstündeki alt sınır arasına (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana
-     daire bunun mainScale katı;
-   - p = +1 köşegen üzerinde, ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W; sığmayan
-     kısmı sağ kenarda kesilir;
+   - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H; masaüstünde sağ kenarı sağ sütunun columnGap·W solunda);
+     temel çap, eğik hâlinin sınır kutusu fitTop (mobilde künyenin altı) ile Bilet Al'ın üstündeki alt sınır arasına
+     (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana daire bunun mainScale katı;
    - p = −3 sol kenarda kesilir (merkezi x = 0), köşegen üzerinde; logoya değecekse alt kenarı logonun
-     logoClear·H üstünde. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde, bütün komşular arası
-     eşit boşlukla (tanıtımın altına girebilirler; yazı üstte kalır);
+     logoClear·H üstünde. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde;
+   - bütün komşular arası (ekrandaki biçimler, köşegen boyunca) tek boşluk g, iki yanda aynı; g, p = −3'ün merkezi
+     x = 0'a gelecek şekilde seçilir ve negatif olabilir (eşit örtüşme). p = +1 … +3 köşegen üzerinde sağ yukarı;
+     sığmayan kısım sağ kenarda kesilir;
    - uzaktakiler aynı adımla sürer. Ara konumlar Catmull-Rom eğrisiyle, ölçek s(p) anahtarlarından.
    Ana daire en önde. Eğim rotateX · rotateY · rotateZ; rotateY eğri üzerindeki konuma göre değişir.
    Bütün daireler tam renkli. Alan derinliği: ana daire tam keskin ve opak; diğerleri ana yuvadan uzaklıkları |p|
@@ -31,8 +31,8 @@
 
    Açık hâl (ana daireye tıklama): diğer daireler yerinde kalır. t = 0'da ana daire düzleşir (eğimsiz), en önde
    kalır ve yerinden, yarıçapı ekranın en uzak köşesine ulaşana kadar büyür (open.dur, open.ease); renkli kalır,
-   gölgesi kaybolur. Aynı anda uzun logo kısa logoya çapraz geçer, sol üstte başlığın altındaki tanıtım kaybolup
-   kapanır, künye kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
+   gölgesi kaybolur. Aynı anda logo (yerinde, aynı boyda), başlık ve altındaki çizgi ile × open.colorDur sn'de
+   beyaza döner; sütunun geri kalanı (tanıtım, künye) kaybolup kapanır, Üye Ol / Giriş kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
    kırpımdaki keskin görsel altına yerleşir. Video ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
    belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
    birlikte döner.
@@ -130,7 +130,6 @@ export function createGallery(o: {
   const showAt = (n: number) => shows[mod(n, N)];
   const f = (n: number, d = 2) => n.toFixed(d);
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-  const lgLong = dom.brand.querySelector<HTMLElement>('.lg-l')!;
   const lgShort = dom.brand.querySelector<HTMLElement>('.lg-s')!;
 
   /* ---------- geometri ---------- */
@@ -297,14 +296,18 @@ export function createGallery(o: {
     const top = (S.mobile ? kBottom : mBottom) + gap;
     const bottom = stageTop - gap;
     const cap = (S.mobile ? GL.cap.mobile : GL.cap.web) * W;
-    const mx = (S.mobile ? GL.mainX.mobile : GL.mainX.web) * W;
+    let mx = (S.mobile ? GL.mainX.mobile : GL.mainX.web) * W;
     const my = (S.mobile ? GL.mainY.mobile : GL.mainY.web) * H;
     D = cap;
     for (let i = 0; i < 4; i++) D = Math.min(cap, D * (Math.max(1, bottom - top) / restBox(0, mx, (top + bottom) / 2).h));
     D *= GL.mainScale;
+    // masaüstü: ana dairenin ekrandaki sağ kenarı sağ sütunun sol kenarından columnGap·W solda (grup sola kayar)
+    if (!S.mobile) {
+      const right = css('--gi-left') - GL.columnGap * W;
+      for (let i = 0; i < 3; i++) mx = right - restBox(0, mx, my).w / 2;
+    }
     P = new Map();
-    const p0 = anchorFor(0, mx, my);
-    P.set(0, p0);
+    P.set(0, anchorFor(0, mx, my));
     const M: [number, number] = [mx, my];
     const unit = (v: [number, number]): [number, number] => {
       const l = Math.hypot(v[0], v[1]) || 1;
@@ -313,26 +316,10 @@ export function createGallery(o: {
     const neg = (u: [number, number]): [number, number] => [-u[0], -u[1]];
     const at = (u: [number, number], t: number): [number, number] => [M[0] + u[0] * t, M[1] + u[1] * t];
 
-    // sağ: p = +1 köşegen üzerinde (sağ yukarı); ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W.
-    // Sığmayan kısmı sağ kenarda kesilir; uzaktakiler aynı adımla
-    const uR = unit([-GL.slope[0] * W, -GL.slope[1] * H]);
-    const e0R = reach(0, mx, my, uR);
-    let tR = e0R + GL.rightGap * W + D / 2;
-    for (let i = 0; i < 4; i++) {
-      const c = at(uR, tR);
-      tR = e0R + GL.rightGap * W + reach(1, c[0], c[1], neg(uR));
-    }
-    const c1 = at(uR, tR);
-    const p1 = anchorFor(1, c1[0], c1[1]);
-    P.set(1, p1);
-    const step: [number, number] = [p1[0] - p0[0], p1[1] - p0[1]];
-    P.set(2, [p1[0] + step[0], p1[1] + step[1]]);
-    P.set(3, [p1[0] + 2 * step[0], p1[1] + 2 * step[1]]);
-
     // sol: p = −3 sol kenarda kesilir (sınır kutusu merkezi x = 0), köşegen üzerinde; logoya değecekse alt kenarı
     // logonun üstünden logoClear·H yukarıda. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde, bütün
-    // komşular arası (ekrandaki biçimler, köşegen boyunca) eşit boşlukla. Künye / tanıtımın altına girebilirler
-    // (yazı üstte kalır)
+    // komşular arası (ekrandaki biçimler, köşegen boyunca) eşit boşlukla g; g negatif olabilir (eşit örtüşme).
+    // Aynı g sağ tarafta da kullanılır
     const slope = (GL.slope[1] * H) / Math.abs(GL.slope[0] * W);
     const h3 = restBox(-3, 0, my).h;
     let y3 = Math.min(my + mx * slope, H - h3 / 2);
@@ -355,7 +342,26 @@ export function createGallery(o: {
       ts[0] += (g[1] - g[0]) * 0.4;
       ts[1] += (g[2] - g[1]) * 0.4;
     }
-    centers().slice(1).forEach((c, i) => P.set(-(i + 1), anchorFor(-(i + 1), c[0], c[1])));
+    const cl = centers();
+    cl.slice(1).forEach((c, i) => P.set(-(i + 1), anchorFor(-(i + 1), c[0], c[1])));
+    const g = [0, 1, 2].map((n) => gapOf(-n, cl[n], -(n + 1), cl[n + 1])).reduce((a, b) => a + b) / 3;
+
+    // sağ: p = +1 … +3 köşegen üzerinde (sağ yukarı); her komşu arası (ekrandaki biçimler, köşegen boyunca) aynı g.
+    // Sığmayan kısım sağ kenarda kesilir
+    const uR = unit([-GL.slope[0] * W, -GL.slope[1] * H]);
+    let tPrev = 0;
+    for (let k = 1; k <= 3; k++) {
+      const prev = at(uR, tPrev);
+      const e = tPrev + reach(k - 1, prev[0], prev[1], uR) + g;
+      let t = e + (D * scaleAt(k)) / 2;
+      for (let i = 0; i < 5; i++) {
+        const c = at(uR, t);
+        t = e + reach(k, c[0], c[1], neg(uR));
+      }
+      const c = at(uR, t);
+      P.set(k, anchorFor(k, c[0], c[1]));
+      tPrev = t;
+    }
 
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
@@ -560,13 +566,6 @@ export function createGallery(o: {
       img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
-  /** Açık hâlde başlığın inmesi (px): üstü ×'in altından ×'in üst boşluğu kadar aşağıda */
-  function titleDrop() {
-    const x = dom.close.getBoundingClientRect();
-    const xTop = parseFloat(getComputedStyle(dom.close).top) || x.top;
-    const giTop = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gi-top')) || 0;
-    return Math.max(0, xTop + dom.close.offsetHeight + xTop - giTop);
-  }
   /** Açılma / kapanma. Açılış: t = 0'da daire büyümeye, yazılar ve logo geçişe başlar; videoAt'te video ve ağ
       belirir. Kapanış tam tersi: önce video ve ağ kaybolur, daire simetrik olarak küçülür */
   function moves(on: boolean) {
@@ -581,15 +580,13 @@ export function createGallery(o: {
     const all = { duration: dur, ease: O.ease, overwrite: true };
     const t0 = at(0, dur);
     tl.to(grow, { v: on ? 1 : 0, ...all }, t0);
-    if (!S.mobile) {
-      tl.to(lgLong, { opacity: on ? 0 : 1, ...all }, t0);
-      tl.to(lgShort, { opacity: on ? 1 : 0, ...all }, t0);
-    }
-    // sütunda başlık dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık ×'in altına iner (×'in alt
-    // kenarından ×'in üst boşluğu kadar aşağı)
+    // logo yerinde ve aynı boyda kalır; logo, başlık ve altındaki çizgi ile × açılışın başında colorDur sn'de
+    // beyaza döner (kapanışta tam tersi)
+    const cd = O.colorDur * red;
+    tl.to([dom.brand, gInfo, dom.close], { color: on ? O.color : T.text, duration: cd, ease: 'none', overwrite: 'auto' }, at(0, cd));
+    // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to(gInfo, { y: on ? titleDrop() : 0, ...all }, t0);
     tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
@@ -706,11 +703,11 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, lgLong, lgShort]);
+      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, dom.brand]);
+      gsap.set([dom.brand, gInfo, dom.close], { clearProps: 'color' });
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
       gsap.set(dom.members, { autoAlpha: 1 });
-      gsap.set(gInfo, { y: 0 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();

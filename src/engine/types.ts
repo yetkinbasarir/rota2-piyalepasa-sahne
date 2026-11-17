@@ -133,7 +133,8 @@ export interface GalleryTokens {
   perspective: number;
   /** Duruştaki yerleşim */
   layout: {
-    /** Ana dairenin (p = 0) sınır kutusu merkezi: x (W oranı), y (H oranı); web / mobil */
+    /** Ana dairenin (p = 0) sınır kutusu merkezi: x (W oranı; masaüstünde columnGap'ten hesaplanır), y (H oranı);
+        web / mobil */
     mainX: { web: number; mobile: number };
     mainY: { web: number; mobile: number };
     /** Bütün daire grubu (daireler ve gölgeleri) bu kadar yukarıda (H oranı); aralık ve ölçüler değişmez */
@@ -147,8 +148,10 @@ export interface GalleryTokens {
     mainScale: number;
     /** Ölçek anahtarları s(p), p = −3 … +3 (arası sürekli) */
     keys: number[];
-    /** p = +1 ile ana daire arası: ekrandaki biçimleri arası, köşegen boyunca (W oranı) */
-    rightGap: number;
+    /** Masaüstü: ana dairenin ekrandaki sağ kenarı ile sağ sütunun sol kenarı arası (W oranı) */
+    columnGap: number;
+    /** Masaüstü: dairelerin sığdırıldığı üst sınır (H; mobilde üye düğmelerinin altı) */
+    fitTop: number;
     /** p = −3 logoya değecekse alt kenarı ile logonun üstü arası (H) */
     logoClear: number;
     /** Köşegen yönü (sola bir adımda [W, H] oranı): p = +1 bunun tersi yönde; p = −3 bu yönde, sol kenarda */
@@ -190,11 +193,11 @@ export interface GalleryTokens {
   /** Hareket: oturma, kendiliğinden ilerleme */
   settle: { dur: number; ease: string };
   auto: { every: number; dur: number; ease: string };
-  /** Açık hâlin ağı: hücre (CSS px), delikler arası zemin grisi çizgi (aygıt pikseli), opaklık */
-  mesh: { cell: number; line: number; opacity: number };
+  /** Açık hâlin ağı: ROTA1'in tam ekran dokusu (id.texture: siyah yüzey, yuvarlak delikler); opaklık */
+  mesh: { opacity: number };
   /** Açılma: ana dairenin ekranı kaplayana kadar büyüme süresi ve eğrisi (kapanışta aynısı), videonun belirme
-      başlangıcı ve süresi (sn) */
-  open: { dur: number; ease: string; videoAt: number; videoDur: number };
+      başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi */
+  open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */
@@ -320,7 +323,8 @@ export interface Identity {
   /** Telefonda yatay ekran katmanı: koşul (yatay, dokunmatik, görünür yükseklik < maxHeight px),
       telefon simgesinin yüksekliği (ekran yüksekliğinin oranı), dönüş ve bekleme süreleri (sn) */
   rotate: { maxHeight: number; icon: number; turn: number; hold: number };
-  /** Yükleme ekranının ekran koruyucu ağı: siyah yüzey, yuvarlak delikler (açık hâlin ağı gallery.mesh) */
+  /** Delikli doku (ROTA1 ile aynı): siyah yüzey, kare ızgarada yuvarlak delikler; açık hâlin ağı ve yükleme
+      ekranının ekran koruyucusu */
   texture: {
     /** Delik aralığı, merkezden merkeze (px) */
     pitch: number;

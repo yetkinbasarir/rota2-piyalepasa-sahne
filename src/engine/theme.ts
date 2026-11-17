@@ -86,7 +86,7 @@ export function buildDom(id: Identity): Dom {
   <div id="stage" class="layer"></div>
   <div id="top" class="layer"></div>
   <div id="fv" class="layer"></div>
-  <div class="tex holes" aria-hidden="true"></div>
+  <div class="tex holes-r" aria-hidden="true"></div>
   <div id="ui" class="layer"></div>
   <div class="brand" role="img" aria-label="${id.name}"><div class="lg-l"></div><div class="lg-s"></div></div>
   <div class="bnd"></div>

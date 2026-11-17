@@ -38,8 +38,11 @@ export const rota1: Identity = {
       mainScale: 1.15,
       /* s(p): p = −3 … +3 */
       keys: [0.18, 0.3, 0.48, 1, 0.88, 0.5, 0.32],
-      /* p = +1 ile ana daire arası (ekrandaki biçimler, köşegen boyunca) 0.02W */
-      rightGap: 0.02,
+      /* masaüstü: ana dairenin sağ kenarı sağ sütunun 0.02W solunda (grup sola kayar); bütün komşular arası tek
+         boşluk g (negatif olabilir), p = −3'ün merkezi x = 0'a gelecek şekilde seçilir */
+      columnGap: 0.02,
+      /* masaüstü: dairelerin sığdırıldığı üst sınır (önceki üye düğmelerinin altı; ölçüler değişmesin) */
+      fitTop: 0.095,
       /* p = −3 logoya değecekse alt kenarı logonun 0.02H üstünde */
       logoClear: 0.02,
       /* başlangıç köşegeni: sola bir adımda (−0.312W, +0.11H); sığmazsa yatıklaştırılır */
@@ -62,21 +65,23 @@ export const rota1: Identity = {
       color: '#111214',
       width: 0.9,
       height: 0.35,
-      opacity: 0.22,
-      mainOpacity: 0.26,
-      blur: 28,
+      /* belirgin: opaklık 1.6×, bulanıklık 0.75× (0.22 / 0.26 / 28 / 36 / 0.16'dan) */
+      opacity: 0.352,
+      mainOpacity: 0.416,
+      blur: 21,
       below: 0.06,
       right: 0.03,
-      lift: { shrink: 0.08, blur: 36, opacity: 0.16 },
+      lift: { shrink: 0.08, blur: 27, opacity: 0.256 },
       tiltShift: 0.01,
     },
     settle: { dur: 0.7, ease: 'power3.out' },
     auto: { every: 6, dur: 1.2, ease: 'power2.inOut' },
-    /* açık hâlin ağı: 4px hücre, delikler arası 1 aygıt pikseli zemin grisi (2× ekranda 0.5px), opaklık 0.85 */
-    mesh: { cell: 4, line: 1, opacity: 0.85 },
+    /* açık hâlin ağı: ROTA1'in tam ekran dokusu (texture: 4px aralık, %30 siyah, yuvarlak delikler), tam opak */
+    mesh: { opacity: 1 },
     /* açılma: ana daire düzleşip yerinden ekranı kaplayana kadar büyür (0.9 sn power3.inOut), diğer daireler yerinde;
-       video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Kapanma tam tersi */
-    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5 },
+       video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Logo, başlık ve altındaki çizgi ile × açılışla birlikte
+       0.5 sn'de beyaza döner. Kapanma tam tersi */
+    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF' },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
@@ -123,19 +128,23 @@ export const rota1: Identity = {
     number: { capOf: 'H' },
     /* sağ sütun (0.21W): başlık (0.028W, mobilde 0.075W; en fazla 2 satır, sığmazsa küçülür), aynalı logo çizgisi,
        tam tanıtım, logo çizgisi, künye satırları. Başlık ve tanıtımın altındaki çizgilerin üstünde ve altında
-       0.0064W (mobilde 0.015W). Sütunun üstü logonun üstüyle hizalı; açık hâlde başlık ×'in altına iner */
+       0.0064W (mobilde 0.015W). Başlığın büyük harf üstü logonun üstüyle aynı çizgide. Açık hâlde başlık ve altındaki
+       çizgi yerinde kalıp beyaza döner, sütunun geri kalanı kaybolur */
     info: {
       width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.075 }, titleLh: 1.05,
       titleLines: 2, ruleGap: { web: 0.0064, mobile: 0.015 }, mobilePad: 0.02,
     },
     stage: { gap: 0.015 },
+    /* Bilet Al: masaüstünde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki), mobilde alt ortada;
+       Üye Ol / Giriş de aynı çapta (masaüstü) */
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },
-    /* uzun logo sol üstte (0.1728H, üstten 0.04H); ilk harfi soldan 0.012W, çizgiler sol kenarda kesilir. Sağ
+    /* uzun logo sol üstte (0.216H, üstten 0.04H); açık hâlde yerinde kalır, beyaza döner; ilk harfi soldan 0.012W, çizgiler sol kenarda kesilir. Sağ
        sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan aynı 0.012W */
-    logo: { h: 0.1728, top: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
+    /* uzun logo %25 büyük (0.1728 → 0.216H) */
+    logo: { h: 0.216, top: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
     /* Üye Ol / Giriş: masaüstünde sol altta (soldan logonun harf boşluğu, alttan Bilet Al'ınki); mobilde sağ üstte */
-    members: { d: 0.075, gap: 0.012, pad: 0.02, mobileD: 0.11 },
+    members: { d: 0.09, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },
   },
 

@@ -31,14 +31,15 @@ const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowe
 /* ---------- sağ sütun: başlık, tanıtım, künye ----------
    Başlığın altında aynalı logo çizgisi, tam tanıtım, altında yine çizgi (künyenin ilk satırının üstündeki çizgi);
    künye satırlarının her birinin üstünde çizgi. Başlık ve tanıtımın altındaki çizgilerin üstünde ve altında
-   boşluk (.lr-g). Açık hâlde başlık dışındaki her şey (.gi-rest) kaybolup kapanır */
+   boşluk (.lr-g). Açık hâlde başlık ve altındaki çizgi yerinde kalır (beyaza döner), geri kalanı (.gi-rest)
+   kaybolup kapanır */
 function info(s: Show, ctx: TemplateContext) {
   const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
   const rows = credits(s, ctx);
-  let rest = rule(true);
+  let rest = '';
   if (desc) rest += desc + (rows.length ? rule(true) : '');
   rest += rows.join(rule());
-  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rest}</div>`;
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2>${rule(true)}<div class="gi-rest">${rest}</div>`;
 }
 
 /* künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları */

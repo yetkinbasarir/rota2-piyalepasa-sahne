@@ -14,10 +14,8 @@ img, video { -webkit-user-drag: none; }
 /* kâğıt dokusu: ekrana sabit, gri tonlu gürültü (theme.ts) */
 .paper { position: absolute; inset: 0; pointer-events: none; background-image: var(--paper); background-size: 300px 300px; opacity: var(--paper-o, .05); }
 
-/* açık hâlin ağı (texture.ts): zemin grisi ince çizgiler, hücreyi neredeyse dolduran eşkenar dörtgen delikler;
-   piksel ızgarasında. Video ile ağ arasında başka katman yok */
-.holes { background-image: var(--mesh-img); background-size: var(--mesh-p) var(--mesh-p); }
-/* yükleme ekranının ekran koruyucusu: siyah yüzey, yuvarlak delikler */
+/* delikli doku (texture.ts; ROTA1 ile aynı): siyah yüzey, kare ızgarada yuvarlak delikler. Açık hâlde videonun
+   üstündeki ağ (arada başka katman yok) ve yükleme ekranının ekran koruyucusu */
 .holes-r {
   background-image: radial-gradient(circle, transparent var(--tex-r), #000 calc(var(--tex-r) + .5px));
   background-size: var(--tex-p) var(--tex-p);
@@ -64,8 +62,9 @@ img, video { -webkit-user-drag: none; }
 .gi > .gx { top: 0; }
 /* açık hâlde kapanır (overflow gizli); logo çizgileri sağ kenarın dışına uzanabilsin diye kutu sağa genişler */
 .gi-rest { overflow: hidden; margin-right: calc(-1 * var(--gi-out) - 2px); padding-right: calc(var(--gi-out) + 2px); }
-/* alt orta: yalnızca Bilet Al */
-.gc { position: absolute; left: 0; right: 0; bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+/* Bilet Al: masaüstünde sağ altta, mobilde alt ortada */
+.gc { position: absolute; right: var(--gc-right); bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.is-mobile .gc { left: 0; right: 0; }
 .ln { will-change: transform, opacity; }
 /* logo çizgisi: logodaki çizgi kalınlığı (--lr-t) ve sağ ucunda logodaki elmas (--lr-d); 1px üst üste biner.
    Sütunda aynası: elmas sütunun sol kenarında, çizgi sağda ekran kenarını geçer; başlığın ve tanıtımın altındakilerin
@@ -126,11 +125,11 @@ img, video { -webkit-user-drag: none; }
 
 /* ---------- × ---------- */
 .xcl {
-  position: fixed; top: var(--logo-pad); right: var(--logo-pad); z-index: 12; width: var(--xcl-d, 56px); height: var(--xcl-d, 56px);
+  position: fixed; bottom: var(--xcl-bottom); left: 50%; transform: translateX(-50%); z-index: 12; width: var(--xcl-d, 56px); height: var(--xcl-d, 56px);
   padding: 0; border: 0; background: none; cursor: pointer; line-height: 0; opacity: 0; visibility: hidden; pointer-events: auto;
 }
 .xcl svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.is-mobile .xcl { top: calc(var(--safe-top) + var(--mpad)); right: var(--mpad); }
+.is-mobile .xcl { top: calc(var(--safe-top) + var(--mpad)); right: var(--mpad); bottom: auto; left: auto; transform: none; }
 
 /* telefonda yatay ekran katmanı: bütün içeriğin üstünde, güvenli alanlar dahil tam ekran düz koyu */
 .rot {

@@ -50,9 +50,8 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     dom.members.addEventListener('pointerdown', (e) => e.stopPropagation());
     dom.members.addEventListener('click', (e) => e.stopPropagation());
   }
-  // dairelerin sığdırıldığı üst sınır: mobilde üye düğmelerinin altı; masaüstünde aynı yükseklik (daire ölçüleri
-  // değişmesin)
-  px('--fit-top', S.safeTop + pad + d);
+  // dairelerin sığdırıldığı üst sınır: mobilde üye düğmelerinin altı; masaüstünde sabit (daire ölçüleri değişmesin)
+  px('--fit-top', S.safeTop + (S.mobile ? pad + d : id.gallery.layout.fitTop * H));
 
   /* başlık, tanıtım ve künye sütunu: masaüstünde sağda (sağ kenarı sağdan logonun ilk harfi kadar), başlığın büyük
      harf üstü logonun üstüyle aynı çizgide; mobilde sol üstte üye düğmelerinin altında (üstünü galeri verir) */
@@ -76,11 +75,16 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--lr-d', DIAMOND_H * lk);
   px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
 
-  /* alt orta: yalnızca Bilet Al */
+  /* Bilet Al: masaüstünde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki), mobilde alt ortada */
   px('--gs-gap', T.stage.gap * H);
-  px('--gc-bottom', S.safeBottom + T.ticket.bottom * H);
+  const gcBottom = S.safeBottom + T.ticket.bottom * H;
+  const tD = T.ticket.d * H;
+  px('--gc-bottom', gcBottom);
+  px('--gc-right', letterX);
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk');
-  if (ticket) ticket.style.setProperty('--cb-d', `${(T.ticket.d * H).toFixed(2)}px`);
+  if (ticket) ticket.style.setProperty('--cb-d', `${tD.toFixed(2)}px`);
+  // ×: masaüstünde alt ortada, Bilet Al ve Üye Ol / Giriş ile aynı yatay eksende
+  px('--xcl-bottom', gcBottom + (tD - id.closeButton.size) / 2);
 
   /* logolar */
   const long = dom.brand.querySelector<HTMLElement>('.lg-l')!;

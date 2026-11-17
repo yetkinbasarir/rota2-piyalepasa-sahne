@@ -2,8 +2,8 @@
 
 Çapraz 3B daire galerisi (CSS 3B): daireler bir köşegen boyunca dizilir. Ana daire (p = 0 yuvası: en büyük, renkli,
 en önde; konumu serbest kompozisyon değeri mainX / mainY) tam keskin, diğerleri uzaklıkça saydam ve bulanık; hepsi tam renkli; ana daireye tıklanınca diğer daireler
-yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda gösteri başlığı, kısa
-logo, Bilet Al ve × kalır. Web + mobil PWA.
+yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ROTA1'in yuvarlak delikli siyah ağı ile) belirir; ekranda logo, gösteri başlığı
+(beyaz), Bilet Al ve × kalır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
 ```bash
@@ -44,7 +44,7 @@ src/
     counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
     loader.ts, screensaver.ts  yükleme ekranı ve açılış ekran koruyucusu
     logo.ts               iki parçalı, uzayıp kısalan logo
-    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, ağ (açık hâlde eşkenar dörtgen / ekran koruyucuda yuvarlak)
+    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, delikli doku (ROTA1 ile aynı; açık hâlin ağı ve ekran koruyucu)
     theme.ts              kimlik token'larını sayfaya uygular, DOM iskeleti
     input/pointer.ts      işaretçi / dokunma (Observer)
     input/wheel.ts        tekerlek / trackpad (Observer)
