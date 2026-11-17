@@ -155,7 +155,8 @@ export function createWall(o: {
 
   /** Halka: (2·kolon + satır) — tekrarsız, ekranda aynı öğe iki kez görünmez */
   const showAt = (i: number, j: number) => shows[mod(2 * i + j, N)];
-  const colorOf = (s: Show) => s.color ?? id.palette[mod(s.k, id.palette.length)];
+  // kimlik kart rengi verdiyse hepsi o renk (fotoğraftan çıkarılan renk kullanılmaz)
+  const colorOf = (s: Show) => id.colors.card ?? s.color ?? id.palette[mod(s.k, id.palette.length)];
   const key = (i: number, j: number) => `${i},${j}`;
 
   /* ---------- ölçüler ---------- */
@@ -321,7 +322,7 @@ export function createWall(o: {
 
   /* ---------- parlama: kartın tamamından geçen eğik ışık şeridi, soldan sağa dalga ---------- */
   const SH = id.shine;
-  const shineOn = !motion.reduced;
+  const shineOn = !motion.reduced && SH.enabled !== false;
   let shineTweens: gsap.core.Tween[] = [];
   let nextWave = 0;
   /** Şerit ölçüleri: eleman genişliği (şerit + eğimin yatay payı) ve gradyan durakları */

@@ -67,6 +67,15 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
   const q = /[?&]logo=([12])/.exec(location.search);
   const anim = q ? +q[1] : LD.logoAnim;
   root.dataset.anim = String(anim);
+  // büyük logo: oran korunur; genişlik en fazla ekranın logoW'si, yükseklik en fazla logoH'si; sola yaslı
+  {
+    const vb = (logo.querySelector('svg')?.getAttribute('viewBox') ?? '0 0 1 1').split(/[\s,]+/).map(Number);
+    const ratio = vb[2] / vb[3] || 1;
+    const mobileLd = matchMedia('(max-width: 760px) and (orientation: portrait)').matches;
+    const wMax = (mobileLd ? LD.logoW.mobile : LD.logoW.web) * 100;
+    logo.style.right = 'auto';
+    logo.style.width = `min(${wMax}vw, ${(LD.logoH * 100 * ratio).toFixed(3)}vh)`;
+  }
   if (base) base.style.fill = LD.base;
   if (tex) tex.className = 'holes';
   /* ---------- 2: opak daireler (canvas) ----------
@@ -85,7 +94,12 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
     if (!near) hues.push(h);
   }
   if (!hues.length) hues.push(0);
-  const pal = hues.map((h) => hslRgb(h, LD.dotSat, LD.dotLight));
+  const rgbOf = (hex: string): [number, number, number] => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  // kimlik paleti verdiyse doğrudan o renkler; yoksa bilet renklerinin tam doygun tonları
+  const pal = LD.dotPalette?.length ? LD.dotPalette.map(rgbOf) : hues.map((h) => hslRgb(h, LD.dotSat, LD.dotLight));
   let dotsList: Dot[] = [];
   let canvas: HTMLCanvasElement | null = null;
   let ctx2: CanvasRenderingContext2D | null = null;

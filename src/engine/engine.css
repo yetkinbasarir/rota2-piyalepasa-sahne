@@ -5,13 +5,13 @@
 :root.is-mobile { --fs: var(--type-mobile-size, 15px); --lh: calc(var(--fs) * var(--type-mobile-lh, 1.4)); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 /* html / body her zaman siyah (Safari üst çubuk alanını sayfa rengine boyamasın); esneme ve dikey kayma yok */
-html, body { height: 100%; overflow: hidden; background: #000 !important; overscroll-behavior: none; }
+html, body { height: 100%; overflow: hidden; background: var(--c-bg, #000) !important; overscroll-behavior: none; }
 body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 img, video { -webkit-user-drag: none; }
 
 /* kanvas: duvar, karartma, açık öğe katmanı */
-#surface { position: fixed; inset: 0; overflow: hidden; contain: strict; cursor: grab; background: #000; }
+#surface { position: fixed; inset: 0; overflow: hidden; contain: strict; cursor: grab; background: var(--c-bg, #000); }
 /* ortak delikli doku (ölçüler texture.ts): siyah yüzey, kare ızgarada yuvarlak delikler */
 .holes {
   background-image: radial-gradient(circle, transparent var(--tex-r), #000 calc(var(--tex-r) + .5px));
@@ -19,7 +19,7 @@ img, video { -webkit-user-drag: none; }
 }
 .layer { position: absolute; inset: 0; pointer-events: none; }
 /* en altta tam genişlikte siyah bant: kartların altında, açık öğenin (tam ekran fotoğraf) altında */
-.band { position: absolute; left: 0; right: 0; bottom: 0; height: var(--band-h); background: #000; pointer-events: none; }
+.band { position: absolute; left: 0; right: 0; bottom: 0; height: var(--band-h); background: var(--c-band, #000); pointer-events: none; }
 
 /* kart: iki kalıcı parça (fotoğraf .pw, renk kutusu .kc); pencereler en büyük hâllerinde kurulur,
    transform ile taşınıp ölçeklenir. Fotoğraf renk kutusunun önünde durur ve ona 1px taşar. */
@@ -88,7 +88,7 @@ img, video { -webkit-user-drag: none; }
 }
 /* mobilde en üstte siyah şerit (y = 0): üst bant (güvenli alan dahil). Kartlar, paneller ve tam ekran
    görüntüsü altında kalır; logo, düğmeler ve sahne etiketi üstünde */
-.topstrip { position: fixed; left: 0; right: 0; top: 0; background: #000; z-index: 10; pointer-events: none; display: none; }
+.topstrip { position: fixed; left: 0; right: 0; top: 0; background: var(--c-band, #000); z-index: 10; pointer-events: none; display: none; }
 /* web'de şerit yok (tam ekran görüntü ekranın en üst pikselinden başlar); mobilde üst bant */
 .is-mobile .topstrip { display: block; height: var(--band-h); }
 /* mobil: sahne etiketi üst bandın hemen altında (logoya binmesin) */
@@ -100,10 +100,10 @@ img, video { -webkit-user-drag: none; }
 
 /* görsel doğal oranında; kutu içindeki yerleşimi crop.ts hesaplar, yavaş zoom görselin kendisinde */
 .phn { position: absolute; left: 0; top: 0; display: block; max-width: none; }
-/* grid'de tek renkli fotoğraf: zemin bilet rengi, görsel siyah beyaz ve multiply (gölgeler koyu, açık
-   tonlar bilet renginde). Renkli kopya (.phc) üstte, normal karışımla; açılırken opaklıkla belirir */
+/* grid'de duotone fotoğraf (SVG filtresi #duotone, sayfada bir kez tanımlı). Renkli kopya (.phc) üstte,
+   normal karışımla; açılırken opaklıkla belirir */
 .phz { position: absolute; left: 0; top: 0; }
-.phm { filter: grayscale(1) contrast(var(--mono-contrast, 1.05)); mix-blend-mode: multiply; }
+.phm { filter: url(#duotone); }
 .phc { mix-blend-mode: normal; }
 
 /* görsel: odak noktası üst üçte bir */
@@ -131,7 +131,7 @@ img, video { -webkit-user-drag: none; }
 }
 /* telefonda yatay ekran katmanı: bütün içeriğin üstünde, güvenli alanlar dahil tam ekran düz siyah */
 .rot {
-  position: fixed; inset: 0; z-index: 1000; background: #000; display: none;
+  position: fixed; inset: 0; z-index: 1000; background: var(--c-bg, #000); display: none;
   align-items: center; justify-content: center; pointer-events: auto; touch-action: none;
 }
 .rot.rot--on { display: flex; }

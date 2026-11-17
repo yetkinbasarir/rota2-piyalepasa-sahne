@@ -3,7 +3,7 @@ import type { Show, Templates, TemplateContext, TicketState } from '../../engine
 import { SURFACE } from './surface';
 
 const DARK = '#0b0b0b';
-const LIGHT = '#fff';
+const LIGHT = '#ffffff';
 
 /** Göreli parlaklık (WCAG) ve kontrast oranı */
 const lum = (h: string) => {

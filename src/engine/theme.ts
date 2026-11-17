@@ -29,6 +29,14 @@ export function applyIdentity(id: Identity) {
   const root = document.documentElement;
   const set = (k: string, v: string | number) => root.style.setProperty(k, String(v));
   set('--c-bg', id.colors.background);
+  set('--c-line', id.colors.line ?? '#000');
+  if (id.colors.card) set('--c-card', id.colors.card);
+  {
+    // bant rengi ve opaklığı
+    const h = (id.colors.band ?? '#000000').replace('#', '');
+    const n = parseInt(h, 16);
+    set('--c-band', `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${id.colors.bandAlpha ?? 1})`);
+  }
   set('--c-paper', id.colors.paper);
   set('--c-ink', id.colors.ink);
   set('--c-focus', id.colors.focus);
@@ -102,6 +110,17 @@ function rotateLayer(id: Identity) {
     `<rect x="1" y="1" width="58" height="98" rx="9" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"/></svg></div>`;
 }
 
+/** Duotone filtresi: gri tona çevir, sonra koyu ve açık ton arasına eşle */
+function duotone(id: Identity) {
+  const c = (hex: string) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => +(v / 255).toFixed(4));
+  };
+  const [d, l] = [c(id.duotone.dark), c(id.duotone.light)];
+  const ch = (k: number, tag: string) => `<${tag} type="table" tableValues="${d[k]} ${l[k]}"/>`;
+  return `<feColorMatrix type="saturate" values="0"/><feComponentTransfer>${ch(0, 'feFuncR')}${ch(1, 'feFuncG')}${ch(2, 'feFuncB')}</feComponentTransfer>`;
+}
+
 export function buildDom(id: Identity, brandHtml: () => string): Dom {
   const app = document.getElementById('app') ?? document.body;
   app.innerHTML = `
@@ -111,6 +130,7 @@ export function buildDom(id: Identity, brandHtml: () => string): Dom {
   <div id="top" class="layer"></div>
   <div id="fv" class="layer"></div>
 </div>
+<svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>
 <div class="tex holes" aria-hidden="true"></div>
 <div class="fst" aria-live="polite"></div>
 <div class="topstrip" aria-hidden="true"></div>

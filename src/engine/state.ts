@@ -118,7 +118,6 @@ export function measure(S: State, id: Identity) {
   root.style.setProperty('--vvh', `${S.vh}px`);
   root.style.setProperty('--gap', `${S.gap}px`);
   root.style.setProperty('--perf', String(Wl.perforation));
-  root.style.setProperty('--mono-contrast', String(Wl.monoContrast));
   // ortak delikli doku: aralık ve çap ekranın piksel ızgarasına yuvarlanır (texture.ts)
   applyTexture(root, id);
   // tam ekran videosu: büyütme ve dikey merkez

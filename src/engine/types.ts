@@ -166,13 +166,22 @@ export interface Identity {
     paper: string;
     ink: string;
     focus: string;
+    /** İkincil çizgi rengi */
+    line?: string;
+    /** Alt / üst bant rengi ve opaklığı */
+    band?: string;
+    bandAlpha?: number;
+    /** Verilirse bütün bilet kartlarının ve açılmış öğe panelinin rengi (fotoğraftan çıkarılan renk kullanılmaz) */
+    card?: string;
   };
+  /** Grid fotoğraflarının duotone eşlemesi (SVG filtresi): koyu ve açık ton */
+  duotone: { dark: string; light: string };
   /** Renk kutularının paleti; yan yana iki öğe aynı rengi almaz */
   palette: string[];
   fonts: {
     stylesheets: string[];
     /** Yalnızca iki metin ağırlığı (light, bold) + büyük başlık */
-    roles: { coverTitle: FontRole; light: FontRole; bold: FontRole; counter: FontRole };
+    roles: { coverTitle: FontRole; light: FontRole; bold: FontRole; counter: FontRole; counterStrong?: FontRole };
   };
   /** Detay, künye ve bilet katmanlarının tek puntosu ve satır aralığı (taban ızgarası) */
   type: { web: TypeSize; mobile: TypeSize };
@@ -215,7 +224,6 @@ export interface Identity {
     /** Fare grid'in üzerindeyken akış hızı (normal hızın oranı) */
     driftHover: number;
     /** Grid'deki tek renkli fotoğrafın kontrastı */
-    monoContrast: number;
     /** Görsellerde yavaş zoom: ölçek aralığı ve öğeden öğeye değişen süre (sn), yoyo, sine.inOut */
     zoom: { from: number; to: number; min: number; max: number };
   };
@@ -232,6 +240,8 @@ export interface Identity {
   };
   /** Grid kartlarında parlama: kartın tamamından geçen eğik, yumuşak kenarlı beyaz şerit (soft-light) */
   shine: {
+    /** Parlama dalgası açık mı */
+    enabled: boolean;
     /** Şeridin en parlak yerindeki beyaz opaklığı */
     opacity: number;
     /** Şerit genişliği (kart genişliğinin oranı) */
@@ -244,6 +254,8 @@ export interface Identity {
       en büyük nokta yarıçapı (aralığın oranı) */
   loader: {
     logoAnim: 1 | 2; minTime: number; base: string;
+    /** Büyük logo: genişlik en fazla ekran genişliğinin oranı (web / mobil), yükseklik en fazla ekran yüksekliğinin oranı */
+    logoW: { web: number; mobile: number }; logoH: number;
     /** Opak daireler: temel yarıçap (logo yüksekliğinin oranı), yarıçap katı aralığı ve küçüklere eğilim
         (kuvvet üssü), ana daire sayısı çarpanı, süzülme (yarıçapın oranı) */
     blobBase: number; blobMin: number; blobMax: number; blobSkew: number; blobFill: number;
@@ -254,6 +266,8 @@ export interface Identity {
     /** Nokta renkleri: bilet renklerinin tonu, doygunluk ve açıklık (%) bu değerlere çekilir; birbirine
         dotHueMerge dereceden yakın tonlar tek renge indirgenir. Ekran koruyucuya geçiş: son nokta tamamlandığı
         karede ekran düz beyaz olur, flashHold sn kalıp geçişsiz kesilir; ardından akış ve logo küçülerek oturur */
+    /** Verilirse dairelerin paleti doğrudan bu renkler (bilet renklerinden türetilmez) */
+    dotPalette?: string[];
     dotSat: number; dotLight: number; dotHueMerge: number; flashHold: number;
     enterFlow: number; enterLogo: number; enterDur: number;
   };

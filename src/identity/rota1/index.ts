@@ -12,11 +12,18 @@ export const rota1: Identity = {
   name: 'Piyalepaşa Sahne',
 
   colors: {
-    background: '#000000',
+    /* ROTA2: koyu gri zemin, ikincil çizgi, yarı saydam bant; kart ve panel geçici olarak tek renk */
+    background: '#2A2D31',
     paper: '#ffffff',
     ink: '#0b0b0b',
     focus: '#DA00F9',
+    line: '#636D74',
+    band: '#3A3D42',
+    bandAlpha: 0.88,
+    card: '#3A3F45',
   },
+  /* grid fotoğrafları duotone: koyu ve açık ton */
+  duotone: { dark: '#1E2125', light: '#D5DADD' },
 
   /* Fotoğrafı olmayan öğelerin rengi (ROTA1 artboard renkleri). Fotoğraflı öğelerin rengi
      derleme sırasında kendi fotoğrafından çıkarılır (scripts/build-images.mjs). */
@@ -28,11 +35,13 @@ export const rota1: Identity = {
     stylesheets: ['https://use.typekit.net/fpj2hxb.css'],
     roles: {
       /* kapaktaki büyük başlık (metin kuralının dışında) */
-      coverTitle: { family: '"akzidenz-grotesk-next"', weight: 200, letterSpacing: '-0.03em' },
-      light: { family: '"akzidenz-grotesk-next-pro"', weight: 400 },
-      bold: { family: '"akzidenz-grotesk-next-pro"', weight: 700 },
-      /* sayaç rakamları ve iki nokta: config-mono-vf (kitte değişken, wght 200–700); Extra Light = 200 */
-      counter: { family: '"config-mono-vf", sans-serif', weight: 200, variation: '"wght" 200' },
+      coverTitle: { family: '"comma-serif", serif', weight: 400 },
+      /* bütün metinler comma-serif: düz 400, başlıklar ve alan adları 700 */
+      light: { family: '"comma-serif", serif', weight: 400 },
+      bold: { family: '"comma-serif", serif', weight: 700 },
+      /* sayaç, tarih ve saat: config-mono-vf; varsayılan wght 300, vurgulu yerlerde (tam ekran sayacı) 500 */
+      counter: { family: '"config-mono-vf", monospace', weight: 300, variation: '"wght" 300' },
+      counterStrong: { family: '"config-mono-vf", monospace', weight: 500, variation: '"wght" 500' },
     },
   },
 
@@ -80,8 +89,6 @@ export const rota1: Identity = {
     /* sürekli akış: kolon / saniye, sağdan sola; fare grid'in üzerindeyken bu hızın %25'i */
     drift: 0.15,
     driftHover: 0.25,
-    /* grid'de tek renkli fotoğraf: siyah beyaz × bilet rengi (multiply), kontrast */
-    monoContrast: 1.05,
     /* görsellerde çok yavaş zoom: 1.00 → 1.08, süre 18–26 sn (öğeden öğeye), yoyo */
     zoom: { from: 1, to: 1.08, min: 18, max: 26 },
   },
@@ -96,6 +103,8 @@ export const rota1: Identity = {
 
   /* Grid kartlarında parlama: ~20° eğik beyaz şerit, kart genişliğinin %45'i, soft-light */
   shine: {
+    /* ROTA2: parlama dalgası yok */
+    enabled: false,
     opacity: 0.35,
     width: 0.45,
     angle: 20,
@@ -105,6 +114,10 @@ export const rota1: Identity = {
      Nokta aralığı logo yüksekliğinin %6'sı (en az 12px), en büyük yarıçap aralığın 0.48 katı */
   loader: {
     logoAnim: 2, minTime: 1.2, base: '#2a2a2a',
+    /* büyük logo: genişlik en fazla ekranın %50'si (mobil %86), yükseklik en fazla %45'i */
+    logoW: { web: 0.5, mobile: 0.86 }, logoH: 0.45,
+    /* daire paleti (ROTA2 griler) */
+    dotPalette: ['#636D74', '#8B959B', '#B4BCC1', '#D5DADD', '#4A5157'],
     /* opak, düz, keskin daireler: temel yarıçap logo yüksekliğinin %4'ü, 0.15–5 katı; kuvvet dağılımı
        (çok sayıda küçük, az sayıda çok büyük); kalan boşlukları küçükler doldurur; yarıçapın %15'i kadar süzülür */
     blobBase: 0.04, blobMin: 0.15, blobMax: 5, blobSkew: 4, blobFill: 1.2,
