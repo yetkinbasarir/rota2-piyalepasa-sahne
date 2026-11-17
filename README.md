@@ -1,6 +1,7 @@
-# Piyalepaşa Sahne — ROTA1
+# Piyalepaşa Sahne — ROTA2
 
-16:9 (mobilde 9:16) birimlerden örülmüş, iki yönde sonsuz dönen program yüzeyi. Web + mobil PWA.
+Çapraz 3B daire galerisi (CSS 3B): daireler hafif bir eğri boyunca dizilir, ortadaki renkli, diğerleri duotone;
+ortadaki daire iris ile açılıp tam ekran video akışını başlatır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
 ```bash
@@ -18,23 +19,26 @@ npm run icons             # logo SVG → public/icons/
 src/
   main.ts                 kimlik + içerik seçilir, motor başlar
   content/shows.ts        içerik modeli: tek kaynak ../icerik_kunye.json (id ile eşleşir) + fotoğraf eşlemesi
-                          (A, yoksa B) + renk (veride elle "renk" > fotoğraftan çıkarılan) + örnek tarih/saat/fiyat
-  content/*.generated.json  scripts/build-images.mjs çıktısı: görsel boyutları, fotoğraf renkleri
+                          (A, yoksa B) + renk + odak + alıntı ("alinti") + örnek tarih/saat/fiyat
+  content/*.generated.json  scripts/build-images.mjs çıktısı: görsel boyutları, fotoğraf renkleri, odak noktaları
   identity/rota1/         KİMLİK KATMANI — motordan ayrı, tek yer
-    index.ts              duvar ölçüleri (kart sayısı, oran, fotoğraf payı, akış hızı, karartma, logo kutusu),
-                          palet, font rolleri (light, bold, sayaç), tek punto token'ı, "move" eğrisi, süreler
-    surface.ts            kart tipografisi
-    templates.ts          kart renk kutusu (isim + sayaç), metin paneli, bilet (devre dışı)
+    index.ts              token'lar: renkler, kâğıt dokusu, galeri (eğri, ölçek, eğim, süzülme, gölge, hareket),
+                          ekran yazıları ve düğmeler, fontlar, tam ekran, yükleme ekranı, süreler, logo
+    templates.ts          künye bloğu, sahne adı, etiket + alıntı, tam ekran başlığı, daire düğmeler, ×
     styles.css            görsel dil
   engine/
     types.ts              motor ↔ kimlik/içerik sözleşmesi
-    state.ts              durum + ekran ölçüsü (kamera kart birimi cinsinden)
-    wall.ts               duvar: sanallaştırılmış kartlar, L hâline açılma, karartma, metin paneli
-    camera.ts             gezinme, InertiaPlugin savrulma, boşta sağdan sola akış, klavye adımı
-    counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
-    fit.ts                sayacı renk kutusunun tam genişliğine oturtur
+    state.ts              durum (galeri konumu S.pos) + ekran ölçüsü
+    gallery.ts            daireler (CSS 3B, Catmull-Rom eğrisi), gölgeler, fare eğimi, iris, tam ekran, yazı geçişleri
+    screen.ts             yazı ölçüleri (CSS değişkenleri), logo, Üye Ol / Giriş
+    camera.ts             konum: sürükleme, atalet, oturma, adım, kendiliğinden ilerleme
     commands.ts           tüm girişlerin çağırdığı komut katmanı
-    media.ts              srcset, önceden yükleme + decode, video oynatma sınırı
+    present.ts            kendi kendine sunum
+    fullVideo.ts          tam ekran videosu (YouTube / Vimeo / mp4, ses)
+    counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
+    loader.ts, screensaver.ts  yükleme ekranı ve açılış ekran koruyucusu
+    logo.ts               iki parçalı, uzayıp kısalan logo
+    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, delikli doku
     theme.ts              kimlik token'larını sayfaya uygular, DOM iskeleti
     input/pointer.ts      işaretçi / dokunma (Observer)
     input/wheel.ts        tekerlek / trackpad (Observer)

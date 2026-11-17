@@ -28,7 +28,7 @@ export function createMotion(id: Identity): Motion {
     CustomEase.create(name, path);
     ease[k] = name;
   }
-  const NOT_SCALED: DurKey[] = ['driftRamp', 'ssIn', 'ssOut', 'ldExit', 'videoIn', 'videoOut', 'videoTimeout', 'youtubeHold', 'soundIn', 'soundOut', 'autoReturn', 'presentIdle', 'presentGrid', 'presentMove', 'presentOpen', 'presentPhoto', 'presentResume', 'shine', 'shineSweep', 'shineRow', 'shineEvery', 'titleIn', 'counterDelay', 'counterIn', 'titleOut', 'hourDelay', 'stageIn', 'columnShift', 'credits', 'panelOut', 'scrollbarIn', 'magnet', 'magnetStagger', 'flipStagger', 'flipSpin', 'countShow', 'dateShow', 'flipWave'];
+  const NOT_SCALED: DurKey[] = ['videoIn', 'videoOut', 'videoTimeout', 'youtubeHold', 'soundIn', 'soundOut', 'autoReturn', 'ssIn', 'ssOut', 'ldExit', 'presentIdle', 'presentOpen', 'presentPhoto', 'presentResume', 'titleIn', 'counterDelay', 'counterIn', 'titleOut', 'hourDelay', 'stageIn', 'closeFade'];
   return {
     ease,
     reduced,

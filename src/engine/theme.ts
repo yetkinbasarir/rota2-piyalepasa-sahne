@@ -1,46 +1,43 @@
-/* Kimlik token'larını sayfaya uygular: CSS değişkenleri, font kiti, satır içi logo sembolü
-   ve motorun DOM iskeleti. */
+/* Kimlik token'larını sayfaya uygular: CSS değişkenleri, font kiti, kâğıt dokusu ve motorun DOM iskeleti. */
 import type { Identity } from './types';
 
 export interface Dom {
   surface: HTMLElement;
-  wall: HTMLElement;
+  shadows: HTMLElement;
+  stage: HTMLElement;
+  ui: HTMLElement;
+  brand: HTMLElement;
+  members: HTMLElement;
   top: HTMLElement;
   video: HTMLElement;
   texture: HTMLElement;
   title: HTMLElement;
-  stage: HTMLElement;
-  band: HTMLElement;
+  stageLabel: HTMLElement;
   close: HTMLElement;
   rotate: HTMLElement;
 }
 
-/** SVG kaynağından viewBox ve iç içeriği çıkarır; id'leri temizler, dolguları currentColor yapar. */
-function parseLogo(svg: string) {
-  const viewBox = /viewBox="([^"]+)"/.exec(svg)?.[1] ?? '0 0 100 100';
-  const inner = (/<svg[^>]*>([\s\S]*)<\/svg>/.exec(svg)?.[1] ?? '')
-    .replace(/\s(id|data-name)="[^"]*"/g, '')
-    .replace(/fill="(?!none)[^"]*"/g, 'fill="currentColor"');
-  const [, , w, h] = viewBox.split(/[\s,]+/).map(Number);
-  return { viewBox, inner, ratio: w / h };
+/** Kâğıt dokusu: gri tonlu feTurbulence (SVG data URI) */
+function paper(id: Identity) {
+  const P = id.paper;
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'>` +
+    `<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${P.frequency}' numOctaves='${P.octaves}' stitchTiles='stitch'/>` +
+    `<feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
 export function applyIdentity(id: Identity) {
   const root = document.documentElement;
   const set = (k: string, v: string | number) => root.style.setProperty(k, String(v));
   set('--c-bg', id.colors.background);
-  set('--c-line', id.colors.line ?? '#000');
-  if (id.colors.card) set('--c-card', id.colors.card);
-  set('--c-stroke', id.colors.stroke ?? '#fff');
-  {
-    // bant rengi ve opaklığı
-    const h = (id.colors.band ?? '#000000').replace('#', '');
-    const n = parseInt(h, 16);
-    set('--c-band', `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${id.colors.bandAlpha ?? 1})`);
-  }
-  set('--c-paper', id.colors.paper);
   set('--c-ink', id.colors.ink);
+  set('--c-muted', id.colors.muted);
   set('--c-focus', id.colors.focus);
+  set('--c-overlay', id.colors.overlay);
+  set('--paper', paper(id));
+  set('--paper-o', id.paper.opacity);
+  set('--g-persp', `${id.gallery.perspective}px`);
   for (const [role, f] of Object.entries(id.fonts.roles)) {
     set(`--role-${role}-family`, f.family);
     set(`--role-${role}-weight`, f.weight);
@@ -48,11 +45,6 @@ export function applyIdentity(id: Identity) {
     set(`--role-${role}-ls`, f.letterSpacing ?? 'normal');
     set(`--role-${role}-var`, f.variation ?? 'normal');
   }
-  // Tek punto + taban ızgarası; mobil/web ayrımı .is-mobile sınıfıyla (engine.css)
-  set('--type-web-size', id.type.web.size);
-  set('--type-web-lh', id.type.web.lineHeight);
-  set('--type-mobile-size', id.type.mobile.size);
-  set('--type-mobile-lh', id.type.mobile.lineHeight);
   for (const href of id.fonts.stylesheets) {
     if (!document.querySelector(`link[href="${href}"]`)) {
       const l = document.createElement('link');
@@ -61,40 +53,16 @@ export function applyIdentity(id: Identity) {
       document.head.append(l);
     }
   }
+  // tarayıcı çubuğu zemin renginde
+  for (const m of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) m.content = id.colors.background;
   document.title = id.name;
-
-  // Logo bir kez satır içi <symbol> olarak gömülür; her kullanım <use> ile buna bağlanır.
-  const logo = parseLogo(id.logo.svg);
-  const symId = `${id.id}-logo`;
-  const sprite = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  sprite.setAttribute('aria-hidden', 'true');
-  sprite.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden');
-  sprite.innerHTML = `<symbol id="${symId}" viewBox="${logo.viewBox}">${logo.inner}</symbol>`;
-  document.body.prepend(sprite);
-
-  // Bandın logosu görünen sınır kutusuna göre ölçülür ("Piyalepaşa" dahil, SVG'nin boş kenar payları hariç)
-  const probe = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  probe.setAttribute('viewBox', logo.viewBox);
-  probe.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:200px;height:200px;visibility:hidden');
-  probe.innerHTML = `<g>${logo.inner}</g>`;
-  document.body.append(probe);
-  const bb = (probe.firstElementChild as SVGGraphicsElement).getBBox();
-  probe.remove();
-  const tight = bb.width > 0 && bb.height > 0 ? `${bb.x} ${bb.y} ${bb.width} ${bb.height}` : logo.viewBox;
-  const brandHtml = () =>
-    `<svg class="lg" viewBox="${tight}" role="img" aria-label="${id.name}">${logo.inner}</svg>`;
-
-  const logoHtml = (width: number, className = '') =>
-    `<svg class="lg ${className}" width="${width.toFixed(1)}" height="${(width / logo.ratio).toFixed(1)}" viewBox="${logo.viewBox}" role="img" aria-label="${id.name}"><use href="#${symId}"/></svg>`;
-
-  return { logoHtml, brandHtml };
 }
 
 /** Yatay telefon koşulu: CSS media query ve JS matchMedia aynı ifadeyi kullanır */
 export const landscapeQuery = (id: Identity) =>
   `(orientation: landscape) and (pointer: coarse) and (max-height: ${id.rotate.maxHeight - 0.02}px)`;
 
-/** Yatay telefon katmanı: düz siyah, ortada dik telefon silueti (1px beyaz çizgi); simge −90°'den 0°'ye
+/** Yatay telefon katmanı: düz koyu, ortada dik telefon silueti (1px beyaz çizgi); simge −90°'den 0°'ye
     döner, bekler, başa döner (CSS animasyonu; azaltılmış harekette dik durur) */
 function rotateLayer(id: Identity) {
   const R = id.rotate;
@@ -122,24 +90,28 @@ function duotone(id: Identity) {
   return `<feColorMatrix type="saturate" values="0"/><feComponentTransfer>${ch(0, 'feFuncR')}${ch(1, 'feFuncG')}${ch(2, 'feFuncB')}</feComponentTransfer>`;
 }
 
-export function buildDom(id: Identity, brandHtml: () => string): Dom {
+export function buildDom(id: Identity): Dom {
   const app = document.getElementById('app') ?? document.body;
   app.innerHTML = `
 <div id="surface" role="application" aria-label="${id.strings.surfaceLabel}">
-  <div id="wall" class="layer"></div>
+  <div class="paper" aria-hidden="true"></div>
+  <div id="shadows" class="layer" aria-hidden="true"></div>
+  <div id="stage" class="layer"></div>
+  <div id="ui" class="layer"></div>
+  <div class="brand" role="img" aria-label="${id.name}"></div>
+  <div class="bnd"></div>
   <div id="top" class="layer"></div>
-  <div class="band" aria-hidden="true"></div>
   <div id="fv" class="layer"></div>
 </div>
 <svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>
 <div class="tex holes" aria-hidden="true"></div>
 <div class="fst" aria-live="polite"></div>
-<div class="topstrip" aria-hidden="true"></div>
 <div class="fsl" aria-hidden="true"></div>
-<div class="brand">${brandHtml()}</div>
-<div class="bnd"></div>
 <button type="button" class="xcl" aria-label="Kapat"></button>
 ${rotateLayer(id)}`;
   const $ = (s: string) => app.querySelector<HTMLElement>(s)!;
-  return { surface: $('#surface'), wall: $('#wall'), top: $('#top'), video: $('#fv'), texture: $('.tex'), title: $('.fst'), stage: $('.fsl'), band: $('.bnd'), close: $('.xcl'), rotate: $('.rot') };
+  return {
+    surface: $('#surface'), shadows: $('#shadows'), stage: $('#stage'), ui: $('#ui'), brand: $('.brand'), members: $('.bnd'),
+    top: $('#top'), video: $('#fv'), texture: $('.tex'), title: $('.fst'), stageLabel: $('.fsl'), close: $('.xcl'), rotate: $('.rot'),
+  };
 }

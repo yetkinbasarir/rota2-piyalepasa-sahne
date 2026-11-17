@@ -7,7 +7,7 @@
    süresiyle (zamana bağlı) dağınık sırayla belirip büyür; hem noktalar tamamlanıp hem yükleme bitince
    net vektör logoya geçilir. Bitince logo düz beyaz kalır, arkasında ekran koruyucu belirir; sol üstte
    QR kodu, sağ üstte üye düğmeleri. İlk tıklama / dokunma / tuş: katmanın tamamı tek parça yukarı
-   kayarak çıkar; altında ana sayfa hazırdır, kartlar mıknatısla gelir. Kayma bitince oynatıcılar ve
+   kayarak çıkar; altında ana sayfa (galeri) hazırdır. Kayma bitince oynatıcılar ve
    katman kaldırılır. */
 import { gsap } from './motion';
 import type { Motion } from './motion';
@@ -22,8 +22,6 @@ export interface Loader {
   track(tasks: Promise<unknown>[]): void;
   /** Ekran koruyucuyu bağla (yükleme bitince başlar) */
   attach(ss: Screensaver | null): void;
-  /** Çıkış başlarken (kartlar mıknatısla gelmeye başlar) */
-  onExit(f: () => void): void;
   /** Katman tamamen kalktıktan sonra (kendi kendine sunum sayacı) */
   onGone(f: () => void): void;
 }
@@ -50,9 +48,9 @@ function hslRgb(h: number, s: number, l: number): [number, number, number] {
   return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
 }
 
-export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTMLElement | null; reveal: HTMLElement[]; colors: string[] }): Loader {
+export function createLoader(o: { id: Identity; motion: Motion; reveal: HTMLElement[]; colors: string[] }): Loader {
   const root = document.getElementById('ld');
-  const noop: Loader = { ssRoot: null, track() {}, attach() {}, onExit: (f) => f(), onGone: (f) => f() };
+  const noop: Loader = { ssRoot: null, track() {}, attach() {}, onGone: (f) => f() };
   if (!root) return noop;
   const { id, motion } = o;
   const LD = id.loader;
@@ -328,7 +326,7 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
   }
   // nokta matrisi kurulamadıysa beklemeye gerek yok
   if (anim === 2 && !mask) dotsDone = true;
-  // site öğeleri çıkışa kadar gizli (bant, düğmeler, logo)
+  // site öğeleri çıkışa kadar gizli (yazılar, düğmeler, logo)
   gsap.set(o.reveal, { autoAlpha: 0 });
 
   /* ---------- ilerleme ---------- */
@@ -483,7 +481,6 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
   }
 
   /* ---------- çıkış ---------- */
-  let exitCb: () => void = () => {};
   let goneCb: () => void = () => {};
   let exited = false;
   // ekran koruyucu sürerken ilk tıklama / dokunma / tuş hiçbir yere geçmez
@@ -506,11 +503,10 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
   function exit() {
     if (exited) return;
     exited = true;
-    // tıklamanın bıraktığı olaylar (pointerup / click) da karta geçmesin
+    // tıklamanın bıraktığı olaylar (pointerup / click) da daireye geçmesin
     window.setTimeout(release, 400);
-    // altında ana sayfa hazır: bant, logo, üye düğmeleri ve grid yerinde; kartlar kayma başlarken mıknatısla gelir
+    // altında ana sayfa hazır: galeri, yazılar, logo ve üye düğmeleri yerinde
     gsap.set(o.reveal, { autoAlpha: 1 });
-    exitCb();
     const gone = () => {
       ss?.destroy();
       cancelAnimationFrame(raf);
@@ -537,9 +533,6 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
     },
     attach(s) {
       ss = s;
-    },
-    onExit(f) {
-      exitCb = f;
     },
     onGone(f) {
       goneCb = f;

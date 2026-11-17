@@ -21,7 +21,7 @@ export default defineConfig({
         display: 'standalone',
         // ana ekrandan açıldığında telefonda ekran dönmez (masaüstü / tablet etkilenmez)
         orientation: 'portrait',
-        theme_color: '#2A2D31',
+        theme_color: '#ECEBE8',
         background_color: '#2A2D31',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

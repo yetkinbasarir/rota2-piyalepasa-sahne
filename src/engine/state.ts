@@ -1,8 +1,6 @@
-/* Paylaşılan durum ve ekran ölçüsü. Duvar yalnızca yatayda kayar: kamera S.cx, kolon cinsinden
-   (ekranın sol kenarındaki kolon). En altta siyah bant; bandın üstünde iki sıra kart: üstte, satır
-   arasında ve bandın üstünde birer boşluk. Kart oranı sabit (genişlik = yükseklik × oran); ortada
-   n = floor((ekran − g) / (kart + g)) tam kolon (1..maxCols) ekranın yatay ortasına yerleşir, kalan
-   alan iki kenarda kesik kartlarla dolar. n = 1 ise mobil dikey açılma düzeni kullanılır. */
+/* Paylaşılan durum ve ekran ölçüsü. Galeri tek bir sürekli konumla (S.pos) yönetilir: tam sayı
+   değerinde o sıradaki daire ortadadır; konum arttıkça sağdaki (sonraki) daireler ortaya gelir.
+   n = 1 (dar dikey ekran) ise mobil yerleşim kullanılır. */
 import type { Identity } from './types';
 import { applyTexture } from './texture';
 
@@ -10,38 +8,16 @@ export interface State {
   vw: number;
   vh: number;
   mobile: boolean;
-  /** Boşluk ve bant yüksekliği (px; mobilde üst bant, üst güvenli alan dahil) */
-  gap: number;
-  band: number;
-  /** İçerik alanı: üst ve alt sınır (px). Web: 0 .. bandın üstü; mobil: üst bandın altı .. alt güvenli alanın üstü */
-  top: number;
-  bottom: number;
-  /** Grid'in üst kenar boşluğu (px): web'de 0 (üst satır y = 0'dan başlar), mobilde boşluk */
-  topGap: number;
   /** Mobil güvenli alanlar (px) */
   safeTop: number;
   safeBottom: number;
-  rows: number;
-  /** Kart genişliği / yüksekliği (px), yatay adım (kart + boşluk) */
-  cw: number;
-  ch: number;
-  stepX: number;
-  /** Ortada görünen tam kolon sayısı ve ilk tam kolonun sol kenarı (px) */
-  cols: number;
-  margin: number;
-  /** Kolona oturmuş kameranın kesir kısmı: tam kolonlar ortada */
-  snapOff: number;
-  /** Kamera: ekranın sol kenarındaki kolon (sürekli) */
-  cx: number;
+  /** Galeri konumu (sürekli; tam sayı = o daire ortada) */
+  pos: number;
   /** İşaretçi basılı */
   pressed: boolean;
-  /** Fare grid'in üzerinde (akış yavaşlar) */
-  hover: boolean;
-  /** Grid'e dönüş / birleşme hareketi sürüyor (akış bekler) */
-  merging: boolean;
-  /** Açık öğe */
-  open: { i: number; j: number } | null;
-  /** Açık öğenin fotoğrafı tam ekranda */
+  /** İris açılıyor / açık / kapanıyor: galeri girişleri bekler */
+  open: boolean;
+  /** Tam ekran (video akışı) */
   full: boolean;
   /** Telefonda yatay ekran katmanı açık: her şey bekler */
   paused: boolean;
@@ -58,12 +34,10 @@ export const snapPx = (v: number) => {
 };
 
 export function createState(): State {
-  return { vw: 0, vh: 0, mobile: false, gap: 0, band: 0, top: 0, bottom: 0, topGap: 0, safeTop: 0, safeBottom: 0, rows: 2, cw: 0, ch: 0, stepX: 0, cols: 4, margin: 0, snapOff: 0, cx: 0, pressed: false, hover: false, merging: false, open: null, full: false, paused: false };
+  return { vw: 0, vh: 0, mobile: false, safeTop: 0, safeBottom: 0, pos: 0, pressed: false, open: false, full: false, paused: false };
 }
 
 export function measure(S: State, id: Identity) {
-  const Wl = id.wall;
-  const G = id.ring;
   S.vw = innerWidth;
   S.vh = innerHeight;
   // mobil (n = 1): dikey dar ekran; görünür alan yüksekliği (100dvh / visualViewport)
@@ -76,47 +50,23 @@ export function measure(S: State, id: Identity) {
     S.safeBottom = vp.bottom;
   }
   const H = S.vh;
-  S.rows = 2;
-  // daire çapı D, kolon aralığı P (merkezden merkeze), satır aralığı R
-  const D = S.mobile ? Math.min(G.disc * H, G.discMobileW * S.vw) : G.disc * H;
-  S.cw = D;
-  S.stepX = D / G.pitch;
-  S.ch = G.row * H;
-  // kolonlar arası boşluk (dairenin kenarından komşu dairenin kenarına)
-  S.gap = S.stepX - D;
-  // alt bant: tam genişlikte, altta; mobilde alt güvenli alan bandın içine eklenir
-  S.band = snapPx(H * (S.mobile ? G.band.mobile : G.band.web) + S.safeBottom);
-  S.top = 0;
-  S.bottom = S.vh - S.band;
-  S.topGap = 0;
-  // ekranın yatay ortasında bir kolon merkezi: ortadaki "tam" kolon tek kolondur
-  S.cols = 1;
-  S.margin = S.vw / 2 - D / 2;
-  // kolona oturmuş kamera: ortadaki dairenin sol kenarı margin'de
-  S.snapOff = mod(-S.margin / S.stepX, 1);
   const root = document.documentElement;
   root.classList.toggle('is-mobile', S.mobile);
-  root.style.setProperty('--card-w', `${S.cw}px`);
-  root.style.setProperty('--card-h', `${S.ch}px`);
-  root.style.setProperty('--band-h', `${S.band}px`);
   root.style.setProperty('--H', `${H}px`);
-  root.style.setProperty('--logo-pad', `${snapPx(G.band.logoPad * H)}px`);
-  root.style.setProperty('--mpad', `${snapPx(G.band.logoPad * H)}px`);
-  root.style.setProperty('--xcl-d', `${Wl.closeSize}px`);
-  root.style.setProperty('--m-fs', `${Wl.mobileBody}px`);
+  // tam ekran ikonlarının ve yükleme ekranının kenar boşluğu
+  const pad = `${snapPx(id.fullTitle.pad * H)}px`;
+  root.style.setProperty('--logo-pad', pad);
+  root.style.setProperty('--mpad', pad);
+  root.style.setProperty('--xcl-d', `${id.fullTitle.closeSize}px`);
   root.style.setProperty('--safe-top', `${S.safeTop}px`);
   // görünür alan yüksekliği (tam ekran video kaplaması); masaüstünde 100vh ile aynı
   root.style.setProperty('--vvh', `${S.vh}px`);
-  root.style.setProperty('--gap', `${S.gap}px`);
-  // ortak delikli doku: aralık ve çap ekranın piksel ızgarasına yuvarlanır (texture.ts)
+  // tam ekran delikli doku: aralık ve çap ekranın piksel ızgarasına yuvarlanır (texture.ts)
   applyTexture(root, id);
   // tam ekran videosu: büyütme ve dikey merkez
   root.style.setProperty('--fv-k', String(id.video.scale));
   root.style.setProperty('--fv-oy', String(id.video.originY));
 }
-
-/** j. satırın üst kenarı (px) */
-export const rowTop = (S: State, j: number) => j * S.ch;
 
 /** Mobil: görünür alan yüksekliği (100dvh; desteklenmiyorsa visualViewport) ve güvenli alanlar */
 function viewportMetrics() {
@@ -133,9 +83,3 @@ function viewportMetrics() {
   probe.remove();
   return { h: h || innerHeight, top, bottom };
 }
-/** Ekranda görünen kolon sayısı */
-export const viewCols = (S: State) => S.vw / S.stepX;
-/** En yakın kolona oturmuş kamera */
-export const snapCam = (S: State, cx: number) => Math.round(cx - S.snapOff) + S.snapOff;
-/** İleriye (sağdan sola) doğru ilk kolona oturmuş kamera: otomatik hareketler hiç geri gitmez */
-export const snapCamForward = (S: State, cx: number) => Math.ceil(cx - S.snapOff - 1e-6) + S.snapOff;

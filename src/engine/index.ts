@@ -1,18 +1,17 @@
-/* Motor: bir kimlik + içerik listesi alır, poster duvarını kurar ve çalıştırır. */
+/* Motor: bir kimlik + içerik listesi alır, 3B daire galerisini kurar ve çalıştırır. */
 import './engine.css';
 import { gsap, createMotion } from './motion';
 import { applyIdentity, buildDom, landscapeQuery } from './theme';
-import { createState, measure, esc, viewCols, snapCamForward, snapPx } from './state';
+import { createState, measure, esc } from './state';
 import { createMedia } from './media';
 import { createCounters } from './counter';
-import { fitText } from './fit';
-import { createWall } from './wall';
+import { createGallery } from './gallery';
 import { createFullVideo } from './fullVideo';
 import { createCamera } from './camera';
 import { createCommands } from './commands';
 import { startPresentation } from './present';
 import { createLoader } from './loader';
-import { pickLogo, layoutLogo } from './logo';
+import { layoutScreen } from './screen';
 import { createScreensaver } from './screensaver';
 import { bindPointer } from './input/pointer';
 import { bindWheel } from './input/wheel';
@@ -21,152 +20,95 @@ import type { Identity, Show, TemplateContext } from './types';
 
 export async function startEngine(id: Identity, shows: Show[]) {
   const motion = createMotion(id);
-  const { logoHtml, brandHtml } = applyIdentity(id);
-  const dom = buildDom(id, brandHtml);
+  applyIdentity(id);
+  const dom = buildDom(id);
   const S = createState();
   measure(S, id);
-  // yükleme ekranı (index.html'de satır içi): site öğeleri çıkışa kadar gizli
+  // yükleme ekranı (index.html'de satır içi): yazılar, logo ve üye düğmeleri çıkışa kadar gizli
   const loader = createLoader({
     id, motion,
-    brand: () => document.querySelector<HTMLElement>('.brand svg'),
-    reveal: [...document.querySelectorAll<HTMLElement>('.band, .bnd, .brand, .topstrip')],
-    // nokta matrisinin paleti: bütün gösterilerin bilet renkleri
+    reveal: [dom.ui, dom.brand, dom.members],
+    // nokta matrisinin paleti: bütün gösterilerin renkleri
     colors: shows.map((s) => s.color ?? id.palette[s.k % id.palette.length]),
   });
   const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
 
   const media = await createMedia();
   let visible: () => Iterable<Element> = () => [];
-  const counters = createCounters(shows, () => visible(), motion, id.counterFormat);
+  const counters = createCounters(shows, () => visible(), id.counterFormat.sep);
   const tctx = (): TemplateContext => ({
     mobile: S.mobile,
     vw: S.vw,
     vh: S.vh,
-    W: S.cw,
-    H: S.ch,
-    media: media.html,
-    logo: logoHtml,
     countdown: (s) => counters.values(s),
     sep: id.counterFormat.sep,
     esc,
   });
 
-  const wall = createWall({
-    S, id, motion, media, shows, tctx, layer: dom.wall, top: dom.top,
+  const gallery = createGallery({
+    S, id, motion, media, shows, dom, tctx,
     video: createFullVideo({ root: dom.video, motion, id }),
-    texture: dom.texture,
-    title: dom.title,
-    stage: dom.stage,
-    band: dom.band,
-    close: dom.close,
-    onCreate: (el) => {
-      counters.fill(el);
-      fitText(el);
-    },
+    onCreate: (el) => counters.fill(el),
   });
-  // tam ekran başlığının sayacı da saniye saniye güncellenir
-  visible = () => [...wall.visible(), dom.title];
+  // künye sayacı ve tam ekran başlığının sayacı saniye saniye güncellenir
+  visible = () => gallery.visible();
   const camera = createCamera(S, id, motion);
-  const cmd = createCommands({ S, camera, wall });
+  const cmd = createCommands({ S, id, camera, gallery });
 
   bindPointer(dom.surface, cmd);
-  // fare grid'in üzerindeyken akış yavaşlar (alt bant grid sayılmaz; dokunmatikte üzerine gelme yok)
-  dom.surface.addEventListener('pointermove', (e) => {
-    S.hover = e.pointerType === 'mouse' && e.clientY < S.vh - S.band;
-  });
-  dom.surface.addEventListener('pointerleave', () => {
-    S.hover = false;
-  });
-  bindWheel(dom.surface, cmd);
+  // fare eğimi (dokunmatikte yok)
+  dom.surface.addEventListener('pointermove', (e) => gallery.hover(e));
+  dom.surface.addEventListener('pointerleave', () => gallery.hover(null));
+  bindWheel(dom.surface, cmd, id.gallery.wheel.idle);
   bindKeyboard(cmd);
 
-  /* alt bant düğmeleri: Üye Ol / Üye Girişi. Logo ile birlikte sığmazsa 0.8 katına küçülür; yine
-     sığmazsa yalnızca Üye Girişi kalır. Şimdilik işlevsiz; tıklama duvara geçmez. */
-  const brand = document.querySelector<HTMLElement>('.brand');
-  /* alt bant logosu: iki parçalı logo, bandın içinde sola yakın (üst ve alt boşluk eşit), çizgi uzantıları
-     ekranın sol kenarına kadar; ekran ölçüsüne göre uzun / kısa seçilir */
-  const renderBrand = () => {
-    if (!brand) return;
-    const G = id.ring;
-    const pad = snapPx(G.band.logoPad * S.vh);
-    // web: 0.195H; mobil: bandın (güvenli alan hariç) aynı oranı
-    const h = S.mobile ? ((S.band - S.safeBottom) * G.band.logoH) / G.band.web : G.band.logoH * S.vh;
-    if (h <= 0) return;
-    const L = layoutLogo(pickLogo(id, h, S.vw, S.mobile), h, pad);
-    brand.style.width = `${L.width}px`;
-    brand.style.height = `${h}px`;
-    brand.innerHTML = L.html;
-  };
-  /* Üye Ol / Giriş: iki daire düğme, bandın sağında dikeyde ortalı. Şimdilik işlevsiz */
-  const renderBand = () => {
-    renderBrand();
-    const G = id.ring;
-    const d = S.mobile ? (S.band - S.safeBottom) * G.button.mobile : G.button.d * S.vh;
-    const st = dom.band.style;
-    st.setProperty('--cb-d', `${d.toFixed(2)}px`);
-    st.setProperty('--cb-fs', `${(G.button.font * S.vh).toFixed(2)}px`);
-    st.setProperty('--cb-gap', `${(G.button.gap * S.vh).toFixed(2)}px`);
-    st.right = `${(G.button.right * S.vh).toFixed(2)}px`;
-    st.bottom = `${S.safeBottom}px`;
-    st.height = `${S.band - S.safeBottom}px`;
-    dom.band.innerHTML = id.templates.circleButtons([['Üye Ol', 'signup'], ['Giriş', 'login']], tctx());
-  };
-  renderBand();
-  // fontlar yüklenince ölçüler değişir: düğmeler yeniden ölçülür
-  document.fonts?.ready.then(renderBand);
-  // kapatma ikonu: dokununca o anki durum ne olursa olsun doğrudan grid'e dönülür; tıklama alttaki
-  // katmanlara geçmez (kendi kendine sunumu durdurma, pencere düzeyindeki dinleyicide yakalanır)
+  const layout = () => layoutScreen(S, id, dom, tctx());
+  layout();
+  // fontlar yüklenince logo ve yazılar yeniden ölçülür
+  document.fonts?.ready.then(() => {
+    layout();
+    gallery.refresh();
+  });
+  // kapatma ikonu: dokununca tam ekrandan galeriye dönülür; tıklama alttaki katmanlara geçmez
   dom.close.innerHTML = id.templates.closeIcon(tctx());
   dom.close.addEventListener('pointerdown', (e) => e.stopPropagation());
   dom.close.addEventListener('click', (e) => {
     e.stopPropagation();
-    cmd.home();
+    cmd.close();
   });
-  dom.band.addEventListener('pointerdown', (e) => e.stopPropagation());
-  dom.band.addEventListener('click', (e) => e.stopPropagation());
 
-  // web: iki kenarda yarım kolon ile başla
-  S.cx = S.snapOff;
-  // yükleme işleri: fontlar, içerik, ilk ekranda görünecek kart görselleri, (web) ekran koruyucunun ilk 2 oynatıcısı
+  // yükleme işleri: fontlar, içerik, ilk ekranda görünecek daire görselleri, (web) ekran koruyucunun ilk oynatıcıları
   const N = shows.length;
+  const A = id.gallery.around;
   const firstScreen = new Set<Show>();
-  for (let i = Math.floor(S.cx) - 1; i <= Math.ceil(S.cx + viewCols(S)) + 1; i++)
-    for (let j = 0; j < S.rows; j++) firstScreen.add(shows[(((2 * i + j) % N) + N) % N]);
-  const firstImages = media.preload([...firstScreen], S.cw * id.ring.photoZoom);
+  for (let n = -A; n <= A; n++) firstScreen.add(shows[((n % N) + N) % N]);
+  const discW = () => (S.mobile ? id.gallery.mobile.disc * S.vw : id.gallery.web.disc * S.vh) * id.gallery.photoZoom;
+  const firstImages = media.preload([...firstScreen], discW());
   const ss = loader.ssRoot ? createScreensaver({ root: loader.ssRoot, shows, media, id, mobile: S.mobile, reduced: motion.reduced }) : null;
   loader.attach(ss);
   // oynatıcılar yüklemeyi geciktirmez: hazır olmayanların kesmelerinde fotoğraf yedeği gösterilir
   loader.track([fontsReady, Promise.resolve(shows), firstImages]);
   // Görselleri ilk çizimden önce yükle + decode et (en fazla kısa bir süre bekle)
   await Promise.race([firstImages, new Promise((r) => setTimeout(r, 1200))]);
-  gsap.ticker.add(wall.render);
+  gsap.ticker.add(gallery.render);
   const later = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 300));
-  later(() => media.preload(shows, S.cw * id.ring.photoZoom));
-
-  // Kimliğin font rolleri yüklenince ölçüye bağlı dizgiler (sayaç genişliği) yeniden kurulur
-  if (document.fonts) {
-    const loads = Object.values(id.fonts.roles).map((r) => document.fonts.load(`${r.weight} 16px ${r.family}`).catch(() => []));
-    Promise.all(loads).then(() => wall.refresh());
-  }
+  later(() => media.preload(shows, discW()));
 
   let presenter: { refresh(): void } | null = null;
   let resizeTimer = 0;
-  /* telefonda yatay ekran: katman açıkken duvar yeniden kurulmaz, durum korunur; her şey bekler.
+  /* telefonda yatay ekran: katman açıkken galeri yeniden kurulmaz, durum korunur; her şey bekler.
      Dikleşince katman kaybolur, yerleşim dikey ölçüye göre bir kez (gerekirse) yeniden hesaplanır */
   const landscape = matchMedia(landscapeQuery(id));
   let before: { vw: number; vh: number } | null = null;
   const relayout = () => {
-    const center = S.cx + viewCols(S) / 2;
-    measure(S, id);
-    const keep = center - viewCols(S) / 2;
-    S.cx = keep;
     camera.stop();
-    wall.rebuild();
+    measure(S, id);
+    // aynı daire ortada kalır
+    S.pos = Math.round(S.pos);
+    gallery.rebuild();
     presenter?.refresh();
-    renderBand();
-    wall.render(); // boş kare kalmasın
-    // kolon hizasına hep ileri (sağdan sola) oturur; geri gitmez
-    camera.run(gsap.to(S, { cx: snapCamForward(S, keep), duration: motion.dur('columnShift'), ease: motion.ease.page }));
+    layout();
+    gallery.render(); // boş kare kalmasın
   };
   const rotateOn = () => {
     if (S.paused) return;
@@ -175,7 +117,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
     gsap.killTweensOf(dom.rotate);
     gsap.set(dom.rotate, { autoAlpha: 1 });
     dom.rotate.classList.add('rot--on');
-    wall.suspend(true);
+    gallery.suspend(true);
     gsap.globalTimeline.pause();
   };
   const rotateOff = () => {
@@ -185,7 +127,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
     // dikey ölçü değiştiyse bir kez yeniden hesaplanır; aynıysa her şey kaldığı yerden sürer
     const changed = !before || Math.abs(innerWidth - before.vw) > 1 || Math.abs(innerHeight - before.vh) > 1;
     if (changed && (S.vw !== innerWidth || Math.abs(S.vh - innerHeight) > 1)) relayout();
-    else wall.suspend(false);
+    else gallery.suspend(false);
     gsap.to(dom.rotate, {
       autoAlpha: 0, duration: 0.3, ease: motion.ease.fade,
       onComplete: () => {
@@ -207,25 +149,14 @@ export async function startEngine(id: Identity, shows: Show[]) {
       if (S.paused) return;
       // ölçü değişmediyse (ör. yatay katmandan dikeye dönüş sonrası gelen olay) yeniden kurma: durum korunur
       if (S.vw === innerWidth && Math.abs(S.vh - innerHeight) <= 2) return;
-      // aynı kart ortada kalsın; kolon sayısı değişince kartlar yeni yerlerine yumuşakça kayar (sıçrama yok)
-      const center = S.cx + viewCols(S) / 2;
-      measure(S, id);
-      const keep = center - viewCols(S) / 2;
-      S.cx = keep;
-      camera.stop();
-      wall.rebuild();
-      presenter?.refresh();
-      renderBand();
-      wall.render(); // boş kare kalmasın
-      // kolon hizasına hep ileri (sağdan sola) oturur; geri gitmez
-    camera.run(gsap.to(S, { cx: snapCamForward(S, keep), duration: motion.dur('columnShift'), ease: motion.ease.page }));
+      relayout();
     }, 150);
   });
 
-  // ekran koruyucudan çıkınca: kartlar mıknatısla gelir; kendi kendine sunumun sayacı ancak şimdi başlar
-  loader.onExit(() => wall.magnet());
+  // ekran koruyucu tamamen kalkınca kendiliğinden ilerleme ve kendi kendine sunumun sayacı başlar
   loader.onGone(() => {
-    presenter = startPresentation({ S, camera, wall, cmd, motion, id });
+    camera.autoplay(true);
+    presenter = startPresentation({ S, camera, gallery, cmd, motion, id });
   });
 
   return { S, cmd };

@@ -1,126 +1,96 @@
 /* Komut katmanı: işaretçi, dokunma, tekerlek, klavye ve kumanda girişlerinin tamamı
-   yalnızca bu komutları çağırır. */
+   yalnızca bu komutları çağırır. Yön kuralı: aşağı / sağ = sonraki daire ortaya gelir. */
 import type { Camera } from './camera';
-import type { Wall } from './wall';
-import { viewCols, type State } from './state';
+import type { Gallery } from './gallery';
+import type { State } from './state';
+import type { Identity } from './types';
 
 export interface Commands {
-  /** Her girişte çağrılır (akış artık beklemez; kanca olarak duruyor) */
+  /** Her girişte çağrılır: kendiliğinden ilerleme sayacı baştan */
   input(): void;
   press(): void;
   release(): void;
-  /** Kapalıyken: dikey hareket de yataya çevrilir (baskın eksen) */
+  /** Sürükleme (px): web'de baskın eksen, mobilde yalnızca dikey */
   pan(dx: number, dy: number): void;
+  /** Bırakma hızı (px/sn) */
   fling(vx: number, vy: number): void;
-  /** Tekerlek bitince en yakın kolona otur */
+  /** Tekerlek (px): baskın eksen */
+  wheel(dx: number, dy: number): void;
+  /** Tekerlek bitince en yakın daireye otur (son yöne eğilimle) */
   settle(): void;
-  /** Ok tuşları: kapalıyken bir kart kaydır; açıkken yatayda sonraki / önceki, dikeyde açık öğeyi kaydır */
-  arrow(di: number, dj: number): void;
+  /** Ok tuşları / kumanda: +1 sonraki, −1 önceki */
+  arrow(d: 1 | -1): void;
   tap(x: number, y: number): void;
-  /** (i, j) öğesini aç: kullanıcı tıklamasıyla aynı yol (kendi kendine sunum da bunu kullanır) */
-  openItem(i: number, j: number): void;
-  /** Açık öğenin fotoğrafını tam ekrana al (fotoğrafa / Detay'a dokunmakla aynı yol) */
-  fullscreen(): void;
-  /** Ekran ortasındaki kartı aç */
+  /** Ortadaki daireyi aç (kendi kendine sunum da bunu kullanır) */
   openCenter(): void;
-  /** Açıkken sonraki (+1) / önceki (−1) kartı açar */
-  next(d: 1 | -1): void;
+  /** Geri: tam ekrandan galeriye */
   close(): void;
-  /** Kapatma ikonu: künye, video, tam ekran ya da açılmış öğe — ne olursa olsun doğrudan grid'e */
-  home(): void;
   isOpen(): boolean;
-  /** Fare uzun künyenin üzerindeyse tekerlek künyeyi kaydırır; true: tüketildi (duvar yatay kaymaz) */
-  creditsWheel(x: number, y: number, dy: number): boolean;
-  /** Açık öğeyi dikey kaydır (sığmıyorsa) */
-  openScroll(dy: number): void;
-  openFling(v: number): void;
-  openStop(): void;
 }
 
-export function createCommands(o: { S: State; camera: Camera; wall: Wall }): Commands {
-  const { S, camera, wall } = o;
+export function createCommands(o: { S: State; id: Identity; camera: Camera; gallery: Gallery }): Commands {
+  const { S, id, camera, gallery } = o;
+  const G = id.gallery;
   const dominant = (a: number, b: number) => (Math.abs(a) >= Math.abs(b) ? a : b);
-
-  /** Açılma kamerayı kaydırmaz: öğe ekranın ortasında açılır, duvar ikiye ayrılır */
-  function open(i: number, j: number) {
-    camera.stop();
-    wall.open(i, j);
-  }
+  /** Bir adımlık sürükleme mesafesi (px): ortadan sonraki daireye */
+  const stepPx = () => {
+    const C = S.mobile ? G.mobile : G.web;
+    return S.mobile ? Math.abs(C.next[1]) * S.vh : Math.hypot(C.next[0] * S.vw, C.next[1] * S.vh);
+  };
+  const drag = (dx: number, dy: number) => (S.mobile ? dy : dominant(dx, dy));
+  const locked = () => S.open || S.full || S.paused;
+  let lastWheel = 0;
 
   const cmd: Commands = {
-    // akış artık etkileşimden sonra beklemez; kaydırma bittiği anda sürer
-    input: () => {},
+    input: () => camera.touch(),
     press() {
       S.pressed = true;
-      if (!S.open) camera.stop();
-      wall.stopOpen();
+      if (!locked()) camera.stop();
     },
     release() {
       S.pressed = false;
     },
     pan(dx, dy) {
-      if (!S.open) camera.pan(dominant(dx, dy));
+      if (!locked()) camera.pan(drag(dx, dy) / stepPx());
     },
     fling(vx, vy) {
-      if (!S.open) camera.fling(dominant(vx, vy));
+      if (!locked()) camera.fling(drag(vx, vy) / stepPx());
+    },
+    wheel(dx, dy) {
+      if (locked()) return;
+      const d = dominant(dx, dy);
+      if (d) lastWheel = Math.sign(d);
+      camera.pan(d / (G.wheel.step * S.vh));
     },
     settle() {
-      if (!S.open) camera.settle();
+      if (!locked()) camera.settle(lastWheel * G.wheel.bias);
+      lastWheel = 0;
     },
-    arrow(di, dj) {
-      if (S.open) {
-        if (di) cmd.next(di > 0 ? 1 : -1);
-        else wall.stepOpen(dj > 0 ? 1 : -1);
-        return;
-      }
-      if (di) camera.step(di);
+    arrow(d) {
+      if (!locked()) camera.step(d);
     },
     tap(x, y) {
-      // tam ekranda ekranın herhangi bir yerine dokunmak doğrudan grid'e döndürür
-      if (S.full) return wall.fullscreen(false);
-      // mobil: açılmış öğenin dışında kalan üst banda dokunmak öğeyi kapatır
-      if (S.mobile && S.open && y < S.top) return void wall.close();
-      const h = wall.hit(x, y);
-      if (!h) return;
-      if (h.part === 'photo') return wall.fullscreen(true);
-      if (h.part === 'act') {
-        // Video tam ekranı açar; Detay künyeyi açıp kapatır; Bilet Al ve Paylaş şimdilik işlevsiz
-        if (h.act === 'video') wall.fullscreen(true);
-        else if (h.act === 'detail') wall.credits();
-        return;
-      }
-      if (h.part === 'open') return wall.tapOpen(x, y);
-      // kenardaki başka bir kart: açık öğe kartına dönüp yerine iner, yeni öğe açılır
-      open(h.i, h.j);
-    },
-    openItem: (i, j) => open(i, j),
-    fullscreen() {
-      if (S.open && !S.full) wall.fullscreen(true);
+      // tam ekranda ekranın herhangi bir yerine dokunmak galeriye döndürür
+      if (S.full) return gallery.close();
+      if (locked()) return;
+      const n = gallery.hit(x, y);
+      if (n === null) return;
+      // kenardaki daire ortaya gelir; ortadaki (yerine oturmuşsa) açılır
+      if (n === Math.round(S.pos) && !camera.busy()) {
+        camera.stop();
+        gallery.open();
+      } else camera.go(n);
     },
     openCenter() {
-      if (S.open) return;
-      open(Math.floor(S.cx + viewCols(S) / 2), 0);
-    },
-    next(d) {
-      if (!S.open || S.full) return;
-      open(S.open.i + d, S.open.j);
+      if (locked()) return;
+      camera.stop();
+      camera.settle();
+      gallery.open();
     },
     close() {
-      // geri: tam ekrandan doğrudan grid'e, açık öğeden grid'e; kamera olduğu yerde kalır
-      if (S.full) return wall.fullscreen(false);
-      // künye açıksa önce künye kapanır
-      if (wall.creditsOpen()) return wall.credits(false);
-      wall.close();
+      if (S.full) gallery.close();
     },
-    home() {
-      if (S.full) return wall.fullscreen(false);
-      if (S.open) wall.close();
-    },
-    isOpen: () => !!S.open,
-    creditsWheel: (x, y, dy) => wall.creditsWheel(x, y, dy),
-    openScroll: (dy) => wall.scrollOpen(dy),
-    openFling: (v) => wall.flingOpen(v),
-    openStop: () => wall.stopOpen(),
+    isOpen: () => S.open || S.full,
   };
   return cmd;
 }

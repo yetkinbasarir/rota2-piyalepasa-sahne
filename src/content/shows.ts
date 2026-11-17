@@ -18,6 +18,8 @@ interface SourceShow {
   sure: string;
   yas: string;
   tanitim: string;
+  /** Elle girilmiş alıntı (varsa tanıtımın ilk cümlesinin yerine gösterilir) */
+  alinti?: string;
   kunye: { alan: string; kisiler: string[] }[];
   oynayanlar: { ad: string; rol: string }[];
   referans_yapim?: string;
@@ -142,6 +144,7 @@ export const SHOWS: Show[] = (data.gosteriler as SourceShow[]).map((g, k) => {
     duration: clean(g.sure),
     age: clean(g.yas),
     intro: clean(g.tanitim),
+    quote: clean(g.alinti),
     credits: g.kunye
       .map((r) => ({ field: clean(r.alan), people: r.kisiler.map(clean).filter(Boolean) }))
       .filter((r) => r.field && r.people.length),
