@@ -4,7 +4,7 @@
    kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol üst noktaya oturur ve çizgi aralığı uzun
    logonunkine eşittir. Sağda başlık / tanıtım / künye sütunu, sol altta Üye Ol / Giriş.
    Mobil: yalnızca kısa logo (sol altta); üye düğmeleri sağ üstte, altlarında başlık ve künye. */
-import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight } from './logo';
+import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight, logoWidth } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
 import type { Identity, TemplateContext, TypeRole } from './types';
@@ -75,7 +75,7 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--lr-d', DIAMOND_H * lk);
   px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
 
-  /* Bilet Al: masaüstünde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki), mobilde alt ortada */
+  /* Bilet Al: ana dairenin altında ortalı (yatay merkezi galeri yazar: --gc-x), alt boşluk ticket.bottom */
   px('--gs-gap', T.stage.gap * H);
   const gcBottom = S.safeBottom + T.ticket.bottom * H;
   const tD = T.ticket.d * H;
@@ -83,8 +83,8 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--gc-right', letterX);
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk');
   if (ticket) ticket.style.setProperty('--cb-d', `${tD.toFixed(2)}px`);
-  // ×: masaüstünde alt ortada, Bilet Al ve Üye Ol / Giriş ile aynı yatay eksende
-  px('--xcl-bottom', gcBottom + (tD - id.closeButton.size) / 2);
+  // × (açık hâl): masaüstünde sağ altta; sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki
+  px('--xcl-bottom', gcBottom);
 
   /* logolar */
   const long = dom.brand.querySelector<HTMLElement>('.lg-l')!;
@@ -111,10 +111,13 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     const vh = logoVbHeight(L.long);
     const lay = layoutLogo(L.long, h, x - letterStart(L.long) * (h / vh));
     place(long, lay.html, lay.width, h, top);
-    // kısa logo: aynı sol üst nokta, çizgi aralığı uzun logonunkine eşit
+    // açık hâlde uzun logo harf bloğunun genişliği kadar sola kayarak kaybolur
+    long.dataset.slide = String(logoWidth(L.long, h) - letterStart(L.long) * (h / vh));
+    // kısa logo (açık hâl): uzun logoyla aynı ölçek (çizgi aralığı eşit), ilk harfi aynı x'te, üst çizgisi aynı y'de
     const hs = h * (ruleSpacing(L.long) / vh) / (ruleSpacing(L.short) / logoVbHeight(L.short));
-    const lays = layoutLogo(L.short, hs, x - letterStart(L.short) * (hs / logoVbHeight(L.short)));
-    place(short, lays.html, lays.width, hs, top);
+    const ss = hs / logoVbHeight(L.short);
+    const lays = layoutLogo(L.short, hs, x - letterStart(L.short) * ss);
+    place(short, lays.html, lays.width, hs, top + L.long.lines[0] * (h / vh) - L.short.lines[0] * ss);
     long.style.display = '';
     long.style.opacity = '1';
     short.style.opacity = '0';

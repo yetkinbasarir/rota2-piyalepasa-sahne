@@ -196,8 +196,9 @@ export interface GalleryTokens {
   /** Açık hâlin ağı: ROTA1'in tam ekran dokusu (id.texture: siyah yüzey, yuvarlak delikler); opaklık */
   mesh: { opacity: number };
   /** Açılma: ana dairenin ekranı kaplayana kadar büyüme süresi ve eğrisi (kapanışta aynısı), videonun belirme
-      başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi */
-  open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string };
+      başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sola
+      kayıp kısa logoya geçişi (colorDur sn, logoEase) */
+  open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string; logoEase: string };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */

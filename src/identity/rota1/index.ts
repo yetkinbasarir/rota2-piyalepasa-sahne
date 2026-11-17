@@ -80,8 +80,9 @@ export const rota1: Identity = {
     mesh: { opacity: 1 },
     /* açılma: ana daire düzleşip yerinden ekranı kaplayana kadar büyür (0.9 sn power3.inOut), diğer daireler yerinde;
        video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Logo, başlık ve altındaki çizgi ile × açılışla birlikte
-       0.5 sn'de beyaza döner. Kapanma tam tersi */
-    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF' },
+       0.5 sn'de beyaza döner; aynı anda uzun logo harf bloğu kadar sola kayarak kaybolur, kısa logo aynı ölçekte
+       aynı sol üst noktada belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
+    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
@@ -135,8 +136,8 @@ export const rota1: Identity = {
       titleLines: 2, ruleGap: { web: 0.0064, mobile: 0.015 }, mobilePad: 0.02,
     },
     stage: { gap: 0.015 },
-    /* Bilet Al: masaüstünde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki), mobilde alt ortada;
-       Üye Ol / Giriş de aynı çapta (masaüstü) */
+    /* Bilet Al: ana dairenin altında ortalı, alttan 0.04H; açık hâlde kaybolur. Üye Ol / Giriş de aynı çapta
+       (masaüstü). × açık hâlde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki) */
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },
     /* uzun logo sol üstte (0.216H, üstten 0.04H); açık hâlde yerinde kalır, beyaza döner; ilk harfi soldan 0.012W, çizgiler sol kenarda kesilir. Sağ

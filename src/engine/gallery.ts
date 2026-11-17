@@ -31,8 +31,9 @@
 
    Açık hâl (ana daireye tıklama): diğer daireler yerinde kalır. t = 0'da ana daire düzleşir (eğimsiz), en önde
    kalır ve yerinden, yarıçapı ekranın en uzak köşesine ulaşana kadar büyür (open.dur, open.ease); renkli kalır,
-   gölgesi kaybolur. Aynı anda logo (yerinde, aynı boyda), başlık ve altındaki çizgi ile × open.colorDur sn'de
-   beyaza döner; sütunun geri kalanı (tanıtım, künye) kaybolup kapanır, Üye Ol / Giriş kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
+   gölgesi kaybolur. Aynı anda logo, başlık ve altındaki çizgi ile × open.colorDur sn'de beyaza döner; uzun logo
+   harf bloğu kadar sola kayarak kaybolur, kısa logo aynı ölçekte aynı sol üst noktada belirir; sütunun geri kalanı
+   (tanıtım, künye) kaybolup kapanır, Üye Ol / Giriş ve Bilet Al kaybolur. Büyüme bitince ekranı kaplayan daireyle birebir aynı
    kırpımdaki keskin görsel altına yerleşir. Video ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
    belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
    birlikte döner.
@@ -130,7 +131,9 @@ export function createGallery(o: {
   const showAt = (n: number) => shows[mod(n, N)];
   const f = (n: number, d = 2) => n.toFixed(d);
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+  const lgLong = dom.brand.querySelector<HTMLElement>('.lg-l')!;
   const lgShort = dom.brand.querySelector<HTMLElement>('.lg-s')!;
+  const gTicket = dom.ui.querySelector<HTMLElement>('.gc')!;
 
   /* ---------- geometri ---------- */
   /** Ölçek 1'deki daire çapı (px); duruştaki yerleşim noktaları p = −3 … +3 */
@@ -363,6 +366,8 @@ export function createGallery(o: {
       tPrev = t;
     }
 
+    // Bilet Al ana dairenin altında ortalı
+    root.style.setProperty('--gc-x', `${mx.toFixed(2)}px`);
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
@@ -584,10 +589,16 @@ export function createGallery(o: {
     // beyaza döner (kapanışta tam tersi)
     const cd = O.colorDur * red;
     tl.to([dom.brand, gInfo, dom.close], { color: on ? O.color : T.text, duration: cd, ease: 'none', overwrite: 'auto' }, at(0, cd));
+    // masaüstü: uzun logo harf bloğu kadar sola kayarak kaybolur, kısa logo aynı ölçekte aynı sol üst noktada belirir
+    if (!S.mobile) {
+      const lg = { duration: cd, ease: O.logoEase, overwrite: 'auto' as const };
+      tl.to(lgLong, { x: on ? -(+(lgLong.dataset.slide ?? 0)) : 0, opacity: on ? 0 : 1, ...lg }, at(0, cd));
+      tl.to(lgShort, { opacity: on ? 1 : 0, ...lg }, at(0, cd));
+    }
     // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to([dom.members, gTicket], { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -703,11 +714,15 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, dom.brand]);
+      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, gTicket, dom.brand, lgLong, lgShort]);
+      if (!S.mobile) {
+        gsap.set(lgLong, { x: 0, opacity: 1 });
+        gsap.set(lgShort, { opacity: 0 });
+      }
       gsap.set([dom.brand, gInfo, dom.close], { clearProps: 'color' });
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set(dom.members, { autoAlpha: 1 });
+      gsap.set([dom.members, gTicket], { autoAlpha: 1 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
