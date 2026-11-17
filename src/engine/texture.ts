@@ -1,5 +1,6 @@
 /* Açık hâlin ağı: zemin grisinde ince çizgilerden ızgara; hücreyi neredeyse dolduran eşkenar dörtgen (45° kare)
-   delikler. Hücre c px (gallery.mesh.cell), komşu delikler arası `line` px gri; delik köşegeni c − line. Delikler
+   delikler. Hücre c CSS px (gallery.mesh.cell), komşu delikler arası `line` aygıt pikseli gri (2× ekranda 0.5 CSS
+   px, 1× ekranda 1 CSS px); delik köşegeni c − line. Delikler
    şaşırtmalı dizilir (hücre merkezi ve köşeler), kenarları komşusununkine paraleldir. c ekranın piksel ızgarasına
    yuvarlanır (moiré olmasın); sonuç CSS değişkeni olarak yazılır (engine.css .holes). Video bu deliklerden tam
    parlaklık ve renkle görünür; arada başka katman yok.
@@ -10,8 +11,9 @@ import type { Identity } from './types';
 /** Ağ desenini CSS değişkenlerine yazar; ekran ölçüsü / dpr değişince yeniden çağrılır */
 export function applyTexture(root: HTMLElement, id: Identity) {
   const M = id.gallery.mesh;
+  const dpr = devicePixelRatio || 1;
   const c = snapPx(M.cell);
-  const r = Math.max(0, (c - M.line) / 2);
+  const r = Math.max(0, (c - M.line / dpr) / 2);
   const h = c / 2;
   const n = (v: number) => +v.toFixed(3);
   // delikler: merkezde bir tane, dört köşede çeyrekleri (komşu hücrelerle tam delik olur)

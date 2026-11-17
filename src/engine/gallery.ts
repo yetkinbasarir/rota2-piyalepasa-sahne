@@ -24,11 +24,15 @@
    Gölge: her dairenin gölgesi zemin düzleminde ayrı bir öğe (dairelerin arkasında); dairenin ekrandaki
    izdüşümünden (süzülmesiz) hesaplanır. Yalnızca transform, opacity ve filter.
 
-   Açık hâl (ana daireye tıklama): her şey aynı anda başlar (open.dur, open.easeIn): daireler gölgeleriyle
-   köşegen boyunca ekrandan çıkar (sağdakiler sağ üstten, ana daire ve soldakiler sol alttan); uzun logo kısa
-   logoya çapraz geçer; künyede başlık dışındaki her şey kaybolup kapanır; alıntı kaybolur; sahne adı ve
-   Bilet Al kalır. Video (videoya kadar görsel) ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
-   belirir. Ekranda yeni yazı yok. Tekrar tıklama (ya da kendiliğinden dönüş): tam tersi, open.easeOut ile.
+   Bütün grup (daireler ve gölgeleri) lift·H yukarıda; aralık ve ölçüler değişmez.
+
+   Açık hâl (ana daireye tıklama): diğer daireler yerinde kalır. t = 0'da ana daire düzleşir (eğimsiz), en önde
+   kalır ve yerinden, yarıçapı ekranın en uzak köşesine ulaşana kadar büyür (open.dur, open.ease); renkli kalır,
+   gölgesi kaybolur. Aynı anda uzun logo kısa logoya çapraz geçer, künyede başlık dışındaki her şey kaybolup
+   kapanır, alıntı kaybolur; sahne adı ve Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
+   kırpımdaki keskin görsel altına yerleşir. Video ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
+   belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
+   birlikte döner.
 
    Yazılar (künye bloğu, tür + alıntı, sahne adı) ana daireye göre değişir: eski satırlar yukarı
    kayarak kaybolur, yeniler aşağıdan gelir (satırlar arası gecikmeyle). */
@@ -37,7 +41,6 @@ import type { Motion } from './motion';
 import type { Media } from './media';
 import { clamp, mod, type State } from './state';
 import type { Identity, Show, TemplateContext } from './types';
-import { placePhoto } from './crop';
 import type { FullVideoPlayer } from './fullVideo';
 import type { Dom } from './theme';
 
@@ -52,7 +55,7 @@ export interface Gallery {
   main(): number;
   /** Bir adımın ekrandaki uzunluğu (px): ana daire ile sonraki dairenin duruş noktaları arası */
   step(): number;
-  /** Açık hâl: daireler çıkar, tam ekran video akışı başlar */
+  /** Açık hâl: ana daire ekranı kaplayana kadar büyür, tam ekran video akışı başlar */
   open(): void;
   /** Açık hâlden galeriye: tam tersi */
   close(): void;
@@ -129,9 +132,6 @@ export function createGallery(o: {
   /** Ölçek 1'deki daire çapı (px); duruştaki yerleşim noktaları p = −3 … +3 */
   let D = 100;
   let P = new Map<number, [number, number]>();
-  /** Açık hâlde çıkış yönleri (birim) */
-  let outR: [number, number] = [1, -0.5];
-  let outL: [number, number] = [-1, 0.5];
 
   const scaleAt = (k: number) => GL.keys[clamp(Math.round(k) + 3, 0, GL.keys.length - 1)];
   const ryAt = (t: number) => {
@@ -344,8 +344,9 @@ export function createGallery(o: {
     }
     centers().slice(1).forEach((c, i) => P.set(-(i + 1), anchorFor(-(i + 1), c[0], c[1])));
 
-    outR = uR;
-    outL = uL;
+    // bütün grup lift·H yukarı: aralık ve ölçüler aynı
+    const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
+    P.forEach((v) => (v[1] -= lift));
     // daireler yeni çapla yeniden kurulur
     items.forEach(drop);
     items.clear();
@@ -516,8 +517,9 @@ export function createGallery(o: {
   }
 
   /* ---------- açık hâl ---------- */
-  /** Dairelerin çıkışı (0: yerinde, 1: ekran dışında) */
-  const ex = { v: 0 };
+  /** Ana dairenin büyümesi (0: yerinde, eğik; 1: düz, ekranı kaplar) ve büyüyen daire */
+  const grow = { v: 0 };
+  let openN: number | null = null;
   let openTl: gsap.core.Timeline | null = null;
   let openShow: Show | null = null;
   let exiting = false;
@@ -527,39 +529,53 @@ export function createGallery(o: {
     autoTimer = null;
   };
   const layers = () => [dom.top, dom.video, dom.texture];
-  /** Video gelene kadar (ya da videosuzsa) ekranı kaplayan görsel */
-  function photo(show: Show) {
+  /** Ana dairenin büyüdüğünde ekranı kaplayan ölçeği: yarıçapı merkezinden ekranın en uzak köşesine */
+  function fullScale(n: number) {
+    const a = place(n - S.pos);
+    const r = Math.max(Math.hypot(a.x, a.y), Math.hypot(S.vw - a.x, a.y), Math.hypot(a.x, S.vh - a.y), Math.hypot(S.vw - a.x, S.vh - a.y));
+    return { x: a.x, y: a.y, s: (2 * r) / D };
+  }
+  /** Büyüme bitince dairenin altına: ekranı kaplayan daireyle birebir aynı kırpımda, ekran çözünürlüğünde görsel */
+  function photo(show: Show, n: number) {
     const ar = show.photo ? show.photo.w / show.photo.h : 1;
-    const to = placePhoto(ar, S.vw, S.vh, show.focus);
-    dom.top.innerHTML = media.img(show, { width: S.vw, height: to.h, aspect: ar });
+    const fr = discFrame(show, ar);
+    const g = fullScale(n);
+    dom.top.innerHTML = media.img(show, { width: fr.w * g.s, height: fr.h * g.s, aspect: ar });
     const img = dom.top.querySelector<HTMLImageElement>('img');
     if (img) {
-      img.sizes = `${Math.round(S.vw)}px`;
-      img.style.transform = `translate(${f(to.x)}px,${f(to.y)}px)`;
+      img.sizes = `${Math.round(Math.max(S.vw, fr.w * g.s))}px`;
+      img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
-  /** Açılmanın / kapanmanın hareket eden bütün parçaları: hepsi aynı anda */
+  /** Açılma / kapanma. Açılış: t = 0'da daire büyümeye, yazılar ve logo geçişe başlar; videoAt'te video ve ağ
+      belirir. Kapanış tam tersi: önce video ve ağ kaybolur, daire simetrik olarak küçülür */
   function moves(on: boolean) {
     const O = G.open;
     const dur = O.dur * red;
-    const ease = on ? O.easeIn : O.easeOut;
+    const vAt = O.videoAt * red;
+    const vDur = O.videoDur * red;
+    const total = Math.max(dur, vAt + vDur);
+    // açılışta büyüme 0'da, video vAt'te; kapanışta zaman ekseni ters
+    const at = (t: number, d: number) => (on ? t : total - t - d);
     const tl = gsap.timeline();
-    const all = { duration: dur, ease, overwrite: true };
-    tl.to(ex, { v: on ? 1 : 0, ...all }, 0);
+    const all = { duration: dur, ease: O.ease, overwrite: true };
+    const t0 = at(0, dur);
+    tl.to(grow, { v: on ? 1 : 0, ...all }, t0);
     if (!S.mobile) {
-      tl.to(lgLong, { opacity: on ? 0 : 1, ...all }, 0);
-      tl.to(lgShort, { opacity: on ? 1 : 0, ...all }, 0);
+      tl.to(lgLong, { opacity: on ? 0 : 1, ...all }, t0);
+      tl.to(lgShort, { opacity: on ? 1 : 0, ...all }, t0);
     }
     // künyede başlık dışındaki her şey kaybolup kapanır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
-    if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, 0);
-    tl.to([gCap, dom.members], { autoAlpha: on ? 0 : 1, ...all }, 0);
-    // video (ve video gelene kadar görsel) ile ağ: açılışta videoAt'te başlayıp videoDur'da belirir;
-    // kapanışta hemen kaybolmaya başlar
-    const fade = { duration: O.videoDur * red, ease: 'none', overwrite: true };
-    const at = on ? O.videoAt * red : 0;
-    tl.to([dom.top, dom.video], { autoAlpha: on ? 1 : 0, ...fade }, at);
-    tl.to(dom.texture, { autoAlpha: on ? G.mesh.opacity : 0, ...fade }, at);
+    if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to([gCap, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
+    tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
+    // video ve ağ
+    const fade = { duration: vDur, ease: 'none', overwrite: true };
+    const tv = at(vAt, vDur);
+    tl.to(dom.video, { autoAlpha: on ? 1 : 0, ...fade }, tv);
+    tl.to(dom.texture, { autoAlpha: on ? G.mesh.opacity : 0, ...fade }, tv);
     return tl;
   }
 
@@ -588,19 +604,20 @@ export function createGallery(o: {
     const flatOn = !S.open && (S.mobile ? rest : hoverMain);
     const R = G.rotate;
     const Sh = G.shadow;
-    const dist = (Math.hypot(S.vw, S.vh) + D) * ex.v;
+    const gv = grow.v;
+    const gFull = openN !== null && gv > 0 ? fullScale(openN) : null;
     for (const it of items.values()) {
       const t = it.n - S.pos;
       flatten(it, flatOn && it.n === c);
       const a = place(t);
       spring(it, dt);
       const fl = it.fl.f;
-      const fz = it.fz.v;
-      // açık hâl: köşegen boyunca ekrandan çıkış
-      const out = t > 0 ? outR : outL;
-      const x = a.x + out[0] * dist;
-      const y = a.y + out[1] * dist;
-      const s = a.s * lerp(1, G.flat.scale, fz);
+      // açık hâl: büyüyen daire düzleşir, yerinden ekranı kaplayana kadar büyür; diğerleri yerinde
+      const g = gFull && it.n === openN ? gv : 0;
+      const fz = Math.max(it.fz.v, g);
+      const x = a.x;
+      const y = a.y;
+      const s = lerp(a.s * lerp(1, G.flat.scale, it.fz.v), gFull ? gFull.s : a.s, g);
       const rx = lerp(R.x + fl * G.float.rx, 0, fz);
       const ry = lerp(a.ry, 0, fz);
       const rz = lerp(R.z, 0, fz);
@@ -611,15 +628,15 @@ export function createGallery(o: {
       if (tf !== it.tf) {
         it.tf = tf;
         it.el.style.transform = tf;
-        // ana daire en önde; uzaklaştıkça geride
-        it.el.style.zIndex = String(Math.round(1000 - Math.abs(t) * 100));
+        // ana daire en önde (büyüyen daire her şeyin önünde); uzaklaştıkça geride
+        it.el.style.zIndex = String(g > 0 ? 2000 : Math.round(1000 - Math.abs(t) * 100));
       }
       // gölge: süzülmesiz izdüşümün altında; yukarı süzüldükçe küçülür, bulanıklaşır, açılır; düzleşince yuvarlaklaşır
       const pb = project(base);
       const lift = fl * (1 - fz);
       const k = 1 - lift * Sh.lift.shrink;
       const blur = Sh.blur + lift * (Sh.lift.blur - Sh.blur);
-      const op0 = lerp(Sh.mainOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1));
+      const op0 = lerp(Sh.mainOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1)) * (1 - g);
       const op = Math.max(0, op0 * (1 + (lift * (Sh.lift.opacity - Sh.opacity)) / Sh.opacity));
       const sx = (-it.tilt.y / G.tilt.max) * Sh.tiltShift * H;
       const sy = (it.tilt.x / G.tilt.max) * Sh.tiltShift * H;
@@ -653,7 +670,8 @@ export function createGallery(o: {
       exiting = false;
       S.open = false;
       S.full = false;
-      ex.v = 0;
+      grow.v = 0;
+      openN = null;
       closeOn = false;
       gsap.killTweensOf([dom.close, ...layers(), gCap, dom.members, lgLong, lgShort]);
       gsap.set(dom.close, { autoAlpha: 0 });
@@ -690,7 +708,10 @@ export function createGallery(o: {
       S.full = true;
       const show = it.show;
       openShow = show;
-      photo(show);
+      openN = it.n;
+      // büyüyen daire renkli ve en keskin görseliyle
+      light(it, true);
+      photo(show, it.n);
       closeIcon(true);
       // tıklamanın içinde, eşzamanlı: video sesle başlar (hazır değilse hazır olunca)
       o.video.prepare(show.fullVideo);
@@ -707,7 +728,7 @@ export function createGallery(o: {
     },
     close() {
       if (!S.full || exiting) return;
-      // tam tersi: her şey aynı anda; ses kısılır, video kaybolurken daireler geri gelir
+      // tam tersi: ses kısılır, video görsele döner, daire yerine ve eğimine küçülür; geri kalanı onunla döner
       exiting = true;
       S.full = false;
       clearAuto();
@@ -721,6 +742,7 @@ export function createGallery(o: {
         const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
         if (rest) gsap.set(rest, { clearProps: 'height' });
         openShow = null;
+        openN = null;
         S.open = false;
         exiting = false;
       });

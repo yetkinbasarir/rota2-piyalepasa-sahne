@@ -41,6 +41,7 @@ export function applyIdentity(id: Identity) {
     set(`--t-${role}-family`, f.family);
     set(`--t-${role}-weight`, f.weight);
     set(`--t-${role}-var`, f.variation ?? 'normal');
+    set(`--t-${role}-style`, f.style ?? 'normal');
   }
   for (const href of id.fonts.stylesheets) {
     if (!document.querySelector(`link[href="${href}"]`)) {

@@ -15,12 +15,21 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   const root = document.documentElement;
   const px = (k: string, v: number) => root.style.setProperty(k, `${v.toFixed(2)}px`);
   const mpad = T.info.mobilePad * H;
+  const clampCss = (c: { min: number; vw: number; max: number }) => `clamp(${c.min}px, ${+(c.vw * 100).toFixed(4)}vw, ${c.max}px)`;
+  const clampPx = (c: { min: number; vw: number; max: number }) => Math.min(c.max, Math.max(c.min, c.vw * W));
+
+  /* yazı boyları: okuma metni ve etiketler (clamp); sayılar büyük harf yüksekliğiyle okuma metnine eşit */
+  root.style.setProperty('--fs-body', clampCss(T.body));
+  root.style.setProperty('--lh-body', String(T.body.lh));
+  root.style.setProperty('--fs-label', clampCss(T.label));
+  root.style.setProperty('--ls-label', `${T.label.track}em`);
+  px('--fs-label-px', clampPx(T.label));
+  root.style.setProperty('--num-k', String(capRatio(id)));
 
   /* üye düğmeleri: sağ üst (değişkenler kökte: yükleme ekranındaki kopya da kullanır) */
   const d = S.mobile ? T.members.mobileD * W : T.members.d * H;
   const pad = T.members.pad * H;
   px('--cb-d', d);
-  px('--cb-fs', T.members.font * H);
   px('--cb-gap', T.members.gap * H);
   dom.members.style.top = `${(pad + S.safeTop).toFixed(2)}px`;
   dom.members.style.right = `${pad.toFixed(2)}px`;
@@ -31,10 +40,6 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     dom.members.addEventListener('click', (e) => e.stopPropagation());
   }
   const membersBottom = S.safeTop + pad + d;
-
-  /* tür satırı */
-  px('--lb-fs', T.label.size * H);
-  root.style.setProperty('--lb-ls', `${T.label.track}em`);
 
   /* üst orta: tür + alıntı (mobilde üye düğmelerinin altında başlar) */
   const quoteTop = S.mobile ? Math.max(S.safeTop + T.quote.top * H, membersBottom + mpad) : T.quote.top * H;
@@ -48,22 +53,14 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   if (!S.mobile) px('--gi-top', T.info.top * H);
   px('--gi-w', S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth));
   px('--gi-title', (S.mobile ? T.info.title.mobile : T.info.title.web) * W);
-  px('--gi-value', T.info.value * H);
-  px('--gi-row', T.info.row * H);
-  root.style.setProperty('--gi-ls', `${T.info.track}em`);
-  px('--gi-dm', T.info.diamond);
+  px('--gi-rule', T.info.rule);
   root.style.setProperty('--gi-lines', String(T.info.descLines));
 
   /* alt orta: sahne adı, altında Bilet Al */
-  px('--gs-fs', T.stage.size * H);
-  root.style.setProperty('--gs-ls', `${T.stage.track}em`);
   px('--gs-gap', T.stage.gap * H);
   px('--gc-bottom', S.safeBottom + T.ticket.bottom * H);
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk');
-  if (ticket) {
-    ticket.style.setProperty('--cb-d', `${(T.ticket.d * H).toFixed(2)}px`);
-    ticket.style.setProperty('--cb-fs', `${(T.ticket.font * H).toFixed(2)}px`);
-  }
+  if (ticket) ticket.style.setProperty('--cb-d', `${(T.ticket.d * H).toFixed(2)}px`);
 
   /* logolar */
   const long = dom.brand.querySelector<HTMLElement>('.lg-l')!;
@@ -99,6 +96,32 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     short.style.opacity = '0';
   }
   fitButtons(document.body, T.button.fit);
+}
+
+/** Sayıların okuma metnine oranı: aynı boyda okuma fontunun ve sayı fontunun büyük harf yüksekliği (canvas
+    measureText, actualBoundingBoxAscent). Sayılar font-size: calc(oran · 1em) ile çevrelerindeki okuma metninin
+    büyük harf yüksekliğine eşitlenir. Fontlar yüklenmeden ölçülmez (1) */
+let capCache: { key: string; k: number } | null = null;
+function capRatio(id: Identity) {
+  const B = id.screen.type.body;
+  const N = id.screen.type.number;
+  const ch = id.screen.number.capOf;
+  const fb = `${B.style ?? 'normal'} ${B.weight} 100px ${B.family}`;
+  const fn = `normal ${N.weight} 100px ${N.family}`;
+  const ready = !!document.fonts?.check?.(fb, ch) && !!document.fonts?.check?.(fn, ch);
+  const key = `${fb}|${fn}|${ready}`;
+  if (capCache?.key === key) return capCache.k;
+  let k = 1;
+  const c = ready ? document.createElement('canvas').getContext('2d') : null;
+  if (c) {
+    c.font = fb;
+    const hb = c.measureText(ch).actualBoundingBoxAscent;
+    c.font = fn;
+    const hn = c.measureText(ch).actualBoundingBoxAscent;
+    if (hb > 0 && hn > 0) k = hb / hn;
+  }
+  capCache = { key, k: +k.toFixed(4) };
+  return capCache.k;
 }
 
 /** Daire düğme yazıları tek satırda, çapın `fit` oranına sığar; aynı gruptaki düğmeler (Üye Ol / Giriş)

@@ -1,8 +1,8 @@
 # Piyalepaşa Sahne — ROTA2
 
 Çapraz 3B daire galerisi (CSS 3B): daireler bir köşegen boyunca dizilir. Ana daire (p = 0 yuvası: en büyük, renkli,
-en önde; konumu serbest kompozisyon değeri mainX / mainY) renkli, diğerleri duotone; ana daireye tıklanınca daireler
-köşegen boyunca çıkar ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda künye başlığı, kısa
+en önde; konumu serbest kompozisyon değeri mainX / mainY) renkli, diğerleri duotone; ana daireye tıklanınca diğer daireler
+yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda künye başlığı, kısa
 logo, sahne adı, Bilet Al ve × kalır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
@@ -34,8 +34,8 @@ src/
     types.ts              motor ↔ kimlik/içerik sözleşmesi
     state.ts              durum (galeri konumu S.pos) + ekran ölçüsü
     gallery.ts            duruş yerleşimi (yazılardan), daireler (CSS 3B, Catmull-Rom), gölgeler, eğim / düzleşme,
-                          açık hâl (çıkış, video, ağ), yazı geçişleri
-    screen.ts             yazı ölçüleri (CSS değişkenleri), uzun / kısa logo, Üye Ol / Giriş, düğme yazısı sığdırma
+                          açık hâl (ana dairenin büyümesi, video, ağ), yazı geçişleri
+    screen.ts             yazı ölçüleri (CSS değişkenleri; sayıların büyük harf yüksekliği canvas ile), uzun / kısa logo, Üye Ol / Giriş, düğme yazısı sığdırma
     camera.ts             konum: sürükleme, atalet, oturma, adım, kendiliğinden ilerleme
     slides.ts             kimlik slayt gösterisi (logoya tıklayınca): src/slides/web|mobile/*.png, dosya adı sırasıyla
     commands.ts           tüm girişlerin çağırdığı komut katmanı

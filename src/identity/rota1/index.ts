@@ -30,6 +30,8 @@ export const rota1: Identity = {
       /* ana daire (p = 0): sınır kutusunun merkezi; dikeyde önceki konum (mobilde önceki gibi ortada) */
       mainX: { web: 0.54, mobile: 0.5 },
       mainY: { web: 0.518, mobile: 0.608 },
+      /* bütün grup (daireler ve gölgeleri) 0.04H yukarıda; aralık ve ölçüler aynı */
+      lift: { web: 0.04, mobile: 0.04 },
       /* temel çap: alıntının altı ile sahne adının üstü arasında 0.03H boşlukla en büyük, en fazla 0.48W (mobil
          0.82W); ana daire bunun %15 büyüğü (alıntı ve sahne adıyla biraz örtüşür) */
       gap: 0.03,
@@ -68,10 +70,11 @@ export const rota1: Identity = {
     },
     settle: { dur: 0.7, ease: 'power3.out' },
     auto: { every: 6, dur: 1.2, ease: 'power2.inOut' },
-    /* açık hâlin ağı: 6px hücre, delikler arası 1px zemin grisi (delik köşegeni 5px), opaklık 0.9 */
-    mesh: { cell: 6, line: 1, opacity: 0.9 },
-    /* açılma: her şey aynı anda, 0.8 sn power3.in (dönüş power3.out); video 0.3 sn'de başlayıp 0.6 sn'de belirir */
-    open: { dur: 0.8, easeIn: 'power3.in', easeOut: 'power3.out', videoAt: 0.3, videoDur: 0.6 },
+    /* açık hâlin ağı: 4px hücre, delikler arası 1 aygıt pikseli zemin grisi (2× ekranda 0.5px), opaklık 0.85 */
+    mesh: { cell: 4, line: 1, opacity: 0.85 },
+    /* açılma: ana daire düzleşip yerinden ekranı kaplayana kadar büyür (0.9 sn power3.inOut), diğer daireler yerinde;
+       video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Kapanma tam tersi */
+    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
@@ -99,26 +102,34 @@ export const rota1: Identity = {
   screen: {
     /* bütün yazılar, logolar ve düğme yazıları saf siyah */
     text: '#000000',
-    /* yazı rolleri: başlık ve alıntı comma-serif 300; değerler ve tanıtım 400; etiketler ve düğmeler
-       config-mono-vf wght 500 (büyük harf); bütün sayılar config-mono-vf wght 300 */
+    /* yazı rolleri (Adobe kiti fpj2hxb): başlık ogg-text 700; tanıtım ve künye değerleri ogg-text 400; alıntı ogg
+       400 italik (başlık ve alıntı içerikteki gibi, büyük harfe çevrilmez); etiketler ve düğmeler config-mono-vf
+       wght 500 (büyük harf); bütün sayılar config-mono-vf wght 300 */
     type: {
-      title: { family: '"comma-serif", serif', weight: 300 },
-      quote: { family: '"comma-serif", serif', weight: 300 },
-      body: { family: '"comma-serif", serif', weight: 400 },
+      title: { family: '"ogg-text", sans-serif', weight: 700, style: 'normal' },
+      quote: { family: '"ogg", sans-serif', weight: 400, style: 'italic' },
+      body: { family: '"ogg-text", sans-serif', weight: 400, style: 'normal' },
       label: { family: '"config-mono-vf", monospace', weight: 500, variation: '"wght" 500' },
       number: { family: '"config-mono-vf", monospace', weight: 300, variation: '"wght" 300' },
     },
-    label: { size: 0.0105, track: 0.16 },
+    /* okuma metni (tanıtım, künye değerleri): clamp(16px, 1.15vw, 19px), satır aralığı 1.45 */
+    body: { min: 16, vw: 0.0115, max: 19, lh: 1.45 },
+    /* etiketler (künye etiketleri, tür satırı, sahne adı, düğme yazıları): clamp(10px, 0.75vw, 12px), 0.08em */
+    label: { min: 10, vw: 0.0075, max: 12, track: 0.08 },
+    /* sayılar: "H" harfinin yüksekliği okuma metninkine eşit (fontlar yüklenince canvas ile ölçülür) */
+    number: { capOf: 'H' },
+    /* künye: başlık, tanıtım, altında satırlar; satırların üstünde ve aralarında 2px düz siyah çizgi */
     info: {
       left: 0.012, top: 0.02, width: 0.21, minWidth: 300, title: { web: 0.032, mobile: 0.075 },
-      value: 0.017, row: 0.029, track: 0.16, diamond: 7, descLines: 6, mobilePad: 0.02,
+      rule: 2, descLines: 6, mobilePad: 0.02,
     },
     quote: { top: 0.05, size: { web: 0.024, mobile: 0.055 }, lh: 1.15, maxW: { web: 0.5, mobile: 0.86 } },
-    stage: { size: 0.019, track: 0.18, gap: 0.015 },
-    ticket: { d: 0.09, font: 0.018, bottom: 0.04 },
+    stage: { gap: 0.015 },
+    ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },
-    logo: { h: 0.16, bottom: 0.04, letter: 0.025, mobileH: 0.11, mobileBottom: 0.03 },
-    members: { d: 0.075, font: 0.016, gap: 0.012, pad: 0.02, mobileD: 0.11 },
+    /* uzun logo %8 büyük (0.16 → 0.1728H); ilk harfi soldan 0.012W, çizgilerin daha çoğu sol kenarda kesilir */
+    logo: { h: 0.1728, bottom: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
+    members: { d: 0.075, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },
   },
 

@@ -3,7 +3,7 @@
    --c-*); ölçüler motorun px değişkenleri. */
 
 body {
-  font-family: var(--t-body-family), serif; font-weight: var(--t-body-weight);
+  font-family: var(--t-body-family); font-weight: var(--t-body-weight); font-style: var(--t-body-style);
   color: var(--c-text);
 }
 button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
@@ -11,12 +11,17 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 /* rol yardımcıları */
 .num, .cd {
   font-family: var(--t-number-family); font-weight: var(--t-number-weight); font-variation-settings: var(--t-number-var);
-  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
+  font-style: normal; font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
 }
+/* sayılar: büyük harf yüksekliği çevredeki okuma metninkine eşit (--num-k: screen.ts, canvas ölçümü) */
+.num, .cd { font-size: calc(var(--num-k, 1) * 1em); }
+/* eş aralıklı etiketler ve düğmeler: küçük, büyük harf */
 .lb, .gl, .gs-t, .cb {
   font-family: var(--t-label-family); font-weight: var(--t-label-weight); font-variation-settings: var(--t-label-var);
-  text-transform: uppercase;
+  font-style: normal; font-size: var(--fs-label); letter-spacing: var(--ls-label); text-transform: uppercase;
 }
+/* etiketlerin içindeki sayılar etiket boyunda */
+.lb .num, .gl .num, .gs-t .num, .cb .num { font-size: inherit; }
 
 /* sayaç: her karakter konumu ayrı span */
 .cd { display: inline-flex; align-items: baseline; line-height: 1; white-space: nowrap; }
@@ -24,32 +29,33 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 
 /* ---------- galeri yazıları: saf siyah ---------- */
 #ui, .brand, .bnd, .xcl { color: var(--c-text); }
-/* künye başlığı: büyük harf; hiç kısaltılmaz, gerektiği kadar satıra iner */
+/* künye başlığı: içerikteki gibi (büyük harfe çevrilmez); hiç kısaltılmaz, gerektiği kadar satıra iner */
 .gt {
-  font-family: var(--t-title-family); font-weight: var(--t-title-weight);
-  font-size: var(--gi-title); line-height: 1; letter-spacing: -0.01em; text-transform: uppercase;
-  overflow-wrap: break-word; padding-bottom: .12em;
+  font-family: var(--t-title-family); font-weight: var(--t-title-weight); font-style: var(--t-title-style);
+  font-size: var(--gi-title); line-height: 1.05; letter-spacing: -0.01em;
+  overflow-wrap: break-word; padding-bottom: .2em;
 }
-/* künye satırları: etiket, değer, sayaç ve tanıtım tek boyda */
-.lb { font-size: var(--gi-value); letter-spacing: var(--gi-ls); line-height: var(--gi-row); }
-.gv { font-size: var(--gi-value); line-height: var(--gi-row); }
+/* okuma metni: tanıtım ve künye değerleri */
+.gv, .gdesc { font-size: var(--fs-body); line-height: var(--lh-body); }
+/* künye satırları: etiket (küçük) ve değer taban çizgisinde */
+.gr { padding: .45em 0; }
+.lb { line-height: 1; flex: none; }
 .gv > span { white-space: nowrap; }
-.gcd { line-height: 1; padding-bottom: calc((var(--gi-row) - var(--gi-value)) / 2); }
-.gcd .cd { font-size: var(--gi-value); }
-/* tanıtım: en fazla birkaç satır, kalanı "…" */
+.gcd { line-height: 1; }
+/* tanıtım: başlığın altında, en fazla birkaç satır, kalanı "…" */
 .gdesc {
-  font-size: var(--gi-value); line-height: var(--gi-row); padding-top: calc((var(--gi-row) - var(--gi-value)) / 4);
+  margin-bottom: .9em;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--gi-lines); line-clamp: var(--gi-lines); overflow: hidden;
 }
-/* tür satırı */
-.gl { font-size: var(--lb-fs); letter-spacing: var(--lb-ls); line-height: 2.4; }
-/* alıntı: tırnak içinde, büyük harf */
+/* tür satırı: künye etiketleriyle aynı boy */
+.gl { line-height: 2.4; }
+/* alıntı: tırnak içinde, içerikteki gibi (büyük harfe çevrilmez), italik */
 .gq {
-  font-family: var(--t-quote-family); font-weight: var(--t-quote-weight);
-  font-size: var(--gq-fs); line-height: var(--gq-lh); text-transform: uppercase; text-wrap: balance;
+  font-family: var(--t-quote-family); font-weight: var(--t-quote-weight); font-style: var(--t-quote-style);
+  font-size: var(--gq-fs); line-height: var(--gq-lh); text-wrap: balance;
 }
 /* sahne adı */
-.gs-t { font-size: var(--gs-fs); letter-spacing: var(--gs-ls); line-height: 1; }
+.gs-t { line-height: 1; }
 /* daire düğmeler: düz beyaz, yazı metin renginde */
 .cb { background: var(--c-btn); color: var(--c-text); }
 @media (hover: hover) {

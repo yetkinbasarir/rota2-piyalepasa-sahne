@@ -1,4 +1,4 @@
-/* ROTA1 şablonları: galeri yazıları (künye bloğu, tür + alıntı, sahne adı), tam ekran başlığı,
+/* ROTA1 şablonları: galeri yazıları (künye bloğu, tür + alıntı, sahne adı),
    daire düğmeler ve kapatma ikonu. Ölçüleri ve yazı rollerini motor CSS değişkenleriyle verir.
    Bütün sayılar (tarih, saat, sayaç ve metin içindeki rakamlar) sayı rolünde (.num / .cd). */
 import type { Show, Templates, TemplateContext } from '../../engine/types';
@@ -19,10 +19,8 @@ function counterChars(s: Show, ctx: TemplateContext) {
 /** Sayacın geri saydığı temsil: henüz geçmemiş ilk temsil, hepsi geçmişse sonuncusu */
 const nextAt = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? s.sample.at.at(-1);
 
-/** Logodaki elmasın sağ ucu (çizgi + elmas); viewBox logonun kendi biriminde, 1px çizgiyle birleşir */
-const DIAMOND =
-  '<svg class="dm" viewBox="900 154.87 41.732 28.626" aria-hidden="true" focusable="false"><path d="M920.961,177.038l6.458,6.458,14.313-14.313-14.313-14.313-6.458,6.458c-3.769,3.769-8.88,5.886-14.21,5.886H900V171.153H906.751c5.33,0,10.441,2.117,14.21,5.886Z"/></svg>';
-const rule = () => `<div class="rl ln" aria-hidden="true"><i></i>${DIAMOND}</div>`;
+/** Künye çizgisi: düz siyah (kalınlık screen.info.rule), elmassız */
+const rule = () => '<div class="rl ln" aria-hidden="true"></div>';
 
 /** İçerikte gerçek değer yoksa (boş, "—", "Belirtilmedi") gösterilmez */
 const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowerCase('tr') !== 'belirtilmedi';
@@ -45,9 +43,10 @@ function info(s: Show, ctx: TemplateContext) {
     const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
     rows.push(`<div class="gr ln"><span class="lb">Oyuncular</span><span class="gv gv-col">${names}</span></div>`);
   }
-  // son satırın altında bir elmaslı çizgi daha ve tanıtım (en fazla birkaç satır, kalanı "…")
-  const desc = !ctx.mobile && s.intro ? rule() + `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
-  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rule()}${rows.join(rule())}${desc}</div>`;
+  // sıra: başlık, tanıtım (en fazla birkaç satır, kalanı "…"), altında çizgilerle ayrılmış künye satırları
+  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
+  const list = rows.length ? rule() + rows.join(rule()) : '';
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${desc}${list}</div>`;
 }
 
 /* ---------- sahne adı ---------- */

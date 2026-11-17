@@ -126,6 +126,8 @@ export interface TypeRole {
   weight: number;
   /** font-variation-settings (ör. '"wght" 300') */
   variation?: string;
+  /** font-style (normal / italic) */
+  style?: string;
 }
 
 /** ROTA2 çapraz 3B daire galerisi: ölçüler ekran yüksekliği H'nin (belirtilenler genişlik W'nin) oranı */
@@ -137,6 +139,8 @@ export interface GalleryTokens {
     /** Ana dairenin (p = 0) sınır kutusu merkezi: x (W oranı), y (H oranı); web / mobil */
     mainX: { web: number; mobile: number };
     mainY: { web: number; mobile: number };
+    /** Bütün daire grubu (daireler ve gölgeleri) bu kadar yukarıda (H oranı); aralık ve ölçüler değişmez */
+    lift: { web: number; mobile: number };
     /** Temel çap: eğik hâlin sınır kutusu alıntının altı ile sahne adının üstü arasında, her iki yanda bu
         boşlukla (H) en büyük */
     gap: number;
@@ -188,10 +192,11 @@ export interface GalleryTokens {
   /** Hareket: oturma, kendiliğinden ilerleme */
   settle: { dur: number; ease: string };
   auto: { every: number; dur: number; ease: string };
-  /** Açık hâlin ağı: hücre (px, piksel ızgarasında), delikler arası zemin grisi (px), opaklık */
+  /** Açık hâlin ağı: hücre (CSS px), delikler arası zemin grisi çizgi (aygıt pikseli), opaklık */
   mesh: { cell: number; line: number; opacity: number };
-  /** Açılma: süre, açılış / kapanış eğrisi, videonun belirme başlangıcı ve süresi (sn) */
-  open: { dur: number; easeIn: string; easeOut: string; videoAt: number; videoDur: number };
+  /** Açılma: ana dairenin ekranı kaplayana kadar büyüme süresi ve eğrisi (kapanışta aynısı), videonun belirme
+      başlangıcı ve süresi (sn) */
+  open: { dur: number; ease: string; videoAt: number; videoDur: number };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */
@@ -204,27 +209,32 @@ export interface ScreenTokens {
   text: string;
   /** Yazı rolleri: künye başlığı, alıntı, değerler / tanıtım, etiketler ve düğmeler, sayılar */
   type: { title: TypeRole; quote: TypeRole; body: TypeRole; label: TypeRole; number: TypeRole };
-  /** Tür satırı (alıntının üstünde): yazı boyu, harf aralığı (em) */
-  label: { size: number; track: number };
-  /** Künye bloğu: sol (W), üst, genişlik (W, en az px), başlık (W; web / mobil), değer ve etiket boyu, satır,
-      etiket harf aralığı (em), elmas yüksekliği (px), tanıtımın en fazla satırı; mobilde kenar boşluğu (H) */
+  /** Okuma metni (tanıtım, künye değerleri): clamp(min px, vw·W, max px), satır aralığı */
+  body: { min: number; vw: number; max: number; lh: number };
+  /** Eş aralıklı etiketler (künye etiketleri, tür satırı, sahne adı, düğme yazıları): clamp(min px, vw·W, max px),
+      harf aralığı (em) */
+  label: { min: number; vw: number; max: number; track: number };
+  /** Sayılar: büyük harf yüksekliği okuma metninkine eşitlenir (canvas ile ölçülen harf) */
+  number: { capOf: string };
+  /** Künye bloğu: sol (W), üst, genişlik (W, en az px), başlık (W; web / mobil), çizgi kalınlığı (px),
+      tanıtımın en fazla satırı; mobilde kenar boşluğu (H) */
   info: {
     left: number; top: number; width: number; minWidth: number; title: { web: number; mobile: number };
-    value: number; row: number; track: number; diamond: number; descLines: number; mobilePad: number;
+    rule: number; descLines: number; mobilePad: number;
   };
   /** Üst orta: tür satırının üstü (H), alıntı boyu (W), satır aralığı, en fazla genişlik (W) */
   quote: { top: number; size: { web: number; mobile: number }; lh: number; maxW: { web: number; mobile: number } };
-  /** Alt orta sahne adı: yazı boyu, harf aralığı (em), Bilet Al ile arası */
-  stage: { size: number; track: number; gap: number };
-  /** Bilet Al: çap, yazı boyu, alt boşluk */
-  ticket: { d: number; font: number; bottom: number };
+  /** Alt orta sahne adı: Bilet Al ile arası (yazı boyu etiket boyu) */
+  stage: { gap: number };
+  /** Bilet Al: çap, alt boşluk (yazı boyu etiket boyu) */
+  ticket: { d: number; bottom: number };
   /** Daire düğmeler: dolgu; yazı tek satırda en fazla çapın `fit` oranı genişlikte (rahat iç boşluk) */
   button: { fill: string; fit: number };
   /** Logo: masaüstünde uzun logo yüksekliği, alt boşluk, ilk harfin soldan uzaklığı (W); mobilde kısa logo
       yüksekliği ve alt boşluğu */
   logo: { h: number; bottom: number; letter: number; mobileH: number; mobileBottom: number };
-  /** Üye Ol / Giriş: çap, yazı boyu, aralık, üst ve sağ boşluk; mobilde çap (W oranı) */
-  members: { d: number; font: number; gap: number; pad: number; mobileD: number };
+  /** Üye Ol / Giriş: çap, aralık, üst ve sağ boşluk; mobilde çap (W oranı); yazı boyu etiket boyu */
+  members: { d: number; gap: number; pad: number; mobileD: number };
   /** Yazı değişimi: kayma (px), satırlar arası gecikme, toplam süre (sn) */
   swap: { shift: number; stagger: number; total: number };
 }
