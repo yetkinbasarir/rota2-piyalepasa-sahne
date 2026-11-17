@@ -6,7 +6,6 @@ import type { Identity } from '../../engine/types';
 import { templates } from './templates';
 import logoLong from './logo-long.svg?raw';
 import logoShort from './logo-short.svg?raw';
-import { SURFACE } from './surface';
 import './styles.css';
 
 export const rota1: Identity = {
@@ -80,8 +79,8 @@ export const rota1: Identity = {
   },
 
   /* kimlik slayt gösterisi (logoya tıklayınca): 5 sn'de bir, yatay itme 0.8 sn power2.inOut, açılma / kapanma
-     0.5 sn; denetimler beyaz %60 (üzerindeyken %100), kenardan 0.025W, yan üçgenler 28px, duraklat 16px;
-     sol altta dönüş oku 20px (görünmez 12px tıklama payı); açıkken site logosu gizli */
+     0.5 sn; denetimler beyaz %60 (üzerindeyken %100), kenardan 0.025W, 3px çizgi (sitedeki × kendi değerinde),
+     yan üçgenler 84px, duraklat 48px; sol altta dönüş oku 60px (görünmez 12px tıklama payı); açıkken site logosu gizli */
   slides: {
     interval: 5,
     dur: 0.8,
@@ -90,12 +89,12 @@ export const rota1: Identity = {
     mobileMax: 768,
     background: '#000000',
     color: '#FFFFFF',
-    stroke: SURFACE.line,
+    stroke: 3,
     opacity: { idle: 0.6, hover: 1 },
     margin: 0.025,
-    arrow: { h: 28, ratio: 0.5 },
-    pause: 16,
-    back: { h: 20, hit: 12 },
+    arrow: { h: 84, ratio: 0.5 },
+    pause: 48,
+    back: { h: 60, hit: 12 },
     swipe: 0.2,
     swipeSpeed: 0.5,
   },

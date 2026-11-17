@@ -259,6 +259,7 @@ export interface SlidesTokens {
   /** Zemin, denetimlerin rengi, çizgi kalınlığı (px; kapatma ikonuyla aynı) */
   background: string;
   color: string;
+  /** Denetimlerin çizgi kalınlığı (px; sitedeki × kendi değerinde kalır) */
   stroke: number;
   /** Denetimlerin opaklığı: duruşta, fare üzerindeyken */
   opacity: { idle: number; hover: number };
