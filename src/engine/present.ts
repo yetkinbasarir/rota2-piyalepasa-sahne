@@ -85,6 +85,8 @@ export function startPresentation(o: { S: State; camera: Camera; gallery: Galler
     // mobilde başlatma zamanlayıcısı kurulmaz
     if (S.mobile) return;
     idle = gsap.delayedCall(s, () => {
+      // slayt gösterisi açıkken sunum başlamaz
+      if (S.slides) return schedule(sec('presentResume'));
       if (!S.mobile) begin();
     });
   }

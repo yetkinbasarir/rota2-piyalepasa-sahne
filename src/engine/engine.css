@@ -95,6 +95,30 @@ img, video { -webkit-user-drag: none; }
 }
 .cb > span { display: block; white-space: nowrap; }
 
+/* ---------- kimlik slayt gösterisi (slides.ts): logonun altında, galerinin ve yazıların üstünde ---------- */
+.sl { position: absolute; inset: 0; z-index: 2; background: var(--sl-bg, #000); overflow: hidden; cursor: default; touch-action: none; }
+.sl-track { position: absolute; inset: 0; }
+.sl-i { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; will-change: transform; }
+.sl-b {
+  position: absolute; z-index: 1; padding: 0; line-height: 0; color: var(--sl-c, #fff); opacity: var(--sl-o, .6);
+  transition: opacity .2s;
+}
+/* tıklama alanı çizimden geniş */
+.sl-b::before { content: ''; position: absolute; inset: -14px; }
+.sl-b svg { display: block; overflow: visible; }
+@media (hover: hover) { .sl-b:hover { opacity: var(--sl-oh, 1); } }
+.sl-prev, .sl-next { top: 50%; transform: translateY(-50%); }
+.sl-prev { left: var(--sl-m); }
+.sl-next { right: var(--sl-m); }
+.sl-prev svg, .sl-next svg { width: var(--sl-aw); height: var(--sl-ah); }
+.sl--touch .sl-prev, .sl--touch .sl-next { display: none; }
+.sl-pp { right: var(--sl-m); bottom: calc(var(--sl-m) + env(safe-area-inset-bottom, 0px)); }
+.sl-pp svg { height: var(--sl-p); width: auto; }
+/* açıkken logo gösterinin üstünde, yerinde; tıklanabilir. × gizli */
+.sl-open .brand { z-index: 3; }
+.sl-open .xcl { display: none; }
+.brand.is-live .lg-l svg, .brand.is-live .lg-l i, .brand.is-live .lg-s svg, .brand.is-live .lg-s i { pointer-events: auto; cursor: pointer; }
+
 /* ---------- × ---------- */
 .xcl {
   position: fixed; top: var(--logo-pad); right: var(--logo-pad); z-index: 12; width: var(--xcl-d, 56px); height: var(--xcl-d, 56px);

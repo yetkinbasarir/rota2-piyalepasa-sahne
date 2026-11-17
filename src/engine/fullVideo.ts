@@ -28,7 +28,8 @@ export interface FullVideoPlayer {
   /** Tam ekranda yüklü (yükleniyor ya da oynuyor) bir video var mı */
   active(): boolean;
   /** Yatay telefon katmanı: on → duraklat ve sesi kapat; off → sessiz olarak kaldığı yerden sürdür */
-  suspend(on: boolean): void;
+  /** Duraklat (on) / sürdür; gesture: kullanıcı dokunuşunun içinde, ses açık sürer */
+  suspend(on: boolean, gesture?: boolean): void;
 }
 
 /* ---------- dış betikler: yalnızca gerektiğinde, bir kez ---------- */
@@ -502,7 +503,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
     else me.pending = { gesture };
   }
 
-  function suspend(on: boolean) {
+  function suspend(on: boolean, gesture = false) {
     const me = cur;
     if (!me || !me.started) return;
     if (on) {
@@ -517,8 +518,11 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       }
     } else {
       me.held = false;
-      // sessiz devam: ses ancak yeni bir dokunuşla açılır
-      if (me.ready) me.play(false);
+      // dokunuşun içinde ses açık sürer (0'dan yükselir); değilse sessiz: ses ancak yeni bir dokunuşla açılır
+      if (me.ready) {
+        me.play(gesture);
+        if (gesture && me.shown && !IOS) fadeSound(me, V.volume, motion.dur('soundIn'));
+      }
     }
   }
 

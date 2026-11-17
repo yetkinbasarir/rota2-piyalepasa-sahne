@@ -6,6 +6,7 @@ import type { Identity } from '../../engine/types';
 import { templates } from './templates';
 import logoLong from './logo-long.svg?raw';
 import logoShort from './logo-short.svg?raw';
+import { SURFACE } from './surface';
 import './styles.css';
 
 export const rota1: Identity = {
@@ -73,6 +74,25 @@ export const rota1: Identity = {
     open: { dur: 0.8, easeIn: 'power3.in', easeOut: 'power3.out', videoAt: 0.3, videoDur: 0.6 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
+  },
+
+  /* kimlik slayt gösterisi (logoya tıklayınca): 5 sn'de bir, yatay itme 0.8 sn power2.inOut, açılma / kapanma
+     0.5 sn; denetimler beyaz %60 (üzerindeyken %100), kenardan 0.025W, yan üçgenler 28px, duraklat 16px */
+  slides: {
+    interval: 5,
+    dur: 0.8,
+    ease: 'power2.inOut',
+    fade: 0.5,
+    mobileMax: 768,
+    background: '#000000',
+    color: '#FFFFFF',
+    stroke: SURFACE.line,
+    opacity: { idle: 0.6, hover: 1 },
+    margin: 0.025,
+    arrow: { h: 28, ratio: 0.5 },
+    pause: 16,
+    swipe: 0.2,
+    swipeSpeed: 0.5,
   },
 
   /* ekrandaki yazılar ve düğmeler */

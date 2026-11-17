@@ -16,6 +16,7 @@ import { createScreensaver } from './screensaver';
 import { bindPointer } from './input/pointer';
 import { bindWheel } from './input/wheel';
 import { bindKeyboard } from './input/keyboard';
+import { createSlides } from './slides';
 import type { Identity, Show, TemplateContext } from './types';
 
 export async function startEngine(id: Identity, shows: Show[]) {
@@ -61,7 +62,30 @@ export async function startEngine(id: Identity, shows: Show[]) {
   dom.surface.addEventListener('pointermove', (e) => gallery.hover(e));
   dom.surface.addEventListener('pointerleave', () => gallery.hover(null));
   bindWheel(dom.surface, cmd, id.gallery.wheel.idle);
+  // kimlik slayt gösterisi: tuşları galeriden önce alır (açıkken galeriye geçmez)
+  const slides = createSlides({
+    id, before: dom.brand, reduced: motion.reduced,
+    hold(on) {
+      S.slides = on;
+      gallery.hold(on);
+      // kapanınca kendiliğinden ilerleme sayacı baştan
+      if (!on) camera.touch();
+    },
+  });
   bindKeyboard(cmd);
+  // logo (yükleme ekranı kalktıktan sonra, görünen logo): slayt gösterisini açar / kapatır; tıklama galeriye geçmez
+  let logoLive = false;
+  const logoHit = (e: Event) => {
+    if (!logoLive) return false;
+    const part = (e.target as Element | null)?.closest?.<HTMLElement>('.lg-l, .lg-s');
+    return !!part && parseFloat(getComputedStyle(part).opacity) >= 0.5;
+  };
+  for (const t of ['pointerdown', 'touchstart']) dom.brand.addEventListener(t, (e) => logoHit(e) && e.stopPropagation());
+  dom.brand.addEventListener('click', (e) => {
+    if (!logoHit(e)) return;
+    e.stopPropagation();
+    slides.toggle();
+  });
 
   // ekran çerçevesi, sonra ondan hesaplanan galeri yerleşimi
   const layout = () => {
@@ -161,6 +185,8 @@ export async function startEngine(id: Identity, shows: Show[]) {
 
   // ekran koruyucu tamamen kalkınca kendiliğinden ilerleme ve kendi kendine sunumun sayacı başlar
   loader.onGone(() => {
+    logoLive = true;
+    dom.brand.classList.add('is-live');
     camera.autoplay(true);
     presenter = startPresentation({ S, camera, gallery, cmd, motion, id });
   });

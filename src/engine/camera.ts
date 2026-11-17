@@ -50,7 +50,7 @@ export function createCamera(S: State, id: Identity, motion: Motion): Camera {
   function arm() {
     timer?.kill();
     timer = gsap.delayedCall(G.auto.every, () => {
-      const idle = autoOn && !S.mobile && !motion.reduced && !S.pressed && !S.open && !S.full && !S.paused && !document.hidden && !busy();
+      const idle = autoOn && !S.mobile && !motion.reduced && !S.pressed && !S.open && !S.full && !S.paused && !S.slides && !document.hidden && !busy();
       if (idle) api.advance();
       arm();
     });

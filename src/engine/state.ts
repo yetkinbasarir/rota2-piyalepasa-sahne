@@ -21,6 +21,8 @@ export interface State {
   full: boolean;
   /** Telefonda yatay ekran katmanı açık: her şey bekler */
   paused: boolean;
+  /** Kimlik slayt gösterisi açık: galeri, sunum ve video bekler */
+  slides: boolean;
 }
 
 export const mod = (a: number, n: number) => ((a % n) + n) % n;
@@ -34,7 +36,7 @@ export const snapPx = (v: number) => {
 };
 
 export function createState(): State {
-  return { vw: 0, vh: 0, mobile: false, safeTop: 0, safeBottom: 0, pos: 0, pressed: false, open: false, full: false, paused: false };
+  return { vw: 0, vh: 0, mobile: false, safeTop: 0, safeBottom: 0, pos: 0, pressed: false, open: false, full: false, paused: false, slides: false };
 }
 
 export function measure(S: State, id: Identity) {

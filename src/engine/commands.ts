@@ -35,7 +35,7 @@ export function createCommands(o: { S: State; id: Identity; camera: Camera; gall
   /** Bir adımlık sürükleme mesafesi (px): ana daire ile sonraki dairenin duruş noktaları arası */
   const stepPx = () => Math.max(1, gallery.step());
   const drag = (dx: number, dy: number) => (S.mobile ? dy : dominant(dx, dy));
-  const locked = () => S.open || S.full || S.paused;
+  const locked = () => S.open || S.full || S.paused || S.slides;
   let lastWheel = 0;
 
   const cmd: Commands = {

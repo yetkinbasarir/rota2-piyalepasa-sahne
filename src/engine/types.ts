@@ -229,6 +229,34 @@ export interface ScreenTokens {
   swap: { shift: number; stagger: number; total: number };
 }
 
+/** Kimlik slayt gösterisi */
+export interface SlidesTokens {
+  /** Kendiliğinden ilerleme (sn) */
+  interval: number;
+  /** Yatay itme geçişi: süre (sn), eğri */
+  dur: number;
+  ease: string;
+  /** Açılma / kapanma (sn) */
+  fade: number;
+  /** Ekran dikeyse ya da bu genişlikten (px) darsa mobil set */
+  mobileMax: number;
+  /** Zemin, denetimlerin rengi, çizgi kalınlığı (px; kapatma ikonuyla aynı) */
+  background: string;
+  color: string;
+  stroke: number;
+  /** Denetimlerin opaklığı: duruşta, fare üzerindeyken */
+  opacity: { idle: number; hover: number };
+  /** Denetimlerin ekran kenarından uzaklığı (W oranı) */
+  margin: number;
+  /** Yan üçgenler: yükseklik (px), genişlik / yükseklik */
+  arrow: { h: number; ratio: number };
+  /** Duraklat / oynat: boy (px) */
+  pause: number;
+  /** Dokunmatik kaydırma: adım için en az kayma (W oranı) ya da hız (px/ms) */
+  swipe: number;
+  swipeSpeed: number;
+}
+
 export interface Identity {
   id: string;
   name: string;
@@ -242,6 +270,7 @@ export interface Identity {
   /** Kâğıt dokusu: SVG feTurbulence */
   paper: { frequency: number; octaves: number; opacity: number };
   gallery: GalleryTokens;
+  slides: SlidesTokens;
   screen: ScreenTokens;
   /** Sayaç biçimi: ayraç */
   counterFormat: { sep: string };

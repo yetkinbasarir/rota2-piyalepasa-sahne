@@ -60,6 +60,8 @@ export interface Gallery {
   videoActive(): boolean;
   /** Yatay telefon katmanı: videoyu duraklat (on) / sessiz sürdür (off) */
   suspend(on: boolean): void;
+  /** Slayt gösterisi: video ve kendiliğinden dönüş zamanlayıcısı bekler (on) / sürer (off; kullanıcı dokunuşunun içinde) */
+  hold(on: boolean): void;
   /** Fare hareketi (eğim, düzleşme); null: fare yüzeyden çıktı */
   hover(e: PointerEvent | null): void;
   /** Fontlar yüklenince yazıları yeniden kur */
@@ -726,6 +728,15 @@ export function createGallery(o: {
     videoActive: () => o.video.active(),
     suspend(on) {
       o.video.suspend(on);
+    },
+    hold(on) {
+      if (on) {
+        autoTimer?.pause();
+        o.video.suspend(true);
+      } else {
+        autoTimer?.resume();
+        o.video.suspend(false, true);
+      }
     },
     hover,
     refresh() {
