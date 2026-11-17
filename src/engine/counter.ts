@@ -34,7 +34,8 @@ export function countdown(now: Date, target: number | null): number[] {
 export const pad2 = (n: number) => String(Math.max(0, Math.min(99, n))).padStart(2, '0');
 
 /** Sayaç metni: "AA:GG:SS:DD:SS" (14 karakter) */
-export const countText = (v: number[]) => v.map(pad2).join(':');
+let SEP = ':';
+export const countText = (v: number[]) => v.map(pad2).join(SEP);
 /** Tarih metni: "GG / AA / YYYY" (14 karakter) */
 export const dateText = (ms: number | null) => {
   if (ms === null) return '00 / 00 / 0000';
@@ -58,7 +59,9 @@ export interface Counters {
    oluşturuldukları andan itibaren sayaçla başlatır. prefers-reduced-motion: dönme yok, kısa opaklık geçişi. */
 type Mode = 'count' | 'date';
 
-export function createCounters(shows: Show[], visible: () => Iterable<Element>, motion: Motion): Counters {
+export function createCounters(shows: Show[], visible: () => Iterable<Element>, motion: Motion, format?: { sep: string; flip: boolean }): Counters {
+  if (format) SEP = format.sep;
+  const flipOn = format?.flip !== false;
   const byK = new Map(shows.map((s) => [s.k, s]));
   const target = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? null;
   const showOf = (el: HTMLElement) => byK.get(+el.dataset.cd!);
@@ -195,12 +198,12 @@ export function createCounters(shows: Show[], visible: () => Iterable<Element>, 
       });
     });
   }
-  gridCycle();
+  if (flipOn) gridCycle();
 
   /* ---------- açılmış öğe / tam ekran: kendi döngüsü, açıldığı andan itibaren ---------- */
   const own = new WeakSet<HTMLElement>();
   function ownCycle(el: HTMLElement) {
-    if (own.has(el)) return;
+    if (own.has(el) || !flipOn) return;
     own.add(el);
     const loop = () =>
       gsap.delayedCall(motion.dur('countShow'), () => {

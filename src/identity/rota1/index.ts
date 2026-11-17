@@ -22,7 +22,34 @@ export const rota1: Identity = {
     band: '#3A3D42',
     bandAlpha: 0.88,
     card: '#3A3F45',
+    stroke: '#B4BCC1',
   },
+  /* ROTA2 daire grid'i: bütün ölçüler ekran yüksekliği H'nin oranı */
+  ring: {
+    disc: 0.4025,
+    discMobileW: 0.62,
+    pitch: 0.873,
+    row: 0.546,
+    nameY: 0.039,
+    nameSize: 0.043,
+    counterY: 0.078,
+    counterSize: 0.0224,
+    counterTrack: 0.04,
+    discTop: 0.108,
+    photoZoom: 1.8,
+    /* ayraç: 2px çizgi, elmas 0.03H × 0.02H; sarkaç en fazla ±1.5°, yarı periyot 1.2 sn, sönüm 0.25.
+       gain: kameranın yatay hızı (px/sn) başına açı (°) — 1500 px/sn'de en büyük açı; phase: ayraçlar arası
+       en fazla frekans farkı (küçük rastgele faz kayması) */
+    sep: { width: 2, diamondH: 0.03, diamondW: 0.02, maxAngle: 1.5, gain: 0.001, halfPeriod: 1.2, damping: 0.25, phase: 0.08 },
+    band: { web: 0.255, mobile: 0.2, open: 0.5, openMobile: 0.62, credits: 0.85, logoH: 0.195, logoPad: 0.034 },
+    button: { d: 0.148, gap: 0.02, right: 0.039, font: 0.035, mobile: 0.7 },
+    open: {
+      iris: 0.9, irisOut: 0.8, ease: 'power3.inOut', bandOut: 0.5, textDelay: 0.2, textFade: 0.4,
+      textGap: 0.05, textW: 0.42, titleSize: 0.043, introSize: 0.021, introLh: 1.4, introGap: 0.02,
+    },
+  },
+  /* sayaç noktalı (ay.gün.saat.dakika.saniye); sayaç ↔ tarih dönüşü kapalı */
+  counterFormat: { sep: '.', flip: false },
   /* grid fotoğrafları duotone: koyu ve açık ton */
   duotone: { dark: '#1E2125', light: '#D5DADD' },
 

@@ -18,44 +18,30 @@ img, video { -webkit-user-drag: none; }
   background-size: var(--tex-p) var(--tex-p);
 }
 .layer { position: absolute; inset: 0; pointer-events: none; }
-/* en altta tam genişlikte siyah bant: kartların altında, açık öğenin (tam ekran fotoğraf) altında */
-.band { position: absolute; left: 0; right: 0; bottom: 0; height: var(--band-h); background: var(--c-band, #000); pointer-events: none; }
+/* alt bant: tam genişlik, ekran yüksekliğinde; görünen yüksekliği motor translateY ile verir
+   (grid'in, ayraçların ve iris görselinin üstünde) */
+.band { position: absolute; left: 0; right: 0; top: 0; height: var(--vvh, 100vh); background: var(--c-band, #000); pointer-events: none; will-change: transform; }
 
-/* kart: iki kalıcı parça (fotoğraf .pw, renk kutusu .kc); pencereler en büyük hâllerinde kurulur,
-   transform ile taşınıp ölçeklenir. Fotoğraf renk kutusunun önünde durur ve ona 1px taşar. */
-.card { position: absolute; left: 0; top: 0; pointer-events: auto; }
-.pw, .kc { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; }
-.pw { will-change: transform; }
-.pwi, .pwm, .kci { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
-/* renk kutusu: kartın kendi rengi. Perforaj: her iki kenarda tek daire, renk kutusunun dikey
-   ortasında; merkezi kutunun dışında, kartlar arası boşluğun tam ortasında (sol: x = −g/2,
-   sağ: x = W + g/2). Çap D = W × oran (--perf). Yan yana iki kartın karşılıklı oyukları aradaki
-   boşlukla birlikte tek bir tam daire olarak görünür; oyuk derinliği (D − g) / 2. Sol ve sağ maske
-   intersect ile birleşir. Açılırken panel zemini (.pbg) gelir. */
-.kbg, .ccard, .pnlw { position: absolute; left: 0; top: 0; }
-.kbg {
-  --r: calc(var(--card-w) * var(--perf, .15) / 2);
-  --hole-l: radial-gradient(circle at calc(var(--gap) / -2) 50%, transparent var(--r), #000 calc(var(--r) + .5px));
-  --hole-r: radial-gradient(circle at calc(100% + var(--gap) / 2) 50%, transparent var(--r), #000 calc(var(--r) + .5px));
-  -webkit-mask: var(--hole-l), var(--hole-r);
-  -webkit-mask-composite: source-in;
-  mask: var(--hole-l), var(--hole-r);
-  mask-composite: intersect;
+/* daire grid'i: öğe (isim, sayaç, daire) kolon merkezine ortalı; yalnızca transform ile taşınır */
+.it { position: absolute; left: 0; top: 0; pointer-events: auto; will-change: transform; }
+.rn, .rc { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; color: #fff; }
+.rd {
+  position: absolute; left: 0; overflow: hidden; border-radius: 50%; background: var(--c-line, #636D74);
+  cursor: pointer; transform: translateZ(0);
 }
-.pbg { position: absolute; inset: 0; opacity: 0; }
-/* uzun künyenin kaydırma çubuğu: kanal görünmez, çubuk düz köşeli; üzerindeyken grab / grabbing */
-.ksb { pointer-events: auto; touch-action: none; }
-.ksbt { cursor: grab; will-change: transform; }
-.ksb.drag, .ksb.drag .ksbt { cursor: grabbing; }
-/* parlama şeridi: kartın tamamından geçer (renk kutusunda perforaj maskesiyle kesilir, isim ve sayacın
-   altında; fotoğrafta görselin üstünde, yavaş zoom'dan bağımsız). Yalnızca translateX ile hareket eder */
-.shn {
-  position: absolute; left: calc(-1 * var(--shn-w)); top: 0; width: var(--shn-w); height: var(--shn-h);
-  background: var(--shn-bg); mix-blend-mode: soft-light; pointer-events: none; will-change: transform;
-}
-/* mobil metin kutusu: aşağı doğru büyür */
-.tpanel { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; visibility: hidden; }
-.tps { position: relative; transform-origin: 0 0; }
+/* kolon ayracı: ekranın üstünden altına, üst ucundan asılı (sarkaç); elmaslar dikey baklava */
+.sp { position: absolute; left: 0; top: 0; background: var(--c-line, #636D74); transform-origin: 50% 0; pointer-events: none; will-change: transform; }
+.sp > i { position: absolute; background: var(--c-line, #636D74); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+/* açılmış öğe: renkli fotoğraf dairesel maskeyle (iris) bütün ekrana */
+.iris { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.iris img { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; display: block; }
+
+/* açılmış öğenin bant paneli: metin kolonu ve düğmeler (motor bantla birlikte taşır) */
+.obp { position: fixed; left: 0; top: 0; width: 100%; z-index: 10; visibility: hidden; opacity: 0; pointer-events: auto; overflow: hidden; }
+.obt { position: absolute; overflow: hidden; touch-action: none; }
+.obs { position: relative; will-change: transform; }
+.obb { position: absolute; display: flex; gap: var(--cb-gap); }
+.obb-m { position: static; margin-top: var(--oi-gap); flex-wrap: wrap; }
 
 /* tam ekran videosu: açık öğenin üstünde, logonun altında; tıklamaları geçirir. Video 16:9 kabul
    edilir; ekranı kaplayan cover boyutunun --fv-k katına büyütülür, büyütmenin merkezi yatayda orta,
@@ -86,23 +72,16 @@ img, video { -webkit-user-drag: none; }
   position: fixed; left: 0; right: 0; top: var(--logo-pad); z-index: 10; pointer-events: none;
   display: flex; justify-content: center; visibility: hidden;
 }
-/* mobilde en üstte siyah şerit (y = 0): üst bant (güvenli alan dahil). Kartlar, paneller ve tam ekran
-   görüntüsü altında kalır; logo, düğmeler ve sahne etiketi üstünde */
-.topstrip { position: fixed; left: 0; right: 0; top: 0; background: var(--c-band, #000); z-index: 10; pointer-events: none; display: none; }
-/* web'de şerit yok (tam ekran görüntü ekranın en üst pikselinden başlar); mobilde üst bant */
-.is-mobile .topstrip { display: block; height: var(--band-h); }
-/* mobil: sahne etiketi üst bandın hemen altında (logoya binmesin) */
-.is-mobile .fsl { top: auto; bottom: calc(env(safe-area-inset-bottom) + var(--mpad)); }
+/* ROTA2: üst şerit yok (bant mobilde de altta) */
+.topstrip { display: none; }
+.is-mobile .fsl { top: calc(var(--safe-top) + var(--mpad)); }
 .tex { position: fixed; inset: 0; z-index: 9; pointer-events: none; opacity: 0; visibility: hidden; }
-/* açılmış öğenin fotoğraf dokusu: fotoğraf kutusuyla aynı alanda, ölçeklenmez; yalnızca kutu dururken */
-.pov { position: absolute; left: 0; top: 0; pointer-events: none; opacity: 0; visibility: hidden; transform-origin: 0 0; }
 .fv-in iframe, .fv-in video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; display: block; object-fit: cover; }
 
-/* görsel doğal oranında; kutu içindeki yerleşimi crop.ts hesaplar, yavaş zoom görselin kendisinde */
+/* görsel doğal oranında; dairedeki ve iristeki yerleşimi motor hesaplar */
 .phn { position: absolute; left: 0; top: 0; display: block; max-width: none; }
 /* grid'de duotone fotoğraf (SVG filtresi #duotone, sayfada bir kez tanımlı). Renkli kopya (.phc) üstte,
    normal karışımla; açılırken opaklıkla belirir */
-.phz { position: absolute; left: 0; top: 0; }
 .phm { filter: url(#duotone); }
 .phc { mix-blend-mode: normal; }
 
@@ -110,26 +89,20 @@ img, video { -webkit-user-drag: none; }
 .media { position: absolute; inset: 0; }
 .media .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 33%; display: block; }
 
-/* logo: bandın içinde sol altta, beyaz; sabit, her şeyin (tam ekran fotoğraf dahil) önünde */
-/* kapsayıcı ekranın sol kenarından başlar; logo içinde logo-pad'de, çizgi uzantıları sol kenara kadar (logo.ts) */
-.brand {
-  position: fixed; left: 0; bottom: var(--logo-pad);
-  height: calc(var(--band-h) - 2 * var(--logo-pad)); z-index: 10; pointer-events: none; line-height: 0; color: #fff;
-}
+/* logo: kapsayıcı ekranın sol kenarından başlar (çizgi uzantıları, logo.ts); dikey konumu motor verir
+   (kapalı bantta ortalı, açık bantta sol üstte). Her şeyin önünde */
+.brand { position: fixed; left: 0; top: 0; z-index: 11; pointer-events: none; line-height: 0; color: #fff; will-change: transform; }
 .brand > i, .brand > svg { position: absolute; }
-/* alt bandın sağındaki düğmeler: bant içinde dikeyde ortalı, sağ boşluk logo-pad; sabit */
-.bnd {
-  position: fixed; right: var(--logo-pad); bottom: 0; height: var(--band-h); z-index: 10;
-  display: flex; align-items: center; pointer-events: none;
-}
+/* Üye Ol / Giriş: bandın sağında dikeyde ortalı (sağ boşluk, alt güvenli alan motor verir) */
+.bnd { position: fixed; z-index: 10; display: flex; align-items: center; gap: var(--cb-gap); pointer-events: none; }
 .bnd button { pointer-events: auto; cursor: pointer; }
-/* mobil (tek kolon): bant ekranın üstünde (üst güvenli alan dahil), açık öğenin de üstünde; logo solda,
-   düğmeler sağda, ikisi de bandın güvenli alan dışındaki kısmında dikeyde ortalı (boşluk --mpad) */
-.is-mobile .band { top: 0; bottom: auto; z-index: 5; }
-.is-mobile .brand {
-  left: 0; top: calc(var(--safe-top) + var(--mpad)); bottom: auto;
-  height: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad));
+/* daire düğme: içi boş, ince kontur; fare üzerindeyken kontur beyaz */
+.cb {
+  width: var(--cb-d); height: var(--cb-d); flex: none; border-radius: 50%; box-sizing: border-box;
+  border: 1px solid var(--c-stroke, #fff); background: transparent; color: #fff; font-size: var(--cb-fs);
+  display: grid; place-items: center; text-align: center; line-height: 1.1; padding: 0 .3em; transition: border-color .2s;
 }
+.cb:hover { border-color: #fff; }
 /* telefonda yatay ekran katmanı: bütün içeriğin üstünde, güvenli alanlar dahil tam ekran düz siyah */
 .rot {
   position: fixed; inset: 0; z-index: 1000; background: var(--c-bg, #000); display: none;
@@ -142,9 +115,5 @@ img, video { -webkit-user-drag: none; }
   padding: 0; border: 0; background: none; cursor: pointer; line-height: 0; opacity: 0; visibility: hidden; pointer-events: auto;
 }
 .xcl svg { width: 100%; height: 100%; display: block; overflow: visible; }
-/* mobil: üst banttaki üye düğmelerinin yerinde, dikeyde bandın içinde ortalı; çap logo yüksekliği */
-.is-mobile .xcl {
-  top: calc(var(--safe-top) + var(--mpad)); right: var(--mpad);
-  width: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad)); height: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad));
-}
-.is-mobile .bnd { right: var(--mpad); top: var(--safe-top); bottom: auto; height: calc(var(--band-h) - var(--safe-top)); }
+/* mobil: sağ üstte, üst güvenli alanın altında */
+.is-mobile .xcl { top: calc(var(--safe-top) + var(--mpad)); right: var(--mpad); }

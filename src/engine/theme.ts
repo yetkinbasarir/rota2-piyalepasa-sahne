@@ -31,6 +31,7 @@ export function applyIdentity(id: Identity) {
   set('--c-bg', id.colors.background);
   set('--c-line', id.colors.line ?? '#000');
   if (id.colors.card) set('--c-card', id.colors.card);
+  set('--c-stroke', id.colors.stroke ?? '#fff');
   {
     // bant rengi ve opaklığı
     const h = (id.colors.band ?? '#000000').replace('#', '');
@@ -126,8 +127,8 @@ export function buildDom(id: Identity, brandHtml: () => string): Dom {
   app.innerHTML = `
 <div id="surface" role="application" aria-label="${id.strings.surfaceLabel}">
   <div id="wall" class="layer"></div>
-  <div class="band" aria-hidden="true"></div>
   <div id="top" class="layer"></div>
+  <div class="band" aria-hidden="true"></div>
   <div id="fv" class="layer"></div>
 </div>
 <svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>

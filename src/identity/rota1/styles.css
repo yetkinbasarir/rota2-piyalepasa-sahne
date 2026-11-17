@@ -10,17 +10,29 @@ body {
 b { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); }
 button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 
-/* ---------- kart: renk kutusu (isim + sayaç) ---------- */
-.nmw { position: absolute; left: 0; top: 0; right: 0; line-height: 1.08; }
-/* isim: Light, renk kutusu başlık puntosu */
-.nm {
-  font-family: var(--role-light-family); font-weight: var(--role-light-weight);
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--lines, 3); overflow: hidden;
-  overflow-wrap: break-word; hyphens: auto;
+/* ---------- ROTA2 daire grid'i ---------- */
+/* isim: comma-serif 400, beyaz, tek satır (motor sığdırır) */
+.rn { font-family: var(--role-light-family); font-weight: var(--role-light-weight); }
+/* sayaç: config-mono-vf wght 500, beyaz, noktalı */
+.rc .cd, .oc .cd {
+  font-family: var(--role-counterStrong-family); font-weight: var(--role-counterStrong-weight);
+  font-variation-settings: var(--role-counterStrong-var);
 }
-/* " & " ile ayrılan isim: yan yana iki sütun */
-.nm-2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: .6em; }
-.nm-2 > span { overflow-wrap: break-word; }
+/* daire düğmeler: comma-serif 400 */
+.cb { font-family: var(--role-light-family); font-weight: var(--role-light-weight); }
+
+/* ---------- açılmış öğe: bandın içindeki metin kolonu ---------- */
+.obs { color: #fff; }
+.ot { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); font-size: var(--ot); line-height: 1.15; overflow-wrap: break-word; }
+.oc { line-height: 1; margin-top: .2em; }
+.oi { margin-top: var(--oi-gap); font-size: var(--oi); line-height: var(--oi-lh); font-family: var(--role-light-family); font-weight: var(--role-light-weight); }
+/* künye: tanıtımın altında, aynı punto; satırlar 1px çizgiyle */
+.ok { margin-top: var(--oi-gap); }
+.ok[hidden] { display: none; }
+.ok .kn { width: auto !important; padding: 0 !important; font-size: var(--oi) !important; line-height: var(--oi-lh); }
+/* Detay basılıyken kontur beyaz */
+.cb[aria-pressed="true"] { border-color: #fff; }
+
 /* sayaç: tek satır, etiketsiz, renk kutusunun tam genişliği (motor data-fit ile oturtur) */
 .cdw { position: absolute; left: 0; right: 0; bottom: 0; }
 .cd {
@@ -31,25 +43,6 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 }
 /* her karakter konumu ayrı: boşluklar da yer kaplar (tarih "GG / AA / YYYY") */
 .cd > span { white-space: pre; }
-
-/* ---------- açılmış öğe: renk paneli ---------- */
-.pnl { display: flex; flex-direction: column; gap: .9em; color: inherit; }
-/* başlık: büyük, Light */
-.pt { font-family: var(--role-bold-family); font-weight: var(--role-bold-weight); line-height: 1.04; letter-spacing: -.01em; overflow-wrap: break-word; }
-/* tanıtım: Light; sığmayan kısım yumuşakça kaybolur */
-.pin {
-  flex: 1; min-height: 0; overflow: hidden; line-height: 1.34;
-  -webkit-mask-image: linear-gradient(#000 78%, transparent); mask-image: linear-gradient(#000 78%, transparent);
-}
-/* düğmeler: beyaz çizgi (1px), içi boş, beyaz yazı; basılıyken / künye açıkken (Detay) içi beyaz dolar */
-.pbt { display: flex; flex-wrap: wrap; gap: .5em; }
-.pbt button {
-  font: inherit; font-family: var(--role-light-family); font-weight: var(--role-light-weight);
-  color: #fff; line-height: 1.2; padding: calc(.4em - 1px) calc(.9em - 1px); box-sizing: border-box;
-  border: 1px solid #fff; border-radius: 999px; background: transparent; white-space: nowrap; transition: background-color .15s, color .15s;
-}
-.pbt button:active, .pbt button[aria-pressed="true"] { background: #fff; color: var(--c-card, #000); }
-.pcw { line-height: 0; }
 
 /* ---------- logo kutusu ---------- */
 .brand { color: #fff; }
@@ -129,17 +122,6 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 .acc-i { opacity: 0; padding-bottom: calc(var(--lh) / 2); }
 
 /* ---------- arayüz ---------- */
-/* alt bant düğmeleri: sahne etiketiyle aynı biçim ve boyut; aralarındaki boşluk panel düğmelerinin 1.6 katı
-   (aynı em, 1.6 kat punto); basılıyken hafifçe kararır */
-.bnb { display: flex; gap: .5em; }
-/* zemin saydam, ince beyaz kontur (--bnb-line; dış ölçüye dahil: dolgu konturu kadar azaltılır, düğme büyümez),
-   yazı beyaz Light; fare üzerindeyken ve basılıyken içi beyaz dolar, yazı siyah olur */
-.bnb button {
-  font: inherit; box-sizing: border-box; border: var(--bnb-line, 1px) solid #fff; background: transparent; color: #fff;
-  padding: calc(.4em - var(--bnb-line, 1px)) calc(.9em - var(--bnb-line, 1px)); text-align: center;
-  transition: background-color .2s, color .2s;
-}
-.bnb button:hover, .bnb button:active { background: #fff; color: #000; }
 /* kapatma ikonu: fare üzerindeyken / basılıyken daire beyaz dolar, × siyah olur */
 /* kapatma ikonu hiçbir durumda dolgu almaz; geri bildirim yalnızca opaklıkla */
 .xcl svg { transition: opacity .2s; }
@@ -180,14 +162,3 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
   color: #000; background: #fff; line-height: 1.2; padding: .4em .9em; border-radius: 999px; white-space: nowrap;
 }
 
-/* ---------- mobil açılmış öğe: renk paneli (içerik kadar uzar) ve altında künye ---------- */
-.mpanel .pnl { height: auto !important; }
-.mpanel .pin { flex: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
-.mpanel .mkn[hidden] { display: none; }
-/* mobil panel puntoları: başlık (Bold), tanıtım ve künye --m-fs, satır aralığı 1.35 */
-.mpanel .pt {
-  font-size: var(--m-fs) !important; line-height: 1.35;
-  font-family: var(--role-bold-family); font-weight: var(--role-bold-weight);
-}
-.mpanel .pin { font-size: var(--m-fs) !important; line-height: 1.35; }
-.mpanel .kn { font-size: var(--m-fs) !important; line-height: 1.35; }

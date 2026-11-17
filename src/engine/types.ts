@@ -93,6 +93,8 @@ export interface MediaOptions {
 }
 
 export interface TemplateContext {
+  /** Sayaç ayracı */
+  sep?: string;
   mobile: boolean;
   vw: number;
   vh: number;
@@ -135,6 +137,12 @@ export interface Templates {
   stageLabel(show: Show, w: number, ctx: TemplateContext): string;
   /** Alt bandın sağındaki düğmeler (panel genişliği w'ye göre boyut; scale ek küçültme); data-band */
   bandButtons(w: number, scale: number, ctx: TemplateContext): string;
+  /** Daire grid'i: isim (.rn) ve sayaç (.rc); boyları ve yerleri motor verir */
+  ringItem(show: Show, ctx: TemplateContext): string;
+  /** Açılmış öğenin metin kolonu: başlık (.ot), sayaç (.oc), tanıtım (.oi), künye yeri (.ok) */
+  openText(show: Show, ctx: TemplateContext): string;
+  /** Daire düğmeler: [etiket, data-act] çiftleri */
+  circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG; çizgi kalınlığı üye düğmelerinin konturu) */
   closeIcon(ctx: TemplateContext): string;
   /** Renk zemini üzerindeki yazı rengi */
@@ -165,6 +173,38 @@ export interface LogoPart {
   thick: number;
 }
 
+export interface RingTokens {
+  /** Daire çapı D (H'nin oranı); mobilde D = min(disc·H, discMobileW·W) */
+  disc: number;
+  discMobileW: number;
+  /** Kolon aralığı P = D / pitch */
+  pitch: number;
+  /** Satır aralığı R */
+  row: number;
+  /** İsim: satır ortası y, yazı boyu */
+  nameY: number;
+  nameSize: number;
+  /** Sayaç: ortası y, yazı boyu, harf aralığı (em) */
+  counterY: number;
+  counterSize: number;
+  counterTrack: number;
+  /** Dairenin üst kenarı */
+  discTop: number;
+  /** Daire içindeki fotoğraf: normal kaplama boyutunun katı */
+  photoZoom: number;
+  /** Kolon ayracı: kalınlık (px), elmas yükseklik / genişlik; sarkaç */
+  sep: { width: number; diamondH: number; diamondW: number; maxAngle: number; gain: number; halfPeriod: number; damping: number; phase: number };
+  /** Alt bant: yükseklikler, logo */
+  band: { web: number; mobile: number; open: number; openMobile: number; credits: number; logoH: number; logoPad: number };
+  /** Daire düğmeler: çap, aralık, sağ boşluk, yazı boyu; mobilde çap bandın oranı */
+  button: { d: number; gap: number; right: number; font: number; mobile: number };
+  /** Açılmış öğe */
+  open: {
+    iris: number; irisOut: number; ease: string; bandOut: number; textDelay: number; textFade: number;
+    textGap: number; textW: number; titleSize: number; introSize: number; introLh: number; introGap: number;
+  };
+}
+
 export interface Identity {
   id: string;
   name: string;
@@ -180,7 +220,13 @@ export interface Identity {
     bandAlpha?: number;
     /** Verilirse bütün bilet kartlarının ve açılmış öğe panelinin rengi (fotoğraftan çıkarılan renk kullanılmaz) */
     card?: string;
+    /** Daire düğmelerin konturu */
+    stroke?: string;
   };
+  /** Daire grid'i (ROTA2): bütün ölçüler ekran yüksekliği H'nin (gerektiğinde genişlik W'nin) oranı */
+  ring: RingTokens;
+  /** Sayaç biçimi: ayraç ve sayaç ↔ tarih karakter dönüşü */
+  counterFormat: { sep: string; flip: boolean };
   /** Grid fotoğraflarının duotone eşlemesi (SVG filtresi): koyu ve açık ton */
   duotone: { dark: string; light: string };
   /** Renk kutularının paleti; yan yana iki öğe aynı rengi almaz */

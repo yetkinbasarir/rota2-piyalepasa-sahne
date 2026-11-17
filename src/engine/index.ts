@@ -2,7 +2,7 @@
 import './engine.css';
 import { gsap, createMotion } from './motion';
 import { applyIdentity, buildDom, landscapeQuery } from './theme';
-import { createState, measure, esc, viewCols, snapCamForward } from './state';
+import { createState, measure, esc, viewCols, snapCamForward, snapPx } from './state';
 import { createMedia } from './media';
 import { createCounters } from './counter';
 import { fitText } from './fit';
@@ -37,7 +37,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
 
   const media = await createMedia();
   let visible: () => Iterable<Element> = () => [];
-  const counters = createCounters(shows, () => visible(), motion);
+  const counters = createCounters(shows, () => visible(), motion, id.counterFormat);
   const tctx = (): TemplateContext => ({
     mobile: S.mobile,
     vw: S.vw,
@@ -47,6 +47,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
     media: media.html,
     logo: logoHtml,
     countdown: (s) => counters.values(s),
+    sep: id.counterFormat.sep,
     esc,
   });
 
@@ -86,33 +87,29 @@ export async function startEngine(id: Identity, shows: Show[]) {
      ekranın sol kenarına kadar; ekran ölçüsüne göre uzun / kısa seçilir */
   const renderBrand = () => {
     if (!brand) return;
-    const css = getComputedStyle(document.documentElement);
-    const pad = parseFloat(css.getPropertyValue(S.mobile ? '--mpad' : '--logo-pad')) || 0;
-    const h = S.mobile ? S.band - S.safeTop - 2 * pad : S.band - 2 * pad;
+    const G = id.ring;
+    const pad = snapPx(G.band.logoPad * S.vh);
+    // web: 0.195H; mobil: bandın (güvenli alan hariç) aynı oranı
+    const h = S.mobile ? ((S.band - S.safeBottom) * G.band.logoH) / G.band.web : G.band.logoH * S.vh;
     if (h <= 0) return;
     const L = layoutLogo(pickLogo(id, h, S.vw, S.mobile), h, pad);
     brand.style.width = `${L.width}px`;
     brand.style.height = `${h}px`;
     brand.innerHTML = L.html;
   };
+  /* Üye Ol / Giriş: iki daire düğme, bandın sağında dikeyde ortalı. Şimdilik işlevsiz */
   const renderBand = () => {
     renderBrand();
-    const pad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(S.mobile ? '--mpad' : '--logo-pad')) || 0;
-    const room = () => S.vw - (brand?.getBoundingClientRect().right ?? 0) - 2 * pad;
-    // düğmeler eş boyda: genişlik ikisinden uzun olanınki, yazı ortalı
-    const equalize = () => {
-      const bs = [...dom.band.querySelectorAll<HTMLElement>('button')];
-      bs.forEach((b) => (b.style.width = ''));
-      const w = Math.max(...bs.map((b) => b.getBoundingClientRect().width));
-      bs.forEach((b) => (b.style.width = `${Math.ceil(w)}px`));
-    };
-    // mobilde üst banda sığacak şekilde 0.8 katı
-    for (const scale of S.mobile ? [0.8] : [1, 0.8]) {
-      dom.band.innerHTML = id.templates.bandButtons(S.cw + S.gap, scale, tctx());
-      equalize();
-      if (dom.band.getBoundingClientRect().width <= room()) return;
-    }
-    dom.band.querySelector('[data-band="signup"]')?.remove();
+    const G = id.ring;
+    const d = S.mobile ? (S.band - S.safeBottom) * G.button.mobile : G.button.d * S.vh;
+    const st = dom.band.style;
+    st.setProperty('--cb-d', `${d.toFixed(2)}px`);
+    st.setProperty('--cb-fs', `${(G.button.font * S.vh).toFixed(2)}px`);
+    st.setProperty('--cb-gap', `${(G.button.gap * S.vh).toFixed(2)}px`);
+    st.right = `${(G.button.right * S.vh).toFixed(2)}px`;
+    st.bottom = `${S.safeBottom}px`;
+    st.height = `${S.band - S.safeBottom}px`;
+    dom.band.innerHTML = id.templates.circleButtons([['Üye Ol', 'signup'], ['Giriş', 'login']], tctx());
   };
   renderBand();
   // fontlar yüklenince ölçüler değişir: düğmeler yeniden ölçülür
@@ -135,7 +132,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
   const firstScreen = new Set<Show>();
   for (let i = Math.floor(S.cx) - 1; i <= Math.ceil(S.cx + viewCols(S)) + 1; i++)
     for (let j = 0; j < S.rows; j++) firstScreen.add(shows[(((2 * i + j) % N) + N) % N]);
-  const firstImages = media.preload([...firstScreen], S.cw);
+  const firstImages = media.preload([...firstScreen], S.cw * id.ring.photoZoom);
   const ss = loader.ssRoot ? createScreensaver({ root: loader.ssRoot, shows, media, id, mobile: S.mobile, reduced: motion.reduced }) : null;
   loader.attach(ss);
   // oynatıcılar yüklemeyi geciktirmez: hazır olmayanların kesmelerinde fotoğraf yedeği gösterilir
@@ -144,7 +141,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
   await Promise.race([firstImages, new Promise((r) => setTimeout(r, 1200))]);
   gsap.ticker.add(wall.render);
   const later = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 300));
-  later(() => media.preload(shows, 2 * S.cw));
+  later(() => media.preload(shows, S.cw * id.ring.photoZoom));
 
   // Kimliğin font rolleri yüklenince ölçüye bağlı dizgiler (sayaç genişliği) yeniden kurulur
   if (document.fonts) {

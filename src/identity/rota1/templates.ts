@@ -27,7 +27,7 @@ const CD_EM = 8.4;
 
 /** Sayaç: 14 karakter ("AA:GG:SS:DD:SS"), her konum ayrı span (sayaç ↔ tarih geçişi konum konum döner) */
 function counterChars(s: Show, ctx: TemplateContext) {
-  const text = ctx.countdown(s).map((n) => String(n).padStart(2, '0')).join(':');
+  const text = ctx.countdown(s).map((n) => String(n).padStart(2, '0')).join(ctx.sep ?? ':');
   return [...text].map((c) => `<span>${c}</span>`).join('');
 }
 function counter(s: Show, ctx: TemplateContext, size: number) {
@@ -159,6 +159,23 @@ function bandButtons(w: number, scale: number, _ctx: TemplateContext) {
     `<button type="button" class="fsl-b" data-band="login">Üye Girişi</button></div>`;
 }
 
+/* ---------- ROTA2 daire grid'i ---------- */
+/** Grid öğesi: isim (tek satır) ve noktalı sayaç; daire motorda */
+function ringItem(s: Show, ctx: TemplateContext) {
+  return `<div class="rn">${ctx.esc(s.title)}</div><div class="rc"><div class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</div></div>`;
+}
+/** Açılmış öğenin metin kolonu: başlık, sayaç, tanıtım; künye (.ok) Detay ile tanıtımın altına */
+function openText(s: Show, ctx: TemplateContext) {
+  return `<h2 class="ot">${ctx.esc(s.title)}</h2>` +
+    `<div class="oc"><div class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</div></div>` +
+    (s.intro ? `<p class="oi">${ctx.esc(s.intro)}</p>` : '') +
+    `<div class="ok" hidden></div>`;
+}
+/** Daire düğmeler: içi boş, ince kontur, yazı ortada */
+function circleButtons(items: [string, string][], ctx: TemplateContext) {
+  return items.map(([label, act]) => `<button type="button" class="cb" data-act="${act}">${ctx.esc(label)}</button>`).join('');
+}
+
 /** Kapatma ikonu: yalnızca × — ince çizgi (ölçeklenmez), keskin, düz uçlu, merkezden ±45°.
     Çizgilerin uçları (artık çizilmeyen) dairenin geçtiği noktalarda biter; tıklama alanı dairenin çapı */
 const CLOSE_R = 49;
@@ -178,6 +195,9 @@ export const templates: Templates = {
   stageLabel,
   bandButtons,
   closeIcon,
+  ringItem,
+  openText,
+  circleButtons,
   credits,
   panel,
   textPanel,

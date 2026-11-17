@@ -63,61 +63,51 @@ export function createState(): State {
 
 export function measure(S: State, id: Identity) {
   const Wl = id.wall;
+  const G = id.ring;
   S.vw = innerWidth;
   S.vh = innerHeight;
-  // alt bant ölçüsü eski ölçütle (dikey dar ekran) aynı kalır
-  const portrait = S.vw < S.vh && S.vw < 760;
-  S.gap = Wl.gap;
-  S.band = snapPx(S.vh * (portrait ? Wl.band.mobile : Wl.band.web));
-  S.rows = Wl.rows;
-  S.top = 0;
-  S.bottom = S.vh - S.band;
+  // mobil (n = 1): dikey dar ekran; görünür alan yüksekliği (100dvh / visualViewport)
+  S.mobile = S.vw < S.vh && S.vw < 760;
   S.safeTop = S.safeBottom = 0;
-  // kart yüksekliği = (içerik alanı − üst boşluk − alt boşluk − satır araları) / satır
-  // web: üst boşluk yok (yalnızca satır arası ve bant üstü boşluk); mobil: üst boşluk var
-  S.topGap = 0;
-  const rowsH = () => (S.bottom - S.top - S.topGap - S.gap - (S.rows - 1) * S.gap) / S.rows;
-  S.ch = rowsH();
-  // kart genişliği sabit orandan; ekran genişliğinden hesaplanmaz
-  S.cw = S.ch * Wl.cardRatio;
-  S.stepX = S.cw + S.gap;
-  // ortadaki tam kolon sayısı ve ekranın ortasına yerleşmeleri
-  S.cols = Math.max(1, Math.min(Wl.maxCols, Math.floor((S.vw - S.gap) / (S.cw + S.gap))));
-  if (S.cols === 1) {
-    // mobil (tek kolon): görünür alan yüksekliği (100dvh / visualViewport), üstte siyah bant,
-    // alt güvenli alan en alttaki içeriğe boşluk olarak eklenir
+  if (S.mobile) {
     const vp = viewportMetrics();
     S.vh = vp.h;
     S.safeTop = vp.top;
     S.safeBottom = vp.bottom;
-    S.band = snapPx(Wl.mobileBand + S.safeTop);
-    S.top = S.band;
-    S.bottom = S.vh - S.safeBottom;
-    S.topGap = S.gap;
-    S.ch = rowsH();
-    S.cw = S.ch * Wl.cardRatio;
-    S.stepX = S.cw + S.gap;
-    S.cols = 1;
   }
-  S.margin = (S.vw - (S.cols * S.cw + (S.cols - 1) * S.gap)) / 2;
-  // kolona oturmuş kamera: ilk tam kolonun sol kenarı margin'de
+  const H = S.vh;
+  S.rows = 2;
+  // daire çapı D, kolon aralığı P (merkezden merkeze), satır aralığı R
+  const D = S.mobile ? Math.min(G.disc * H, G.discMobileW * S.vw) : G.disc * H;
+  S.cw = D;
+  S.stepX = D / G.pitch;
+  S.ch = G.row * H;
+  // kolonlar arası boşluk (dairenin kenarından komşu dairenin kenarına)
+  S.gap = S.stepX - D;
+  // alt bant: tam genişlikte, altta; mobilde alt güvenli alan bandın içine eklenir
+  S.band = snapPx(H * (S.mobile ? G.band.mobile : G.band.web) + S.safeBottom);
+  S.top = 0;
+  S.bottom = S.vh - S.band;
+  S.topGap = 0;
+  // ekranın yatay ortasında bir kolon merkezi: ortadaki "tam" kolon tek kolondur
+  S.cols = 1;
+  S.margin = S.vw / 2 - D / 2;
+  // kolona oturmuş kamera: ortadaki dairenin sol kenarı margin'de
   S.snapOff = mod(-S.margin / S.stepX, 1);
-  // tek kolon: mobil dikey açılma düzeni
-  S.mobile = S.cols === 1;
   const root = document.documentElement;
   root.classList.toggle('is-mobile', S.mobile);
   root.style.setProperty('--card-w', `${S.cw}px`);
   root.style.setProperty('--card-h', `${S.ch}px`);
   root.style.setProperty('--band-h', `${S.band}px`);
-  root.style.setProperty('--logo-pad', `${snapPx(Wl.logoPad * S.gap)}px`);
-  root.style.setProperty('--mpad', `${Wl.mobileLogoPad}px`);
+  root.style.setProperty('--H', `${H}px`);
+  root.style.setProperty('--logo-pad', `${snapPx(G.band.logoPad * H)}px`);
+  root.style.setProperty('--mpad', `${snapPx(G.band.logoPad * H)}px`);
   root.style.setProperty('--xcl-d', `${Wl.closeSize}px`);
   root.style.setProperty('--m-fs', `${Wl.mobileBody}px`);
   root.style.setProperty('--safe-top', `${S.safeTop}px`);
   // görünür alan yüksekliği (tam ekran video kaplaması); masaüstünde 100vh ile aynı
   root.style.setProperty('--vvh', `${S.vh}px`);
   root.style.setProperty('--gap', `${S.gap}px`);
-  root.style.setProperty('--perf', String(Wl.perforation));
   // ortak delikli doku: aralık ve çap ekranın piksel ızgarasına yuvarlanır (texture.ts)
   applyTexture(root, id);
   // tam ekran videosu: büyütme ve dikey merkez
@@ -126,7 +116,7 @@ export function measure(S: State, id: Identity) {
 }
 
 /** j. satırın üst kenarı (px) */
-export const rowTop = (S: State, j: number) => S.top + S.topGap + j * (S.ch + S.gap);
+export const rowTop = (S: State, j: number) => j * S.ch;
 
 /** Mobil: görünür alan yüksekliği (100dvh; desteklenmiyorsa visualViewport) ve güvenli alanlar */
 function viewportMetrics() {
