@@ -99,12 +99,10 @@ export interface TemplateContext {
 }
 
 export interface Templates {
-  /** Sol üst: başlık; .gi-rest içinde logo çizgisi, tanıtım, logo çizgisi. Satır satır geçiş için her satır .ln
-      taşır; mobilde tanıtım yok */
+  /** Sağ sütun (mobilde sol üst): başlık; .gi-rest içinde logo çizgileriyle ayrılmış tanıtım ve künye (TÜR / TARİH
+      (+ sayaç) / SAHNE / YÖNETEN / OYUNCULAR). Satır satır geçiş için her satır .ln taşır; mobilde tanıtım ve
+      oyuncular yok */
   info(show: Show, ctx: TemplateContext): string;
-  /** Sağ alt künye (mobilde başlığın altında): çizgilerle ayrılmış TÜR / TARİH (+ sayaç) / SAHNE / YÖNETEN /
-      OYUNCULAR satırları (.ln); mobilde oyuncular yok */
-  credits(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -163,8 +161,8 @@ export interface GalleryTokens {
   /** Ortadan uzaklık (adım): DOM'da tutulan daireler [-around, +around] */
   around: number;
   /** Alan derinliği: ana yuvadan uzaklık |p| = 0, 1, 2, 3'te opaklık ve bulanıklık (W oranı; arası doğrusal, iki
-      yanda aynı); mobilde bulanıklığın katı; bulanıklık adımı (px) */
-  focus: { opacity: number[]; blur: number[]; mobileBlur: number; step: number };
+      yanda aynı; sağda opaklık opacityRight); mobilde bulanıklığın katı; bulanıklık adımı (px) */
+  focus: { opacity: number[]; opacityRight: number[]; blur: number[]; mobileBlur: number; step: number };
   /** Süzülme: dikey genlik (H oranı), rotateX genliği (°), periyot aralığı (sn), eğri */
   float: { y: number; rx: number; min: number; max: number; ease: string };
   /** Fare eğimi (kenardaki daireler): en fazla açı (°), yay sertliği ve sönüm (dönüş) */
@@ -216,17 +214,14 @@ export interface ScreenTokens {
   label: { min: number; vw: number; max: number; track: number };
   /** Sayılar: büyük harf yüksekliği okuma metninkine eşitlenir (canvas ile ölçülen harf) */
   number: { capOf: string };
-  /** Sol üst blok (başlık + tanıtım): sol (W), genişlik (W, en az px), başlık (W; web / mobil), başlığın satır
+  /** Sağ sütun (başlık + tanıtım + künye; mobilde sol üstte): genişlik (W, en az px), başlık (W; web / mobil), başlığın satır
       aralığı ve en fazla satırı (sığmazsa yazı küçülür, hiç kısaltılmaz), logo çizgilerinin üstünde ve altında
-      boşluk (W; web / mobil); mobilde kenar boşluğu (H). Masaüstünde başlığın büyük harf üstü Üye Ol / Giriş
-      düğmelerinin üstüyle aynı çizgide. Tanıtım tam gösterilir */
+      boşluk (W; web / mobil); mobilde kenar boşluğu (H). Masaüstünde başlığın büyük harf üstü logonun üstüyle
+      aynı çizgide. Tanıtım tam gösterilir */
   info: {
-    left: number; width: number; minWidth: number; title: { web: number; mobile: number }; titleLh: number;
+    width: number; minWidth: number; title: { web: number; mobile: number }; titleLh: number;
     titleLines: number; ruleGap: { web: number; mobile: number }; mobilePad: number;
   };
-  /** Künye: genişlik (W; masaüstünde sağ altta, sağ kenarı Giriş düğmesinin, altı logonun altıyla hizalı, yukarı
-      büyür; mobilde başlığın altında ortada) */
-  credits: { width: { web: number; mobile: number } };
   /** Dairelerin sığdırıldığı alt sınır: Bilet Al'ın üstünden bu kadar (H) ve bir etiket satırı yukarısı
       (eski sahne adı yeri; daire ölçüleri değişmesin) */
   stage: { gap: number };
@@ -234,10 +229,11 @@ export interface ScreenTokens {
   ticket: { d: number; bottom: number };
   /** Daire düğmeler: dolgu; yazı tek satırda en fazla çapın `fit` oranı genişlikte (rahat iç boşluk) */
   button: { fill: string; fit: number };
-  /** Logo: masaüstünde uzun logo yüksekliği, alt boşluk, ilk harfin soldan uzaklığı (W); mobilde kısa logo
-      yüksekliği ve alt boşluğu */
-  logo: { h: number; bottom: number; letter: number; mobileH: number; mobileBottom: number };
-  /** Üye Ol / Giriş: çap, aralık, üst ve sağ boşluk; mobilde çap (W oranı); yazı boyu etiket boyu */
+  /** Logo: masaüstünde sol üstte uzun logo yüksekliği, üst boşluk, ilk harfin soldan uzaklığı (W; sağ sütunun
+      sağdan ve Üye Ol / Giriş'in soldan uzaklığı da bu); mobilde sol altta kısa logo yüksekliği ve alt boşluğu */
+  logo: { h: number; top: number; letter: number; mobileH: number; mobileBottom: number };
+  /** Üye Ol / Giriş: çap, aralık; mobilde sağ üstte üst ve sağ boşluk, çap (W oranı); masaüstünde sol altta
+      (logo.letter, ticket.bottom); yazı boyu etiket boyu */
   members: { d: number; gap: number; pad: number; mobileD: number };
   /** Yazı değişimi: kayma (px), satırlar arası gecikme, toplam süre (sn) */
   swap: { shift: number; stagger: number; total: number };

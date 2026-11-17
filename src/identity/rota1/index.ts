@@ -52,7 +52,8 @@ export const rota1: Identity = {
     around: 3,
     /* bütün daireler tam renkli; alan derinliği: |p| = 0 / 1 / 2 / 3'te opaklık 1 / 0.75 / 0.5 / 0.3, bulanıklık
        0 / 0.003W / 0.006W / 0.009W (mobilde yarısı), 0.5px adımlarla; gölge aynı opaklık katını alır */
-    focus: { opacity: [1, 0.75, 0.5, 0.3], blur: [0, 0.003, 0.006, 0.009], mobileBlur: 0.5, step: 0.5 },
+    /* sağda p = +1 opaklık 0.45 (0.75 yerine); p ≥ +2 aynı oranda (0.6×) */
+    focus: { opacity: [1, 0.75, 0.5, 0.3], opacityRight: [1, 0.45, 0.3, 0.18], blur: [0, 0.003, 0.006, 0.009], mobileBlur: 0.5, step: 0.5 },
     float: { y: 0.006, rx: 1.2, min: 5, max: 7, ease: 'sine.inOut' },
     tilt: { max: 7, stiffness: 140, damping: 14 },
     /* ana daire düzleşir: 1.08, 0.5 sn power2.out; gölge daha yuvarlak */
@@ -120,20 +121,20 @@ export const rota1: Identity = {
     label: { min: 10, vw: 0.0075, max: 12, track: 0.08 },
     /* sayılar: "H" harfinin yüksekliği okuma metninkine eşit (fontlar yüklenince canvas ile ölçülür) */
     number: { capOf: 'H' },
-    /* sol üst: başlık (0.028W, mobilde 0.075W; en fazla 2 satır, sığmazsa küçülür), altında logo çizgisi, tam
-       tanıtım, logo çizgisi. Çizgilerin üstünde ve altında başlık ile tanıtım arasındaki önceki boşluk
-       (0.2 × önceki başlık boyu: 0.0064W, mobilde 0.015W) */
+    /* sağ sütun (0.21W): başlık (0.028W, mobilde 0.075W; en fazla 2 satır, sığmazsa küçülür), aynalı logo çizgisi,
+       tam tanıtım, logo çizgisi, künye satırları. Başlık ve tanıtımın altındaki çizgilerin üstünde ve altında
+       0.0064W (mobilde 0.015W). Sütunun üstü logonun üstüyle hizalı; açık hâlde başlık ×'in altına iner */
     info: {
-      left: 0.012, width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.075 }, titleLh: 1.05,
+      width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.075 }, titleLh: 1.05,
       titleLines: 2, ruleGap: { web: 0.0064, mobile: 0.015 }, mobilePad: 0.02,
     },
-    /* künye sağ altta: 0.21W (mobilde başlığın altında 0.92W) */
-    credits: { width: { web: 0.21, mobile: 0.92 } },
     stage: { gap: 0.015 },
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },
-    /* uzun logo %8 büyük (0.16 → 0.1728H); ilk harfi soldan 0.012W, çizgilerin daha çoğu sol kenarda kesilir */
-    logo: { h: 0.1728, bottom: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
+    /* uzun logo sol üstte (0.1728H, üstten 0.04H); ilk harfi soldan 0.012W, çizgiler sol kenarda kesilir. Sağ
+       sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan aynı 0.012W */
+    logo: { h: 0.1728, top: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
+    /* Üye Ol / Giriş: masaüstünde sol altta (soldan logonun harf boşluğu, alttan Bilet Al'ınki); mobilde sağ üstte */
     members: { d: 0.075, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },
   },

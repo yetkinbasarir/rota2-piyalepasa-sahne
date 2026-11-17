@@ -1,4 +1,4 @@
-/* ROTA1 şablonları: galeri yazıları (sol üstte başlık + tanıtım, sağ altta künye),
+/* ROTA1 şablonları: galeri yazıları (sağ sütunda başlık, tanıtım, künye),
    daire düğmeler ve kapatma ikonu. Ölçüleri ve yazı rollerini motor CSS değişkenleriyle verir.
    Sayı rolü (.num / .cd) yalnızca künyedeki tarih / saat ve sayaçta; akan metindeki rakamlar metnin fontunda. */
 import type { Show, Templates, TemplateContext } from '../../engine/types';
@@ -23,20 +23,25 @@ const nextAt = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? s.sample.
     aynası (elmas solda) */
 const DIAMOND =
   '<svg class="dm" viewBox="900 154.87 41.732 28.626" aria-hidden="true" focusable="false"><path d="M920.961,177.038l6.458,6.458,14.313-14.313-14.313-14.313-6.458,6.458c-3.769,3.769-8.88,5.886-14.21,5.886H900V171.153H906.751c5.33,0,10.441,2.117,14.21,5.886Z"/></svg>';
-const rule = (mirror = false) => `<div class="lr${mirror ? ' lr-r' : ''} ln" aria-hidden="true"><i></i>${DIAMOND}</div>`;
+const rule = (gap = false) => `<div class="lr lr-r${gap ? ' lr-g' : ''} ln" aria-hidden="true"><i></i>${DIAMOND}</div>`;
 
 /** İçerikte gerçek değer yoksa (boş, "—", "Belirtilmedi") gösterilmez */
 const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowerCase('tr') !== 'belirtilmedi';
 
-/* ---------- sol üst: başlık ve altında tanıtım ---------- */
+/* ---------- sağ sütun: başlık, tanıtım, künye ----------
+   Başlığın altında aynalı logo çizgisi, tam tanıtım, altında yine çizgi (künyenin ilk satırının üstündeki çizgi);
+   künye satırlarının her birinin üstünde çizgi. Başlık ve tanıtımın altındaki çizgilerin üstünde ve altında
+   boşluk (.lr-g). Açık hâlde başlık dışındaki her şey (.gi-rest) kaybolup kapanır */
 function info(s: Show, ctx: TemplateContext) {
-  // başlığın altında logo çizgisi, tam tanıtım, altında yine logo çizgisi; açık hâlde kaybolup kapanır, başlık kalır
-  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` + rule() : '';
-  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rule()}${desc}</div>`;
+  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
+  const rows = credits(s, ctx);
+  let rest = rule(true);
+  if (desc) rest += desc + (rows.length ? rule(true) : '');
+  rest += rows.join(rule());
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rest}</div>`;
 }
 
-/* ---------- sağ alt künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları; her satırın üstünde aynalı logo
-   çizgisi ---------- */
+/* künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları */
 const STAGE: Record<string, string> = {
   'Ana Sahne': 'Büyük Sahne',
   'Küçük Sahne': 'Küçük Sahne',
@@ -45,7 +50,7 @@ const STAGE: Record<string, string> = {
 const initials = (v: string) =>
   v.toLocaleLowerCase('tr').replace(/(^|[\s\-/(])(\S)/g, (_m, a: string, b: string) => a + b.toLocaleUpperCase('tr'));
 const row = (label: string, value: string, cls = '') => `<div class="gr ln"><span class="lb">${label}</span><span class="gv${cls}">${value}</span></div>`;
-function credits(s: Show, ctx: TemplateContext) {
+function credits(s: Show, ctx: TemplateContext): string[] {
   const rows: string[] = [];
   if (present(s.genre)) rows.push(row('Tür', txt(ctx, initials(s.genre))));
   const at = nextAt(s);
@@ -62,7 +67,7 @@ function credits(s: Show, ctx: TemplateContext) {
     const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
     rows.push(row('Oyuncular', names, ' gv-col'));
   }
-  return rows.length ? rule(true) + rows.join(rule(true)) : '';
+  return rows;
 }
 
 /* ---------- düğmeler ---------- */
@@ -85,7 +90,6 @@ function closeIcon(_ctx: TemplateContext) {
 
 export const templates: Templates = {
   info,
-  credits,
   circleButtons,
   closeIcon,
 };

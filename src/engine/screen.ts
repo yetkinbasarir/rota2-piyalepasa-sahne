@@ -1,8 +1,9 @@
 /* Ekran çerçevesi: yazıların ölçüleri (CSS değişkenleri, px), logolar ve Üye Ol / Giriş düğmeleri.
    Bütün ölçüler kimliğin `screen` token'ları (H'nin, belirtilenler W'nin oranı).
-   Masaüstü: uzun logo sol altta, ilk harfi soldan `letter`·W'de, çizgilerin başı ekranın sol kenarında
-   kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol alt noktaya oturur ve çizgi aralığı uzun
-   logonunkine eşittir. Mobil: yalnızca kısa logo; üye düğmelerinin altında başlık, onun altında künye (0.92W). */
+   Masaüstü: uzun logo sol üstte, ilk harfi soldan `letter`·W'de, çizgilerin başı ekranın sol kenarında
+   kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol üst noktaya oturur ve çizgi aralığı uzun
+   logonunkine eşittir. Sağda başlık / tanıtım / künye sütunu, sol altta Üye Ol / Giriş.
+   Mobil: yalnızca kısa logo (sol altta); üye düğmeleri sağ üstte, altlarında başlık ve künye. */
 import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
@@ -26,30 +27,44 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--fs-label-px', clampPx(T.label));
   root.style.setProperty('--num-k', String(capRatio(id)));
 
-  /* üye düğmeleri: sağ üst (değişkenler kökte: yükleme ekranındaki kopya da kullanır) */
+  /* üye düğmeleri: masaüstünde sol altta (soldan logonun ilk harfi kadar, alttan Bilet Al kadar); mobilde sağ
+     üstte (değişkenler kökte: yükleme ekranındaki kopya da kullanır) */
   const d = S.mobile ? T.members.mobileD * W : T.members.d * H;
   const pad = T.members.pad * H;
+  const letterX = T.logo.letter * W;
   px('--cb-d', d);
   px('--cb-gap', T.members.gap * H);
-  dom.members.style.top = `${(pad + S.safeTop).toFixed(2)}px`;
-  dom.members.style.right = `${pad.toFixed(2)}px`;
+  const ms = dom.members.style;
+  if (S.mobile) {
+    ms.top = `${(pad + S.safeTop).toFixed(2)}px`;
+    ms.right = `${pad.toFixed(2)}px`;
+    ms.left = ms.bottom = '';
+  } else {
+    ms.left = `${letterX.toFixed(2)}px`;
+    ms.bottom = `${(S.safeBottom + T.ticket.bottom * H).toFixed(2)}px`;
+    ms.top = ms.right = '';
+  }
   if (!dom.members.childElementCount) {
     dom.members.innerHTML = id.templates.circleButtons([['Üye Ol', 'signup'], ['Giriş', 'login']], tctx);
     // şimdilik işlevsiz; tıklama galeriye geçmez
     dom.members.addEventListener('pointerdown', (e) => e.stopPropagation());
     dom.members.addEventListener('click', (e) => e.stopPropagation());
   }
-  const membersBottom = S.safeTop + pad + d;
+  // dairelerin sığdırıldığı üst sınır: mobilde üye düğmelerinin altı; masaüstünde aynı yükseklik (daire ölçüleri
+  // değişmesin)
+  px('--fit-top', S.safeTop + pad + d);
 
-  px('--members-bottom', membersBottom);
-
-  /* sol üst başlık: masaüstünde ilk satırın büyük harf üstü Üye Ol / Giriş düğmelerinin üstüyle aynı çizgide;
-     mobilde üye düğmelerinin altında (üstünü galeri verir) */
+  /* başlık, tanıtım ve künye sütunu: masaüstünde sağda (sağ kenarı sağdan logonun ilk harfi kadar), başlığın büyük
+     harf üstü logonun üstüyle aynı çizgide; mobilde sol üstte üye düğmelerinin altında (üstünü galeri verir) */
   const titleFs = (S.mobile ? T.info.title.mobile : T.info.title.web) * W;
-  const line = S.safeTop + pad;
-  px('--gi-left', S.mobile ? mpad : T.info.left * W);
-  if (!S.mobile) px('--gi-top', line - capOffset(T.type.title, titleFs, T.info.titleLh));
-  px('--gi-w', S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth));
+  const logoTop = S.safeTop + T.logo.top * H;
+  const giW = S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth);
+  const giLeft = S.mobile ? mpad : W - letterX - giW;
+  px('--gi-left', giLeft);
+  if (!S.mobile) px('--gi-top', logoTop - capOffset(T.type.title, titleFs, T.info.titleLh));
+  px('--gi-w', giW);
+  // sütundaki çizgiler sağda ekran kenarını geçer: sütunun sağ kenarından ekranın sağ kenarına
+  px('--gi-out', W - giLeft - giW);
   px('--gi-title', titleFs);
   root.style.setProperty('--gi-title-lh', String(T.info.titleLh));
   root.style.setProperty('--gi-title-lines', String(T.info.titleLines));
@@ -60,16 +75,6 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--lr-t', id.logo.long.thick * lk);
   px('--lr-d', DIAMOND_H * lk);
   px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
-
-  /* künye: masaüstünde sağ altta (sağ kenarı Giriş düğmesinin sağ kenarı, altı logonun altı; yukarı büyür);
-     mobilde başlığın altında ortada (üstünü galeri verir) */
-  const kw = (S.mobile ? T.credits.width.mobile : T.credits.width.web) * W;
-  px('--gk-w', kw);
-  px('--gk-left', (W - kw) / 2);
-  px('--gk-right', pad);
-  px('--gk-bottom', S.safeBottom + T.logo.bottom * H);
-  // künye çizgileri sağda ekran kenarını geçer: künyenin sağ kenarından ekranın sağ kenarına
-  px('--gk-out', S.mobile ? (W - kw) / 2 : pad);
 
   /* alt orta: yalnızca Bilet Al */
   px('--gs-gap', T.stage.gap * H);
@@ -95,17 +100,17 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     long.style.display = 'none';
     short.style.opacity = '1';
   } else {
-    const bottom = H - S.safeBottom - T.logo.bottom * H;
-    const x = T.logo.letter * W;
+    const top = logoTop;
+    const x = letterX;
     // uzun logo: ilk harf x'te; çizgilerin başı sol kenarda kesilir
     const h = T.logo.h * H;
     const vh = logoVbHeight(L.long);
     const lay = layoutLogo(L.long, h, x - letterStart(L.long) * (h / vh));
-    place(long, lay.html, lay.width, h, bottom - h);
-    // kısa logo: aynı sol alt nokta, çizgi aralığı uzun logonunkine eşit
+    place(long, lay.html, lay.width, h, top);
+    // kısa logo: aynı sol üst nokta, çizgi aralığı uzun logonunkine eşit
     const hs = h * (ruleSpacing(L.long) / vh) / (ruleSpacing(L.short) / logoVbHeight(L.short));
     const lays = layoutLogo(L.short, hs, x - letterStart(L.short) * (hs / logoVbHeight(L.short)));
-    place(short, lays.html, lays.width, hs, bottom - hs);
+    place(short, lays.html, lays.width, hs, top);
     long.style.display = '';
     long.style.opacity = '1';
     short.style.opacity = '0';

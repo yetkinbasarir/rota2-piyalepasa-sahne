@@ -62,27 +62,22 @@ img, video { -webkit-user-drag: none; }
 .gx { position: absolute; left: 0; right: 0; }
 .gi { position: absolute; left: var(--gi-left); top: var(--gi-top); width: var(--gi-w); }
 .gi > .gx { top: 0; }
-/* açık hâlde kapanır (overflow gizli); logo çizgileri sol kenarın dışına uzanabilsin diye kutu sola genişler */
-.gi-rest { overflow: hidden; margin-left: calc(-1 * var(--gi-left) - 2px); padding-left: calc(var(--gi-left) + 2px); }
-/* künye: masaüstünde sağ altta, alttan yukarı büyür; mobilde başlığın altında ortada */
-.gk { position: absolute; right: var(--gk-right); bottom: var(--gk-bottom); width: var(--gk-w); }
-.gk > .gx { bottom: 0; }
-.is-mobile .gk { right: auto; bottom: auto; left: var(--gk-left); top: var(--gk-top); }
-.is-mobile .gk > .gx { top: 0; bottom: auto; }
+/* açık hâlde kapanır (overflow gizli); logo çizgileri sağ kenarın dışına uzanabilsin diye kutu sağa genişler */
+.gi-rest { overflow: hidden; margin-right: calc(-1 * var(--gi-out) - 2px); padding-right: calc(var(--gi-out) + 2px); }
 /* alt orta: yalnızca Bilet Al */
 .gc { position: absolute; left: 0; right: 0; bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
 .ln { will-change: transform, opacity; }
 /* logo çizgisi: logodaki çizgi kalınlığı (--lr-t) ve sağ ucunda logodaki elmas (--lr-d); 1px üst üste biner.
-   Sol sütunda soldan ekran dışından başlar, sütunun sağ kenarında elmasla biter; üstünde ve altında --lr-gap.
-   Künyede aynası: elmas künyenin sol kenarında, çizgi sağda ekran kenarını geçer */
+   Sütunda aynası: elmas sütunun sol kenarında, çizgi sağda ekran kenarını geçer; başlığın ve tanıtımın altındakilerin
+   (.lr-g) üstünde ve altında --lr-gap */
 .lr { display: flex; align-items: center; height: var(--lr-d); }
 .lr > i { flex: 1; height: var(--lr-t); background: currentColor; margin-right: -.5px; }
 .lr > .dm { height: var(--lr-d); width: auto; display: block; fill: currentColor; flex: none; }
 .lr-r { flex-direction: row-reverse; }
 .lr-r > i { margin-right: 0; margin-left: -.5px; }
 .lr-r > .dm { transform: scaleX(-1); }
-.gi .lr { margin: var(--lr-gap) 0 var(--lr-gap) calc(-1 * var(--gi-left) - 2px); }
-.gk .lr { margin-right: calc(-1 * var(--gk-out) - 2px); }
+.gi .lr { margin-right: calc(-1 * var(--gi-out) - 2px); }
+.gi .lr-g { margin-top: var(--lr-gap); margin-bottom: var(--lr-gap); }
 .gr { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
 .gv { display: flex; flex-direction: column; align-items: flex-end; text-align: right; min-width: 0; }
 

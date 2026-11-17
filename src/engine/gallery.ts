@@ -232,10 +232,9 @@ export function createGallery(o: {
 
   /* ---------- yazılar: iskelet ---------- */
   dom.ui.innerHTML =
-    '<div class="gi"></div><div class="gk"></div>' +
+    '<div class="gi"></div>' +
     `<div class="gc">${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
   const gInfo = dom.ui.querySelector<HTMLElement>('.gi')!;
-  const gKun = dom.ui.querySelector<HTMLElement>('.gk')!;
   // Bilet Al şimdilik işlevsiz; tıklama galeriye geçmez
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk')!;
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -272,24 +271,25 @@ export function createGallery(o: {
 
     // ekrandaki başlık yeni ölçüde en fazla titleLines satır
     fitTitle(gInfo);
-    // üst sınır: Üye Ol / Giriş düğmelerinin altı
-    const mBottom = css('--members-bottom');
-    // mobilde: üye düğmelerinin altında başlık, onun altında künye; daireler künyenin altında
+    // üst sınır: mobilde Üye Ol / Giriş düğmelerinin altı, masaüstünde aynı yükseklik
+    const mBottom = css('--fit-top');
+    // mobilde: üye düğmelerinin altında başlık ve künye; daireler onların altında
     let kBottom = 0;
     if (S.mobile) {
       root.style.setProperty('--gi-top', `${(mBottom + mpad).toFixed(2)}px`);
-      const k = measureMax(gInfo, (s) => id.templates.info(s, ctx));
-      const kkTop = mBottom + mpad + k.h + mpad;
-      root.style.setProperty('--gk-top', `${kkTop.toFixed(2)}px`);
-      kBottom = kkTop + measureMax(gKun, (s) => id.templates.credits(s, ctx)).h;
+      kBottom = mBottom + mpad + measureMax(gInfo, (s) => id.templates.info(s, ctx)).h;
     }
     // alt sınır: Bilet Al'ın üstünden stage.gap ve bir etiket satırı yukarısı (eski sahne adı yeri)
     const tD = T.ticket.d * H;
     const gcBottom = css('--gc-bottom');
     const stageTop = H - gcBottom - tD - css('--gs-gap') - css('--fs-label-px');
 
-    const logoEl = (S.mobile ? lgShort : lgLong).querySelector('svg')?.getBoundingClientRect();
-    const logoTop = logoEl && logoEl.width > 0 ? logoEl.top : null;
+    // sol uçtaki daire için alt sınır: mobilde sol alttaki logonun üstü; masaüstünde logo sol üstte, sınır uzun
+    // logonun önceki sol alt yeri (kompozisyon değişmesin)
+    const logoEl = S.mobile ? lgShort.querySelector('svg')?.getBoundingClientRect() : null;
+    const logoTop = S.mobile
+      ? logoEl && logoEl.width > 0 ? logoEl.top : null
+      : H - S.safeBottom - (T.logo.top + T.logo.h) * H;
 
     // ana daire: sınır kutusunun merkezi (mainX, mainY). Temel çap, eğik hâlinin sınır kutusu üye düğmelerinin
     // altı (mobilde künyenin altı) ile alt sınır arasına her iki yanda gap boşlukla sığan en büyük değer
@@ -424,7 +424,7 @@ export function createGallery(o: {
       const i = Math.min(keys.length - 2, Math.floor(u));
       return lerp(keys[i], keys[i + 1], u - i);
     };
-    return { op: at(F.opacity), blur: at(F.blur) * S.vw * (S.mobile ? F.mobileBlur : 1) };
+    return { op: at(t > 0 ? F.opacityRight : F.opacity), blur: at(F.blur) * S.vw * (S.mobile ? F.mobileBlur : 1) };
   }
   /** Düzleşme: düz tam daire ve flat.scale (ya da eğimine dönüş) */
   function flatten(it: Disc, on: boolean) {
@@ -519,7 +519,6 @@ export function createGallery(o: {
     const show = showAt(n);
     const ctx = o.tctx();
     swap(gInfo, id.templates.info(show, ctx), animate);
-    swap(gKun, id.templates.credits(show, ctx), animate);
   }
 
   /* ---------- × ---------- */
@@ -561,6 +560,13 @@ export function createGallery(o: {
       img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
+  /** Açık hâlde başlığın inmesi (px): üstü ×'in altından ×'in üst boşluğu kadar aşağıda */
+  function titleDrop() {
+    const x = dom.close.getBoundingClientRect();
+    const xTop = parseFloat(getComputedStyle(dom.close).top) || x.top;
+    const giTop = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gi-top')) || 0;
+    return Math.max(0, xTop + dom.close.offsetHeight + xTop - giTop);
+  }
   /** Açılma / kapanma. Açılış: t = 0'da daire büyümeye, yazılar ve logo geçişe başlar; videoAt'te video ve ağ
       belirir. Kapanış tam tersi: önce video ve ağ kaybolur, daire simetrik olarak küçülür */
   function moves(on: boolean) {
@@ -579,10 +585,12 @@ export function createGallery(o: {
       tl.to(lgLong, { opacity: on ? 0 : 1, ...all }, t0);
       tl.to(lgShort, { opacity: on ? 1 : 0, ...all }, t0);
     }
-    // sol üstte başlık dışındaki her şey (tanıtım) kaybolup kapanır
+    // sütunda başlık dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık ×'in altına iner (×'in alt
+    // kenarından ×'in üst boşluğu kadar aşağı)
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to([gKun, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to(gInfo, { y: on ? titleDrop() : 0, ...all }, t0);
+    tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -680,7 +688,7 @@ export function createGallery(o: {
       }
     }
     // sayaç künyede: yalnızca güncel içerik
-    const cur = gKun.lastElementChild;
+    const cur = gInfo.lastElementChild;
     visibleEls = cur ? [cur] : [];
   }
 
@@ -698,10 +706,11 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gKun, dom.members, lgLong, lgShort]);
+      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, lgLong, lgShort]);
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([gKun, dom.members], { autoAlpha: 1 });
+      gsap.set(dom.members, { autoAlpha: 1 });
+      gsap.set(gInfo, { y: 0 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -711,7 +720,7 @@ export function createGallery(o: {
       textFor = null;
       swaps.forEach((t) => t.kill());
       swaps.clear();
-      for (const g of [gInfo, gKun]) g.innerHTML = '';
+      gInfo.innerHTML = '';
     },
     render,
     hit(x, y) {
