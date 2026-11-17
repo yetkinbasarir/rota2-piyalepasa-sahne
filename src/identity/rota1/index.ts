@@ -50,7 +50,9 @@ export const rota1: Identity = {
     photoZoom: 1.15,
     /* ortadan ±3 adım: 7 daire */
     around: 3,
-    colorFade: 0.6,
+    /* bütün daireler tam renkli; alan derinliği: |p| = 0 / 1 / 2 / 3'te opaklık 1 / 0.75 / 0.5 / 0.3, bulanıklık
+       0 / 0.003W / 0.006W / 0.009W (mobilde yarısı), 0.5px adımlarla; gölge aynı opaklık katını alır */
+    focus: { opacity: [1, 0.75, 0.5, 0.3], blur: [0, 0.003, 0.006, 0.009], mobileBlur: 0.5, step: 0.5 },
     float: { y: 0.006, rx: 1.2, min: 5, max: 7, ease: 'sine.inOut' },
     tilt: { max: 7, stiffness: 140, damping: 14 },
     /* ana daire düzleşir: 1.08, 0.5 sn power2.out; gölge daha yuvarlak */
@@ -138,8 +140,6 @@ export const rota1: Identity = {
 
   /* sayaç noktalı: ay.gün.saat.dakika.saniye */
   counterFormat: { sep: '.' },
-  /* kenardaki daireler duotone: koyu ve açık ton */
-  duotone: { dark: '#2A2D31', light: '#ECEBE8' },
 
   /* Fotoğrafı olmayan öğelerin rengi (ROTA1 artboard renkleri); yükleme ekranının nokta paleti */
   palette: ['#64AADC', '#9FC54E', '#6AB27A', '#4070B8', '#C9222A'],

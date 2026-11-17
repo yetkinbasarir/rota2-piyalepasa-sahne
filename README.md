@@ -1,7 +1,7 @@
 # Piyalepaşa Sahne — ROTA2
 
 Çapraz 3B daire galerisi (CSS 3B): daireler bir köşegen boyunca dizilir. Ana daire (p = 0 yuvası: en büyük, renkli,
-en önde; konumu serbest kompozisyon değeri mainX / mainY) renkli, diğerleri duotone; ana daireye tıklanınca diğer daireler
+en önde; konumu serbest kompozisyon değeri mainX / mainY) tam keskin, diğerleri uzaklıkça saydam ve bulanık; hepsi tam renkli; ana daireye tıklanınca diğer daireler
 yerinde kalır, ana daire düzleşip ekranı kaplayana kadar büyür ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda gösteri başlığı, kısa
 logo, Bilet Al ve × kalır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).

@@ -15,7 +15,10 @@
      eşit boşlukla (tanıtımın altına girebilirler; yazı üstte kalır);
    - uzaktakiler aynı adımla sürer. Ara konumlar Catmull-Rom eğrisiyle, ölçek s(p) anahtarlarından.
    Ana daire en önde. Eğim rotateX · rotateY · rotateZ; rotateY eğri üzerindeki konuma göre değişir.
-   Ana daire renkli, diğerleri duotone; ana yuvaya gelen colorFade sn'de renklenir.
+   Bütün daireler tam renkli. Alan derinliği: ana daire tam keskin ve opak; diğerleri ana yuvadan uzaklıkları |p|
+   ile (hareket sırasında sürekli ara değerle) saydamlaşır ve bulanıklaşır (focus.opacity / focus.blur; mobilde
+   bulanıklık mobileBlur katı). Bulanıklık dairenin görsel katmanında filter: blur(), focus.step px adımlarla;
+   gölge aynı opaklık katını alır.
    Süzülme: her daire kendi rastgele fazıyla dikeyde ve rotateX'te salınır (yoyo, sine.inOut).
    Fare eğimi (kenardaki daireler): imlece doğru eğilir, yay-sönümle döner (dokunmatikte yok).
    Düzleşme: ana daire masaüstünde fare üzerindeyken, mobilde galeri durunca düz ve tam daire olur,
@@ -77,13 +80,12 @@ interface Disc {
   n: number;
   show: Show;
   el: HTMLElement;
-  col: HTMLElement | null;
+  /** Görsel katmanı (bulanıklık) */
+  im: HTMLElement | null;
   sh: HTMLElement;
   /** Süzülme (−1..1; +1 en yukarı) */
   fl: { f: number };
   flTw: gsap.core.Tween | null;
-  /** Renkli mi (hedef) */
-  lit: boolean;
   /** Düzleşme (0..1) ve hedefi */
   fz: { v: number };
   flat: boolean;
@@ -93,6 +95,8 @@ interface Disc {
   box: Box;
   tf: string;
   sk: string;
+  /** Son yazılan opaklık / bulanıklık */
+  dk: string;
 }
 
 interface Box {
@@ -373,7 +377,7 @@ export function createGallery(o: {
   }
 
   /* ---------- daire ---------- */
-  function make(n: number, lit: boolean): Disc {
+  function make(n: number): Disc {
     const show = showAt(n);
     const el = document.createElement('div');
     el.className = 'gd';
@@ -381,11 +385,9 @@ export function createGallery(o: {
     el.style.cssText = `width:${f(D)}px;height:${f(D)}px;left:${f(-D / 2)}px;top:${f(-D / 2)}px`;
     const ar = show.photo ? show.photo.w / show.photo.h : 1;
     const fr = discFrame(show, ar);
-    const one = (cls: string) => media.img(show, { width: fr.w, height: fr.h, aspect: ar }).replace('class="ph phn"', `class="ph phn ${cls}"`);
-    el.innerHTML = one('phm') + one('phc');
-    for (const im of el.querySelectorAll<HTMLElement>('img')) im.style.transform = `translate(${f(fr.x)}px,${f(fr.y)}px)`;
-    const col = el.querySelector<HTMLElement>('.phc');
-    if (col) col.style.opacity = lit ? '1' : '0';
+    el.innerHTML = media.img(show, { width: fr.w, height: fr.h, aspect: ar });
+    const im = el.querySelector<HTMLElement>('img');
+    if (im) im.style.transform = `translate(${f(fr.x)}px,${f(fr.y)}px)`;
     dom.stage.append(el);
     const sh = document.createElement('div');
     sh.className = 'gsh';
@@ -402,24 +404,27 @@ export function createGallery(o: {
       flTw.totalTime(Math.random() * period);
     }
     return {
-      n, show, el, col, sh, fl, flTw, lit, fz: { v: 0 }, flat: false,
+      n, show, el, im, sh, fl, flTw, fz: { v: 0 }, flat: false,
       tilt: { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 },
       box: { cx: 0, cy: 0, w: 0, h: 0, bottom: 0 },
-      tf: '', sk: '',
+      tf: '', sk: '', dk: '',
     };
   }
   function drop(it: Disc) {
     it.flTw?.kill();
     gsap.killTweensOf(it.fz);
-    if (it.col) gsap.killTweensOf(it.col);
     it.el.remove();
     it.sh.remove();
   }
-  /** Renklenme: ana daire renkli, diğerleri duotone */
-  function light(it: Disc, on: boolean) {
-    if (it.lit === on || !it.col) return;
-    it.lit = on;
-    gsap.to(it.col, { opacity: on ? 1 : 0, duration: G.colorFade * red, ease: 'none', overwrite: true });
+  /** Alan derinliği: ana yuvadan uzaklık |p|'de opaklık ve bulanıklık (W oranı); anahtarlar arası doğrusal */
+  function depth(t: number) {
+    const F = G.focus;
+    const at = (keys: number[]) => {
+      const u = clamp(Math.abs(t), 0, keys.length - 1);
+      const i = Math.min(keys.length - 2, Math.floor(u));
+      return lerp(keys[i], keys[i + 1], u - i);
+    };
+    return { op: at(F.opacity), blur: at(F.blur) * S.vw * (S.mobile ? F.mobileBlur : 1) };
   }
   /** Düzleşme: düz tam daire ve flat.scale (ya da eğimine dönüş) */
   function flatten(it: Disc, on: boolean) {
@@ -596,7 +601,7 @@ export function createGallery(o: {
     const H = S.vh;
     const c = Math.round(S.pos);
     // pencere: ana yuvadan ±around adım
-    for (let n = c - G.around; n <= c + G.around; n++) if (!items.has(n)) items.set(n, make(n, n === c));
+    for (let n = c - G.around; n <= c + G.around; n++) if (!items.has(n)) items.set(n, make(n));
     for (const [n, it] of items) {
       if (Math.abs(n - c) <= G.around) continue;
       if (hovered === it) hovered = null;
@@ -605,7 +610,6 @@ export function createGallery(o: {
     }
     if (c !== lastMain) {
       lastMain = c;
-      items.forEach((it) => light(it, it.n === c));
       texts(c, textFor !== null);
     }
     // ana daire düzleşir: masaüstünde fare üzerindeyken, mobilde galeri durunca
@@ -645,7 +649,18 @@ export function createGallery(o: {
       const lift = fl * (1 - fz);
       const k = 1 - lift * Sh.lift.shrink;
       const blur = Sh.blur + lift * (Sh.lift.blur - Sh.blur);
-      const op0 = lerp(Sh.mainOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1)) * (1 - g);
+      // alan derinliği: daire ve gölgesi aynı opaklık katı; bulanıklık görsel katmanında (ekran px → yerel px,
+      // focus.step adımlarla)
+      const dp = depth(t);
+      const sc = Math.max(0.05, pb.w / D);
+      const bl = Math.round(dp.blur / sc / G.focus.step) * G.focus.step;
+      const dk = `${f(dp.op, 3)}|${bl}`;
+      if (dk !== it.dk) {
+        it.dk = dk;
+        it.el.style.opacity = f(dp.op, 3);
+        if (it.im) it.im.style.filter = bl > 0 ? `blur(${bl}px)` : 'none';
+      }
+      const op0 = lerp(Sh.mainOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1)) * (1 - g) * dp.op;
       const op = Math.max(0, op0 * (1 + (lift * (Sh.lift.opacity - Sh.opacity)) / Sh.opacity));
       const sx = (-it.tilt.y / G.tilt.max) * Sh.tiltShift * H;
       const sy = (it.tilt.x / G.tilt.max) * Sh.tiltShift * H;
@@ -719,8 +734,6 @@ export function createGallery(o: {
       const show = it.show;
       openShow = show;
       openN = it.n;
-      // büyüyen daire renkli ve en keskin görseliyle
-      light(it, true);
       photo(show, it.n);
       closeIcon(true);
       // tıklamanın içinde, eşzamanlı: video sesle başlar (hazır değilse hazır olunca)

@@ -29,12 +29,11 @@ img, video { -webkit-user-drag: none; }
 /* daire: kutusunun merkezi sahnenin (0, 0) noktasında; konum, ölçek ve eğim tek matrix3d ile */
 .gd {
   position: absolute; left: 0; top: 0; border-radius: 50%; overflow: hidden; pointer-events: auto; cursor: pointer;
-  transform-origin: 50% 50%; will-change: transform; backface-visibility: hidden;
+  transform-origin: 50% 50%; will-change: transform, opacity; backface-visibility: hidden;
   /* dairesel kırpma alt katmanlara da kesin uygulansın */
   clip-path: circle(50% at 50% 50%);
 }
-.gd img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
-.gd .phc { opacity: 0; }
+.gd img { position: absolute; left: 0; top: 0; max-width: none; display: block; will-change: transform, filter, opacity; }
 /* zemine düşen gölge: dairelerin arkasında, yalnızca transform / opacity / filter */
 .gsh { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform, opacity; transform-origin: 50% 50%; }
 
@@ -42,7 +41,6 @@ img, video { -webkit-user-drag: none; }
 #top, #fv { opacity: 0; visibility: hidden; }
 #top img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
 .phn { position: absolute; left: 0; top: 0; display: block; max-width: none; }
-.phm { filter: url(#duotone); }
 /* tam ekran videosu: tıklamaları geçirir. Video 16:9 kabul edilir; ekranı kaplayan cover boyutunun --fv-k
    katına büyütülür, büyütmenin merkezi yatayda orta, dikeyde ekranın üstünden --fv-oy */
 #fv { overflow: hidden; }

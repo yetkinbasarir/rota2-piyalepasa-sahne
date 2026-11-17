@@ -77,17 +77,6 @@ function rotateLayer(id: Identity) {
     `<rect x="1" y="1" width="58" height="98" rx="9" stroke="#fff" stroke-width="1" vector-effect="non-scaling-stroke"/></svg></div>`;
 }
 
-/** Duotone filtresi: gri tona çevir, sonra koyu ve açık ton arasına eşle */
-function duotone(id: Identity) {
-  const c = (hex: string) => {
-    const n = parseInt(hex.replace('#', ''), 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => +(v / 255).toFixed(4));
-  };
-  const [d, l] = [c(id.duotone.dark), c(id.duotone.light)];
-  const ch = (k: number, tag: string) => `<${tag} type="table" tableValues="${d[k]} ${l[k]}"/>`;
-  return `<feColorMatrix type="saturate" values="0"/><feComponentTransfer>${ch(0, 'feFuncR')}${ch(1, 'feFuncG')}${ch(2, 'feFuncB')}</feComponentTransfer>`;
-}
-
 export function buildDom(id: Identity): Dom {
   const app = document.getElementById('app') ?? document.body;
   app.innerHTML = `
@@ -102,7 +91,6 @@ export function buildDom(id: Identity): Dom {
   <div class="brand" role="img" aria-label="${id.name}"><div class="lg-l"></div><div class="lg-s"></div></div>
   <div class="bnd"></div>
 </div>
-<svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>
 <button type="button" class="xcl" aria-label="Kapat"></button>
 ${rotateLayer(id)}`;
   const $ = (s: string) => app.querySelector<HTMLElement>(s)!;

@@ -162,8 +162,9 @@ export interface GalleryTokens {
   photoZoom: number;
   /** Ortadan uzaklık (adım): DOM'da tutulan daireler [-around, +around] */
   around: number;
-  /** Renklenme / duotone'a dönüş (sn) */
-  colorFade: number;
+  /** Alan derinliği: ana yuvadan uzaklık |p| = 0, 1, 2, 3'te opaklık ve bulanıklık (W oranı; arası doğrusal, iki
+      yanda aynı); mobilde bulanıklığın katı; bulanıklık adımı (px) */
+  focus: { opacity: number[]; blur: number[]; mobileBlur: number; step: number };
   /** Süzülme: dikey genlik (H oranı), rotateX genliği (°), periyot aralığı (sn), eğri */
   float: { y: number; rx: number; min: number; max: number; ease: string };
   /** Fare eğimi (kenardaki daireler): en fazla açı (°), yay sertliği ve sönüm (dönüş) */
@@ -290,8 +291,6 @@ export interface Identity {
   screen: ScreenTokens;
   /** Sayaç biçimi: ayraç */
   counterFormat: { sep: string };
-  /** Kenardaki dairelerin duotone eşlemesi (SVG filtresi): koyu ve açık ton */
-  duotone: { dark: string; light: string };
   /** Fotoğrafı olmayan öğelerin rengi (yükleme ekranının nokta paleti) */
   palette: string[];
   fonts: {
