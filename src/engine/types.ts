@@ -158,6 +158,13 @@ export interface TypeSize {
   lineHeight: number;
 }
 
+/** Uzayıp kısalabilen logonun bir parçası: SVG, yatay çizgilerin merkez y değerleri ve kalınlığı (viewBox birimi) */
+export interface LogoPart {
+  svg: string;
+  lines: number[];
+  thick: number;
+}
+
 export interface Identity {
   id: string;
   name: string;
@@ -384,7 +391,8 @@ export interface Identity {
     /** Mobil metin kutusu kaydırma adımı */
     scroll: number;
   };
-  logo: { svg: string };
+  /** Logo: eski tek parça (logoHtml için) ve iki parçalı uzun / kısa logo (çizgileri sola uzar) */
+  logo: { svg: string; long: LogoPart; short: LogoPart; longFit: number };
   templates: Templates;
   strings: {
     surfaceLabel: string;

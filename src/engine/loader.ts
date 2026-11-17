@@ -13,6 +13,7 @@ import { gsap } from './motion';
 import type { Motion } from './motion';
 import type { Identity } from './types';
 import type { Screensaver } from './screensaver';
+import { pickLogo, layoutLogo, logoWidth } from './logo';
 
 export interface Loader {
   /** Ekran koruyucunun kökü (yoksa null: yükleme ekranı yok) */
@@ -58,25 +59,38 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
   const ssRoot = root.querySelector<HTMLElement>('#ld-ss');
   const tex = root.querySelector<HTMLElement>('#ld-tex');
   const logo = root.querySelector<HTMLElement>('#ld-logo')!;
-  const fill = logo.querySelector<SVGElement>('.ld-fill');
+  const fill = logo.querySelector<HTMLElement>('.ld-fill');
   const dots = logo.querySelector<HTMLElement>('.ld-dots');
-  const base = logo.querySelector<SVGElement>('.ld-base');
+  const base = logo.querySelector<HTMLElement>('.ld-base');
   const ui = root.querySelector<HTMLElement>('#ld-ui');
 
   // logo animasyonu: token; adresteki ?logo=1|2 geçersiz kılar
   const q = /[?&]logo=([12])/.exec(location.search);
   const anim = q ? +q[1] : LD.logoAnim;
   root.dataset.anim = String(anim);
-  // büyük logo: oran korunur; genişlik en fazla ekranın logoW'si, yükseklik en fazla logoH'si; sola yaslı
-  {
-    const vb = (logo.querySelector('svg')?.getAttribute('viewBox') ?? '0 0 1 1').split(/[\s,]+/).map(Number);
-    const ratio = vb[2] / vb[3] || 1;
-    const mobileLd = matchMedia('(max-width: 760px) and (orientation: portrait)').matches;
-    const wMax = (mobileLd ? LD.logoW.mobile : LD.logoW.web) * 100;
+  /* büyük logo: iki parçalı logo (uzun / kısa seçimi), oran korunur; genişlik en fazla ekranın logoW'si,
+     yükseklik en fazla logoH'si; sola yaslı, çizgi uzantıları ekranın sol kenarına kadar. Daire maskesi
+     o an seçili logodan (uzantılar dahil) üretilir */
+  let maskSvg = '';
+  const layoutLd = () => {
+    const W = innerWidth, H = innerHeight;
+    const mobileLd = document.documentElement.classList.contains('is-mobile');
+    const css = getComputedStyle(document.documentElement);
+    const pad = parseFloat(css.getPropertyValue(mobileLd ? '--mpad' : '--logo-pad')) || 20;
+    const part = pickLogo(id, H * LD.logoH, W, mobileLd);
+    const wMax = W * (mobileLd ? LD.logoW.mobile : LD.logoW.web);
+    const h = Math.min(H * LD.logoH, (wMax / logoWidth(part, H * LD.logoH)) * H * LD.logoH);
+    const L = layoutLogo(part, h, pad);
+    logo.style.left = '0px';
     logo.style.right = 'auto';
-    logo.style.width = `min(${wMax}vw, ${(LD.logoH * 100 * ratio).toFixed(3)}vh)`;
-  }
-  if (base) base.style.fill = LD.base;
+    logo.style.width = `${L.width}px`;
+    logo.style.height = `${h}px`;
+    if (base) base.innerHTML = L.html;
+    if (fill) fill.innerHTML = L.html;
+    maskSvg = L.maskSvg;
+  };
+  layoutLd();
+  if (base) base.style.color = LD.base;
   if (tex) tex.className = 'holes';
   /* ---------- 2: opak daireler (canvas) ----------
      Daireler logonun sınır kutusunda (biraz taşarak) mavi gürültü benzeri dağılır; boyutları dramatik
@@ -284,7 +298,7 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
     raf = requestAnimationFrame(frame);
   };
   if (anim === 2 && dots && base && !motion.reduced) {
-    const svg = base.outerHTML.replace('class="ld-base"', 'xmlns="http://www.w3.org/2000/svg" fill="#000"');
+    const svg = maskSvg;
     mask = new Image();
     mask.onload = () => {
       buildDots();
@@ -301,7 +315,14 @@ export function createLoader(o: { id: Identity; motion: Motion; brand: () => HTM
       clearTimeout(rt);
       rt = window.setTimeout(() => {
         if (finished) return;
-        buildDots();
+        // logo yeniden seçilir ve yerleşir; maske yeni logodan
+        layoutLd();
+        const m = new Image();
+        m.onload = () => {
+          mask = m;
+          buildDots();
+        };
+        m.src = `data:image/svg+xml,${encodeURIComponent(maskSvg)}`;
       }, 120);
     });
   }

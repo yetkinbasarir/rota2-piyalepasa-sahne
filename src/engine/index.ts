@@ -12,6 +12,7 @@ import { createCamera } from './camera';
 import { createCommands } from './commands';
 import { startPresentation } from './present';
 import { createLoader } from './loader';
+import { pickLogo, layoutLogo } from './logo';
 import { createScreensaver } from './screensaver';
 import { bindPointer } from './input/pointer';
 import { bindWheel } from './input/wheel';
@@ -81,7 +82,21 @@ export async function startEngine(id: Identity, shows: Show[]) {
   /* alt bant düğmeleri: Üye Ol / Üye Girişi. Logo ile birlikte sığmazsa 0.8 katına küçülür; yine
      sığmazsa yalnızca Üye Girişi kalır. Şimdilik işlevsiz; tıklama duvara geçmez. */
   const brand = document.querySelector<HTMLElement>('.brand');
+  /* alt bant logosu: iki parçalı logo, bandın içinde sola yakın (üst ve alt boşluk eşit), çizgi uzantıları
+     ekranın sol kenarına kadar; ekran ölçüsüne göre uzun / kısa seçilir */
+  const renderBrand = () => {
+    if (!brand) return;
+    const css = getComputedStyle(document.documentElement);
+    const pad = parseFloat(css.getPropertyValue(S.mobile ? '--mpad' : '--logo-pad')) || 0;
+    const h = S.mobile ? S.band - S.safeTop - 2 * pad : S.band - 2 * pad;
+    if (h <= 0) return;
+    const L = layoutLogo(pickLogo(id, h, S.vw, S.mobile), h, pad);
+    brand.style.width = `${L.width}px`;
+    brand.style.height = `${h}px`;
+    brand.innerHTML = L.html;
+  };
   const renderBand = () => {
+    renderBrand();
     const pad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(S.mobile ? '--mpad' : '--logo-pad')) || 0;
     const room = () => S.vw - (brand?.getBoundingClientRect().right ?? 0) - 2 * pad;
     // düğmeler eş boyda: genişlik ikisinden uzun olanınki, yazı ortalı

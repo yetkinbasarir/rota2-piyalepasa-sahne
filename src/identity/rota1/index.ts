@@ -4,7 +4,8 @@
    ikinci bir kimlik aynı arayüzle yeni bir klasörde tanımlanıp main.ts'te seçilir. */
 import type { Identity } from '../../engine/types';
 import { templates } from './templates';
-import logoSvg from './logo.svg?raw';
+import logoLong from './logo-long.svg?raw';
+import logoShort from './logo-short.svg?raw';
 import './styles.css';
 
 export const rota1: Identity = {
@@ -232,7 +233,14 @@ export const rota1: Identity = {
     scroll: 0.42,
   },
 
-  logo: { svg: logoSvg },
+  /* iki parçalı logo: çizgiler x = 0'dan başlar, sola uzar. Uzun logo hedef yükseklikte kullanılabilir
+     genişliğin %70'ine sığıyorsa uzun, değilse kısa; mobilde hep kısa */
+  logo: {
+    svg: logoLong,
+    long: { svg: logoLong, lines: [14.31, 169.18, 324.05, 478.92], thick: 3.94 },
+    short: { svg: logoShort, lines: [14.53, 169.53, 324.53, 479.53, 634.53], thick: 4 },
+    longFit: 0.7,
+  },
   templates,
 
   strings: {

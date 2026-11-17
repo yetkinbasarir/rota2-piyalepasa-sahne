@@ -111,11 +111,12 @@ img, video { -webkit-user-drag: none; }
 .media .ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 33%; display: block; }
 
 /* logo: bandın içinde sol altta, beyaz; sabit, her şeyin (tam ekran fotoğraf dahil) önünde */
+/* kapsayıcı ekranın sol kenarından başlar; logo içinde logo-pad'de, çizgi uzantıları sol kenara kadar (logo.ts) */
 .brand {
-  position: fixed; left: var(--logo-pad); bottom: var(--logo-pad);
+  position: fixed; left: 0; bottom: var(--logo-pad);
   height: calc(var(--band-h) - 2 * var(--logo-pad)); z-index: 10; pointer-events: none; line-height: 0; color: #fff;
 }
-.brand svg { height: 100%; width: auto; display: block; }
+.brand > i, .brand > svg { position: absolute; }
 /* alt bandın sağındaki düğmeler: bant içinde dikeyde ortalı, sağ boşluk logo-pad; sabit */
 .bnd {
   position: fixed; right: var(--logo-pad); bottom: 0; height: var(--band-h); z-index: 10;
@@ -126,7 +127,7 @@ img, video { -webkit-user-drag: none; }
    düğmeler sağda, ikisi de bandın güvenli alan dışındaki kısmında dikeyde ortalı (boşluk --mpad) */
 .is-mobile .band { top: 0; bottom: auto; z-index: 5; }
 .is-mobile .brand {
-  left: var(--mpad); top: calc(var(--safe-top) + var(--mpad)); bottom: auto;
+  left: 0; top: calc(var(--safe-top) + var(--mpad)); bottom: auto;
   height: calc(var(--band-h) - var(--safe-top) - 2 * var(--mpad));
 }
 /* telefonda yatay ekran katmanı: bütün içeriğin üstünde, güvenli alanlar dahil tam ekran düz siyah */
