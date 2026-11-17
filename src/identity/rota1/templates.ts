@@ -1,9 +1,14 @@
-/* ROTA1 şablonları: galeri yazıları (künye bloğu, sahne adı, etiket + alıntı), tam ekran başlığı,
-   daire düğmeler ve kapatma ikonu. Ölçüleri motor CSS değişkenleriyle verir. */
+/* ROTA1 şablonları: galeri yazıları (künye bloğu, tür + alıntı, sahne adı), tam ekran başlığı,
+   daire düğmeler ve kapatma ikonu. Ölçüleri ve yazı rollerini motor CSS değişkenleriyle verir.
+   Bütün sayılar (tarih, saat, sayaç ve metin içindeki rakamlar) sayı rolünde (.num / .cd). */
 import type { Show, Templates, TemplateContext } from '../../engine/types';
 import { SURFACE } from './surface';
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Kaçışlı metindeki sayıları sayı rolüne al */
+const nums = (html: string) => html.replace(/\d+(?:[.,:]\d+)*/g, '<span class="num">$&</span>');
+const txt = (ctx: TemplateContext, s: string) => nums(ctx.esc(s));
 
 /** Sayaç: her karakter konumu ayrı span (motor saniye saniye günceller) */
 function counterChars(s: Show, ctx: TemplateContext) {
@@ -26,21 +31,23 @@ const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowe
 function info(s: Show, ctx: TemplateContext) {
   const rows: string[] = [];
   const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');
-  if (director) rows.push(`<div class="gr ln"><b class="lb">Yöneten</b><span class="gv">${ctx.esc(director.people.join(', '))}</span></div>`);
+  if (director) rows.push(`<div class="gr ln"><span class="lb">Yöneten</span><span class="gv">${txt(ctx, director.people.join(', '))}</span></div>`);
   const at = nextAt(s);
   if (at) {
     const d = new Date(at);
     const date = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
     rows.push(
-      `<div class="gr ln"><b class="lb">Tarih</b><span class="gv"><span>${date}</span>` +
+      `<div class="gr ln"><span class="lb">Tarih</span><span class="gv"><span class="num">${date}</span>` +
         `<span class="gcd"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></span></span></div>`,
     );
   }
   if (!ctx.mobile && s.cast.length) {
-    const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${ctx.esc(c.name)}</span>`).join('');
-    rows.push(`<div class="gr ln"><b class="lb">Oyuncular</b><span class="gv gv-col">${names}</span></div>`);
+    const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
+    rows.push(`<div class="gr ln"><span class="lb">Oyuncular</span><span class="gv gv-col">${names}</span></div>`);
   }
-  return `<h2 class="gt ln">${ctx.esc(s.title)}</h2>` + rule() + rows.join(rule());
+  // son satırın altında bir elmaslı çizgi daha ve tanıtım (en fazla birkaç satır, kalanı "…")
+  const desc = !ctx.mobile && s.intro ? rule() + `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rule()}${rows.join(rule())}${desc}</div>`;
 }
 
 /* ---------- sahne adı ---------- */
@@ -53,8 +60,8 @@ function stageName(s: Show, ctx: TemplateContext) {
   return name ? `<div class="gs-t ln">${ctx.esc(name)}</div>` : '';
 }
 
-/* ---------- etiket + alıntı ---------- */
-/** "alinti" varsa o; yoksa tanıtımın ilk cümlesi (en fazla `chars` karakter, kelime sınırında "…") */
+/* ---------- tür + alıntı ---------- */
+/** "alinti" varsa o; yoksa tanıtımın ilk cümlesi (en fazla `quoteChars` karakter, kelime sınırında "…") */
 function quoteOf(s: Show) {
   if (s.quote) return s.quote;
   const intro = s.intro.trim();
@@ -67,39 +74,29 @@ function quoteOf(s: Show) {
   return `${(sp > 0 ? cut.slice(0, sp) : cut).replace(/[\s,;:.–—-]+$/, '')}…`;
 }
 function caption(s: Show, ctx: TemplateContext) {
-  const label = present(s.genre) ? `<div class="gl ln">${ctx.esc(s.genre)}</div>` : '';
+  const label = present(s.genre) ? `<div class="gl ln">${txt(ctx, s.genre)}</div>` : '';
   const q = quoteOf(s);
-  return label + (q ? `<p class="gq ln">“${ctx.esc(q)}”</p>` : '');
+  return label + (q ? `<p class="gq ln">“${txt(ctx, q)}”</p>` : '');
 }
 
 /* ---------- tam ekran ---------- */
-/** Tam ekran: çok büyük tek satır başlık (Light) ve altında etiketsiz sayaç; boyları motor verir */
+/** Tam ekran: çok büyük tek satır başlık ve altında etiketsiz sayaç ve saat; boyları motor verir */
 function fullTitle(s: Show, ctx: TemplateContext) {
-  // saat: sayacın geri saydığı gösterimin saati ("SS:DD")
   const at = nextAt(s);
   const d = at ? new Date(at) : null;
   const hour = d ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}` : '';
-  return `<div class="fst-t">${ctx.esc(s.title)}</div>` +
+  return `<div class="fst-t">${txt(ctx, s.title)}</div>` +
     `<div class="fst-c"><div class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</div></div>` +
     `<div class="fst-c fst-h"><div class="cd">${hour}</div></div>`;
 }
 
-/** İçerikteki sahne adı → tam ekran etiketi; eşleşmeyen (boş, "—") değerlerde etiket yok */
-function stageLabel(s: Show, w: number, ctx: TemplateContext) {
-  const name = STAGE[s.stage];
-  if (!name) return '';
-  const fs = Math.max(SURFACE.button.minPx, w * SURFACE.button.scale) * SURFACE.stageLabel;
-  return `<span class="fsl-b" style="font-size:${fs.toFixed(2)}px">${ctx.esc(name)}</span>`;
-}
-
 /* ---------- düğmeler ---------- */
-/** Daire düğmeler: içi boş, ince kontur, yazı ortada */
+/** Daire düğmeler: düz beyaz, konturusuz, yazı ortada tek satır (motor sığdırır) */
 function circleButtons(items: [string, string][], ctx: TemplateContext) {
-  return items.map(([label, act]) => `<button type="button" class="cb" data-act="${act}">${ctx.esc(label)}</button>`).join('');
+  return items.map(([label, act]) => `<button type="button" class="cb" data-act="${act}"><span>${ctx.esc(label)}</span></button>`).join('');
 }
 
-/** Kapatma ikonu: yalnızca × — ince çizgi (ölçeklenmez), keskin, düz uçlu, merkezden ±45°.
-    Çizgilerin uçları (artık çizilmeyen) dairenin geçtiği noktalarda biter; tıklama alanı dairenin çapı */
+/** Kapatma ikonu: yalnızca × — ince çizgi (ölçeklenmez), keskin, düz uçlu, merkezden ±45°; metin renginde */
 const CLOSE_R = 49;
 function closeIcon(_ctx: TemplateContext) {
   const h = CLOSE_R / Math.SQRT2;
@@ -107,8 +104,8 @@ function closeIcon(_ctx: TemplateContext) {
   const b = (50 + h).toFixed(3);
   const sw = SURFACE.line;
   return `<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false" shape-rendering="geometricPrecision">` +
-    `<line class="xl" x1="${a}" y1="${a}" x2="${b}" y2="${b}" stroke="#fff" stroke-width="${sw}" stroke-linecap="butt" vector-effect="non-scaling-stroke"/>` +
-    `<line class="xl" x1="${a}" y1="${b}" x2="${b}" y2="${a}" stroke="#fff" stroke-width="${sw}" stroke-linecap="butt" vector-effect="non-scaling-stroke"/></svg>`;
+    `<line class="xl" x1="${a}" y1="${a}" x2="${b}" y2="${b}" stroke="currentColor" stroke-width="${sw}" stroke-linecap="butt" vector-effect="non-scaling-stroke"/>` +
+    `<line class="xl" x1="${a}" y1="${b}" x2="${b}" y2="${a}" stroke="currentColor" stroke-width="${sw}" stroke-linecap="butt" vector-effect="non-scaling-stroke"/></svg>`;
 }
 
 export const templates: Templates = {
@@ -116,7 +113,6 @@ export const templates: Templates = {
   stageName,
   caption,
   fullTitle,
-  stageLabel,
   circleButtons,
   closeIcon,
 };

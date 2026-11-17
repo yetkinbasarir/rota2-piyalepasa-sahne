@@ -56,7 +56,35 @@ export interface LogoLayout {
   maskSvg: string;
 }
 
-/** Logoyu kapsayıcıda `left` konumunda, `height` yüksekliğinde çiz; çizgileri kapsayıcının sol kenarına uzat */
+/** Harflerin başladığı x (viewBox birimi): sol kenardan (x = 0) başlayan çizgiler dışındaki şekillerin en solu */
+const letterCache = new Map<string, number>();
+export function letterStart(part: LogoPart): number {
+  const hit = letterCache.get(part.svg);
+  if (hit !== undefined) return hit;
+  const p = parse(part);
+  const probe = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  probe.setAttribute('viewBox', p.vb.join(' '));
+  probe.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:200px;height:200px;visibility:hidden');
+  probe.innerHTML = p.inner;
+  document.body.append(probe);
+  let min = Infinity;
+  for (const el of probe.querySelectorAll<SVGGraphicsElement>('path, polygon, rect, circle, ellipse, polyline')) {
+    const b = el.getBBox();
+    if (b.width > 0 && b.x > p.vb[0] + 0.5) min = Math.min(min, b.x);
+  }
+  probe.remove();
+  const x = Number.isFinite(min) ? min : p.vb[0];
+  letterCache.set(part.svg, x);
+  return x;
+}
+
+/** Çizgi aralığı (viewBox birimi): ilk iki yatay çizgi arası */
+export const ruleSpacing = (part: LogoPart) => (part.lines.length > 1 ? part.lines[1] - part.lines[0] : 1);
+/** viewBox yüksekliği */
+export const logoVbHeight = (part: LogoPart) => parse(part).vb[3];
+
+/** Logoyu kapsayıcıda `left` konumunda, `height` yüksekliğinde çiz. left > 0 ise çizgiler kapsayıcının sol
+    kenarına uzatılır; left < 0 ise logonun sol kısmı (çizgilerin başı) ekranın sol kenarında kesilir */
 export function layoutLogo(part: LogoPart, height: number, left: number): LogoLayout {
   const p = parse(part);
   const s = height / p.vb[3];
@@ -68,14 +96,15 @@ export function layoutLogo(part: LogoPart, height: number, left: number): LogoLa
     return { top, th };
   });
   // 1px bindirme: uzantı SVG'deki çizginin başlangıcının 1px içine uzanır
-  const ext = lines
-    .map(({ top, th }) => `<i style="position:absolute;left:0;top:${top}px;width:${L + 1}px;height:${th}px;background:currentColor"></i>`)
-    .join('');
+  const ext = L > 0
+    ? lines.map(({ top, th }) => `<i style="position:absolute;left:0;top:${top}px;width:${L + 1}px;height:${th}px;background:currentColor"></i>`).join('')
+    : '';
   const svg = `<svg viewBox="${p.vb.join(' ')}" fill="currentColor" aria-hidden="true" style="position:absolute;left:${L}px;top:0;width:${logoW}px;height:${height}px;display:block;overflow:visible">${p.inner}</svg>`;
-  const W = L + logoW;
+  const W = Math.max(0, L) + logoW;
+  const E = Math.max(0, L);
   const maskSvg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${height}" viewBox="0 0 ${W} ${height}" fill="#000">` +
-    lines.map(({ top, th }) => `<rect x="0" y="${top}" width="${L + 1}" height="${th}"/>`).join('') +
+    (L > 0 ? lines.map(({ top, th }) => `<rect x="0" y="${top}" width="${E + 1}" height="${th}"/>`).join('') : '') +
     `<svg x="${L}" y="0" width="${logoW}" height="${height}" viewBox="${p.vb.join(' ')}">${p.inner}</svg></svg>`;
-  return { html: ext + svg, width: W, left: L, logoW, maskSvg };
+  return { html: ext + svg, width: L + logoW, left: L, logoW, maskSvg };
 }

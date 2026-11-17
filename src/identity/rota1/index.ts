@@ -13,10 +13,8 @@ export const rota1: Identity = {
   name: 'Piyalepaşa Sahne',
 
   colors: {
-    /* açık kâğıt zemin; metin ve çizgiler neredeyse siyah; ikincil metin gri */
+    /* açık kâğıt zemin */
     background: '#ECEBE8',
-    ink: '#111214',
-    muted: '#5E6266',
     focus: '#DA00F9',
     /* yatay telefon katmanı: koyu, düz */
     overlay: '#2A2D31',
@@ -24,14 +22,24 @@ export const rota1: Identity = {
   /* zeminin üstünde çok hafif kâğıt dokusu */
   paper: { frequency: 0.9, octaves: 2, opacity: 0.05 },
 
-  /* çapraz 3B daire galerisi: ölçüler ekran yüksekliği H'nin (x'ler genişlik W'nin) oranı */
+  /* çapraz 3B daire galerisi: ölçüler ekran yüksekliği H'nin (belirtilenler genişlik W'nin) oranı */
   gallery: {
     perspective: 1600,
-    /* ortadaki dairenin merkezi; sağdaki (sonraki) ve soldaki (önceki) komşuya adım */
-    web: { center: [0.517, 0.53], next: [0.353, -0.19], prev: [-0.312, 0.11], disc: 0.6 },
-    /* mobil: dikeye yakın eğri; çap genişliğin oranı */
-    mobile: { center: [0.5, 0.5], next: [0.18, -0.36], prev: [-0.16, 0.34], disc: 0.82 },
-    scale: { prev2: 0.62, prev: 0.78, center: 1, next: 1.04, min: 0.2 },
+    layout: {
+      centerX: 0.5,
+      /* ortadaki daire: alıntının altı ile sahne adının üstü arasında 0.03H boşlukla en büyük; en fazla 0.48W (mobil 0.82W) */
+      gap: 0.03,
+      cap: { web: 0.48, mobile: 0.82 },
+      /* s(p): p = −3 … +3 */
+      keys: [0.18, 0.3, 0.48, 1, 0.78, 0.5, 0.32],
+      /* p = +1 dairenin genişliğinin %40'ı sağ kenarın dışında */
+      rightOut: 0.4,
+      /* soldaki daireler sağındakinin arkasına en fazla kendi genişliğinin %25'i kadar girer */
+      tuck: 0.25,
+      clear: 0.012,
+      /* başlangıç köşegeni: sola bir adımda (−0.312W, +0.11H); sığmazsa yatıklaştırılır */
+      slope: [-0.312, 0.11],
+    },
     /* rotateX(28°) rotateY(−22°) rotateZ(−8°); rotateY sol uçta (−2 adım) −30°, sağ uçta (+1 adım) −14° */
     rotate: { x: 28, y: -22, z: -8, yLeft: -30, yRight: -14, leftAt: -2, rightAt: 1 },
     photoZoom: 1.15,
@@ -40,6 +48,8 @@ export const rota1: Identity = {
     colorFade: 0.6,
     float: { y: 0.006, rx: 1.2, min: 5, max: 7, ease: 'sine.inOut' },
     tilt: { max: 7, stiffness: 140, damping: 14 },
+    /* ortadaki daire düzleşir: 1.08, 0.5 sn power2.out; gölge daha yuvarlak */
+    flat: { scale: 1.08, dur: 0.5, ease: 'power2.out', shadowHeight: 0.5 },
     shadow: {
       color: '#111214',
       width: 0.9,
@@ -54,19 +64,35 @@ export const rota1: Identity = {
     },
     settle: { dur: 0.7, ease: 'power3.out' },
     auto: { every: 6, dur: 1.2, ease: 'power2.inOut' },
-    iris: { dur: 0.9, ease: 'power3.inOut' },
+    /* açılma: her şey aynı anda, 0.8 sn power3.in (dönüş power3.out); video 0.3 sn'de başlayıp 0.6 sn'de belirir */
+    open: { dur: 0.8, easeIn: 'power3.in', easeOut: 'power3.out', videoAt: 0.3, videoDur: 0.6 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
 
   /* ekrandaki yazılar ve düğmeler */
   screen: {
+    /* bütün yazılar, logolar ve düğme yazıları saf siyah */
+    text: '#000000',
+    /* yazı rolleri: başlık ve alıntı comma-serif 300; değerler ve tanıtım 400; etiketler ve düğmeler
+       config-mono-vf wght 500 (büyük harf); bütün sayılar config-mono-vf wght 300 */
+    type: {
+      title: { family: '"comma-serif", serif', weight: 300 },
+      quote: { family: '"comma-serif", serif', weight: 300 },
+      body: { family: '"comma-serif", serif', weight: 400 },
+      label: { family: '"config-mono-vf", monospace', weight: 500, variation: '"wght" 500' },
+      number: { family: '"config-mono-vf", monospace', weight: 300, variation: '"wght" 300' },
+    },
     label: { size: 0.0105, track: 0.16 },
-    info: { left: 0.012, top: 0.02, width: 0.21, minWidth: 300, title: 0.036, value: 0.017, row: 0.029, counter: 0.015, diamond: 7, mobilePad: 0.02 },
-    stage: { size: 0.019, track: 0.18, top: 0.03 },
-    caption: { bottom: 0.05, quote: 0.027, lh: 1.05, lines: 2, maxW: 0.42, gap: 0.025 },
-    ticket: { d: 0.09, font: 0.018 },
-    logo: { h: 0.11, bottom: 0.03 },
+    info: {
+      left: 0.012, top: 0.02, width: 0.21, minWidth: 300, title: { web: 0.032, mobile: 0.075 },
+      value: 0.017, row: 0.029, track: 0.16, diamond: 7, descLines: 6, mobilePad: 0.02,
+    },
+    quote: { top: 0.05, size: { web: 0.024, mobile: 0.055 }, lh: 1.15, maxW: { web: 0.5, mobile: 0.86 } },
+    stage: { size: 0.019, track: 0.18, gap: 0.015 },
+    ticket: { d: 0.09, font: 0.018, bottom: 0.04 },
+    button: { fill: '#FFFFFF', fit: 0.68 },
+    logo: { h: 0.16, bottom: 0.04, letter: 0.025, mobileH: 0.11, mobileBottom: 0.03 },
     members: { d: 0.075, font: 0.016, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },
   },
@@ -79,17 +105,9 @@ export const rota1: Identity = {
   /* Fotoğrafı olmayan öğelerin rengi (ROTA1 artboard renkleri); yükleme ekranının nokta paleti */
   palette: ['#64AADC', '#9FC54E', '#6AB27A', '#4070B8', '#C9222A'],
 
-  /* Adobe Fonts kiti fpj2hxb. Ağırlık / aile değişikliği yalnızca burada yapılır. */
+  /* Adobe Fonts kiti fpj2hxb (comma-serif 100–900, config-mono-vf 200–700). Yazı rolleri screen.type'ta */
   fonts: {
     stylesheets: ['https://use.typekit.net/fpj2hxb.css'],
-    roles: {
-      /* başlık, alıntı ve değerler 400; etiketler 700 */
-      light: { family: '"comma-serif", serif', weight: 400 },
-      bold: { family: '"comma-serif", serif', weight: 700 },
-      /* sayaç: config-mono-vf wght 300; tam ekran sayacı 500 */
-      counter: { family: '"config-mono-vf", monospace', weight: 300, variation: '"wght" 300' },
-      counterStrong: { family: '"config-mono-vf", monospace', weight: 500, variation: '"wght" 500' },
-    },
   },
 
   /* Tam ekran başlığı: ekran genişliğinin %11'i (en fazla %90 genişlik); sayaç başlığın yarısı, arası 0.15 */
@@ -98,7 +116,6 @@ export const rota1: Identity = {
     maxWidth: 0.9,
     counter: 0.5,
     gap: 0.15,
-    stageBasis: 0.461,
     pad: 0.034,
     closeSize: 56,
   },
@@ -129,7 +146,7 @@ export const rota1: Identity = {
   /* Telefonda yatay ekran kapalı: yatay + dokunmatik + görünür yükseklik < 500px */
   rotate: { maxHeight: 500, icon: 0.28, turn: 1.6, hold: 1.2 },
 
-  /* Tam ekran delikli doku: 4px aralık, siyah yüzey %30 */
+  /* Tam ekran ağı: 4px hücre; eşkenar dörtgen delikler en büyük (yarı köşegen p/2), ekran koruyucuda yuvarlak delik, yüzey %30 */
   texture: {
     pitch: 4,
     cover: 0.3,
@@ -160,8 +177,6 @@ export const rota1: Identity = {
     youtubeHold: 4,
     soundIn: 2.5,
     soundOut: 0.5,
-    textureIn: 0.6,
-    textureOut: 0.4,
     autoReturn: 15,
     /* ekran koruyucu: belirme, kararma */
     ssIn: 0.6,
@@ -178,9 +193,8 @@ export const rota1: Identity = {
     counterDelay: 0.2,
     counterIn: 0.6,
     titleOut: 0.5,
-    /* tam ekran: saat sayaçtan 0.15 sn sonra; sahne etiketi 0.6 sn */
+    /* tam ekran: saat sayaçtan 0.15 sn sonra */
     hourDelay: 0.15,
-    stageIn: 0.6,
     closeFade: 0.3,
   },
 

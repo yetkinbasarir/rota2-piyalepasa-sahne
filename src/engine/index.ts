@@ -48,6 +48,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
   const gallery = createGallery({
     S, id, motion, media, shows, dom, tctx,
     video: createFullVideo({ root: dom.video, motion, id }),
+    busy: () => camera.busy(),
     onCreate: (el) => counters.fill(el),
   });
   // künye sayacı ve tam ekran başlığının sayacı saniye saniye güncellenir
@@ -62,9 +63,13 @@ export async function startEngine(id: Identity, shows: Show[]) {
   bindWheel(dom.surface, cmd, id.gallery.wheel.idle);
   bindKeyboard(cmd);
 
-  const layout = () => layoutScreen(S, id, dom, tctx());
+  // ekran çerçevesi, sonra ondan hesaplanan galeri yerleşimi
+  const layout = () => {
+    layoutScreen(S, id, dom, tctx());
+    gallery.layout();
+  };
   layout();
-  // fontlar yüklenince logo ve yazılar yeniden ölçülür
+  // fontlar yüklenince logo, yazılar ve galeri yerleşimi yeniden ölçülür
   document.fonts?.ready.then(() => {
     layout();
     gallery.refresh();
@@ -82,7 +87,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
   const A = id.gallery.around;
   const firstScreen = new Set<Show>();
   for (let n = -A; n <= A; n++) firstScreen.add(shows[((n % N) + N) % N]);
-  const discW = () => (S.mobile ? id.gallery.mobile.disc * S.vw : id.gallery.web.disc * S.vh) * id.gallery.photoZoom;
+  const discW = () => id.gallery.layout.cap[S.mobile ? 'mobile' : 'web'] * S.vw * id.gallery.photoZoom;
   const firstImages = media.preload([...firstScreen], discW());
   const ss = loader.ssRoot ? createScreensaver({ root: loader.ssRoot, shows, media, id, mobile: S.mobile, reduced: motion.reduced }) : null;
   loader.attach(ss);
@@ -108,6 +113,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
     gallery.rebuild();
     presenter?.refresh();
     layout();
+    gallery.refresh();
     gallery.render(); // boş kare kalmasın
   };
   const rotateOn = () => {

@@ -99,17 +99,15 @@ export interface TemplateContext {
 }
 
 export interface Templates {
-  /** Sol üst künye bloğu: başlık, elmaslı çizgi, YÖNETEN / TARİH (+ sayaç) / OYUNCULAR satırları.
-      Satır satır geçiş için her satır .ln taşır; mobilde oyuncular yok */
+  /** Sol üst künye bloğu: başlık; .gi-rest içinde elmaslı çizgiler, YÖNETEN / TARİH (+ sayaç) / OYUNCULAR
+      satırları ve tanıtım. Satır satır geçiş için her satır .ln taşır; mobilde oyuncular ve tanıtım yok */
   info(show: Show, ctx: TemplateContext): string;
-  /** Üst ortadaki sahne adı (.ln); sahne yoksa '' */
+  /** Alt ortadaki sahne adı (.ln); sahne yoksa '' */
   stageName(show: Show, ctx: TemplateContext): string;
-  /** Alt ortadaki etiket (tür) ve alıntı (.ln satırları) */
+  /** Üst ortadaki tür satırı ve alıntı (.ln satırları) */
   caption(show: Show, ctx: TemplateContext): string;
   /** Tam ekran başlığı ve sayacı: .fst-t başlık (tek satır), .fst-c sayaç ([data-cd]) */
   fullTitle(show: Show, ctx: TemplateContext): string;
-  /** Tam ekranın üst ortasındaki sahne etiketi (w: boyut tabanı, px); sahne yoksa '' */
-  stageLabel(show: Show, w: number, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -117,15 +115,6 @@ export interface Templates {
 }
 
 /* ---------- kimlik ---------- */
-export interface FontRole {
-  family: string;
-  weight: number;
-  style?: 'normal' | 'italic';
-  letterSpacing?: string;
-  /** Değişken font eksenleri (ör. '"wght" 200') */
-  variation?: string;
-}
-
 /** Uzayıp kısalabilen logonun bir parçası: SVG, yatay çizgilerin merkez y değerleri ve kalınlığı (viewBox birimi) */
 export interface LogoPart {
   svg: string;
@@ -133,21 +122,37 @@ export interface LogoPart {
   thick: number;
 }
 
-/** Eğri üzerindeki yerleşim: ortadaki dairenin merkezi ve komşulara adım ([x oranı W, y oranı H]) */
-export interface GalleryCurve {
-  center: [number, number];
-  next: [number, number];
-  prev: [number, number];
+/** Yazı rolü: aile, ağırlık, değişken font ekseni */
+export interface TypeRole {
+  family: string;
+  weight: number;
+  /** font-variation-settings (ör. '"wght" 300') */
+  variation?: string;
 }
 
-/** ROTA2 çapraz 3B daire galerisi: ölçüler ekran yüksekliği H'nin (x'ler genişlik W'nin) oranı */
+/** ROTA2 çapraz 3B daire galerisi: ölçüler ekran yüksekliği H'nin (belirtilenler genişlik W'nin) oranı */
 export interface GalleryTokens {
   /** CSS perspective (px); perspective-origin ekranın ortası */
   perspective: number;
-  web: GalleryCurve & { /** Ortadaki dairenin çapı (H oranı) */ disc: number };
-  mobile: GalleryCurve & { /** Ortadaki dairenin çapı (W oranı) */ disc: number };
-  /** Ölçek: iki adım sol, sol, orta, sağ; daha uzakta aynı adımla sürer */
-  scale: { prev2: number; prev: number; center: number; next: number; min: number };
+  /** Duruştaki yerleşim */
+  layout: {
+    /** Ortadaki dairenin merkezi x (W oranı) */
+    centerX: number;
+    /** Ortadaki daire: alıntının altı ile sahne adının üstü arasında, her iki yanda bu boşlukla (H) en büyük çap */
+    gap: number;
+    /** Çap üst sınırı (W oranı) */
+    cap: { web: number; mobile: number };
+    /** Ölçek anahtarları s(p), p = −3 … +3 (arası sürekli) */
+    keys: number[];
+    /** p = +1 dairenin ekranın sağ kenarı dışında kalan genişlik oranı */
+    rightOut: number;
+    /** Soldaki daire sağındaki dairenin arkasına kendi genişliğinin en fazla bu oranı kadar girebilir */
+    tuck: number;
+    /** Yazı, düğme ve logodan en az boşluk (H) */
+    clear: number;
+    /** Başlangıç köşegeni (sola bir adımda [W, H] oranı); sığmazsa yatıklaştırılır */
+    slope: [number, number];
+  };
   /** 3B eğim (°): x, z sabit; y eğri üzerinde sol uçtan (yLeft, leftAt adım) sağ uca (yRight, rightAt adım) */
   rotate: { x: number; y: number; z: number; yLeft: number; yRight: number; leftAt: number; rightAt: number };
   /** Daire içindeki fotoğraf: normal kaplamanın katı */
@@ -158,8 +163,11 @@ export interface GalleryTokens {
   colorFade: number;
   /** Süzülme: dikey genlik (H oranı), rotateX genliği (°), periyot aralığı (sn), eğri */
   float: { y: number; rx: number; min: number; max: number; ease: string };
-  /** Fare eğimi: en fazla açı (°), yay sertliği ve sönüm (dönüş) */
+  /** Fare eğimi (kenardaki daireler): en fazla açı (°), yay sertliği ve sönüm (dönüş) */
   tilt: { max: number; stiffness: number; damping: number };
+  /** Ortadaki daire düzleşir (masaüstünde fare üzerindeyken, mobilde duruşta): ölçek, süre, eğri; gölgenin
+      yükseklik oranı (düz hâlde) */
+  flat: { scale: number; dur: number; ease: string; shadowHeight: number };
   /** Zemine düşen gölge */
   shadow: {
     color: string;
@@ -177,10 +185,11 @@ export interface GalleryTokens {
     /** Fare eğiminde en fazla kayma (H oranı) */
     tiltShift: number;
   };
-  /** Hareket: oturma, kendiliğinden ilerleme, iris */
+  /** Hareket: oturma, kendiliğinden ilerleme */
   settle: { dur: number; ease: string };
   auto: { every: number; dur: number; ease: string };
-  iris: { dur: number; ease: string };
+  /** Açılma: süre, açılış / kapanış eğrisi, videonun belirme başlangıcı ve süresi (sn) */
+  open: { dur: number; easeIn: string; easeOut: string; videoAt: number; videoDur: number };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */
@@ -189,20 +198,29 @@ export interface GalleryTokens {
 
 /** Ekrandaki yazılar ve düğmeler (H oranı; belirtilenler W oranı ya da px) */
 export interface ScreenTokens {
-  /** Etiket: yazı boyu, harf aralığı (em) */
+  /** Metin rengi (yazılar, logolar, künye çizgileri, düğme yazıları) */
+  text: string;
+  /** Yazı rolleri: künye başlığı, alıntı, değerler / tanıtım, etiketler ve düğmeler, sayılar */
+  type: { title: TypeRole; quote: TypeRole; body: TypeRole; label: TypeRole; number: TypeRole };
+  /** Tür satırı (alıntının üstünde): yazı boyu, harf aralığı (em) */
   label: { size: number; track: number };
-  /** Künye bloğu: sol (W), üst, genişlik (W, en az px), başlık, değer, satır, sayaç, elmas yüksekliği (px);
-      mobilde kenar boşluğu (H). En fazla oyuncu sayısı şablonda */
-  info: { left: number; top: number; width: number; minWidth: number; title: number; value: number; row: number; counter: number; diamond: number; mobilePad: number };
-  /** Sahne adı: yazı boyu, harf aralığı (em), üst boşluk */
-  stage: { size: number; track: number; top: number };
-  /** Alt orta: alt boşluk, alıntı (boy, satır aralığı, en fazla satır, en fazla genişlik W), alıntı ile
-      Bilet Al arası. Alıntının en fazla karakteri şablonda */
-  caption: { bottom: number; quote: number; lh: number; lines: number; maxW: number; gap: number };
-  /** Bilet Al: çap, yazı boyu */
-  ticket: { d: number; font: number };
-  /** Logo: yükseklik, alt boşluk */
-  logo: { h: number; bottom: number };
+  /** Künye bloğu: sol (W), üst, genişlik (W, en az px), başlık (W; web / mobil), değer ve etiket boyu, satır,
+      etiket harf aralığı (em), elmas yüksekliği (px), tanıtımın en fazla satırı; mobilde kenar boşluğu (H) */
+  info: {
+    left: number; top: number; width: number; minWidth: number; title: { web: number; mobile: number };
+    value: number; row: number; track: number; diamond: number; descLines: number; mobilePad: number;
+  };
+  /** Üst orta: tür satırının üstü (H), alıntı boyu (W), satır aralığı, en fazla genişlik (W) */
+  quote: { top: number; size: { web: number; mobile: number }; lh: number; maxW: { web: number; mobile: number } };
+  /** Alt orta sahne adı: yazı boyu, harf aralığı (em), Bilet Al ile arası */
+  stage: { size: number; track: number; gap: number };
+  /** Bilet Al: çap, yazı boyu, alt boşluk */
+  ticket: { d: number; font: number; bottom: number };
+  /** Daire düğmeler: dolgu; yazı tek satırda en fazla çapın `fit` oranı genişlikte (rahat iç boşluk) */
+  button: { fill: string; fit: number };
+  /** Logo: masaüstünde uzun logo yüksekliği, alt boşluk, ilk harfin soldan uzaklığı (W); mobilde kısa logo
+      yüksekliği ve alt boşluğu */
+  logo: { h: number; bottom: number; letter: number; mobileH: number; mobileBottom: number };
   /** Üye Ol / Giriş: çap, yazı boyu, aralık, üst ve sağ boşluk; mobilde çap (W oranı) */
   members: { d: number; font: number; gap: number; pad: number; mobileD: number };
   /** Yazı değişimi: kayma (px), satırlar arası gecikme, toplam süre (sn) */
@@ -215,10 +233,6 @@ export interface Identity {
   colors: {
     /** Zemin (html, body, theme-color) */
     background: string;
-    /** Metin ve çizgiler */
-    ink: string;
-    /** İkincil metin */
-    muted: string;
     focus: string;
     /** Yatay telefon katmanının zemini */
     overlay: string;
@@ -235,7 +249,6 @@ export interface Identity {
   palette: string[];
   fonts: {
     stylesheets: string[];
-    roles: { light: FontRole; bold: FontRole; counter: FontRole; counterStrong: FontRole };
   };
   /** Tam ekran başlığı ve sayacı */
   fullTitle: {
@@ -247,9 +260,7 @@ export interface Identity {
     counter: number;
     /** Başlıkla sayaç arası (başlık boyunun oranı) */
     gap: number;
-    /** Sahne etiketinin boyut tabanı (H oranı) */
-    stageBasis: number;
-    /** Tam ekran ikonlarının (×, sahne etiketi) ve yükleme ekranının kenar boşluğu (H oranı) */
+    /** Kapatma ikonunun ve yükleme ekranının kenar boşluğu (H oranı) */
     pad: number;
     /** Kapatma ikonunun çapı (px) */
     closeSize: number;
@@ -280,11 +291,11 @@ export interface Identity {
   /** Telefonda yatay ekran katmanı: koşul (yatay, dokunmatik, görünür yükseklik < maxHeight px),
       telefon simgesinin yüksekliği (ekran yüksekliğinin oranı), dönüş ve bekleme süreleri (sn) */
   rotate: { maxHeight: number; icon: number; turn: number; hold: number };
-  /** Tam ekran delikli doku: siyah yüzeyde kare ızgaraya dizilmiş yuvarlak delikler */
+  /** Tam ekran ağı: zemin renginde yüzey, kare ızgarada eşkenar dörtgen delikler (ekran koruyucuda yuvarlak) */
   texture: {
     /** Delik aralığı, merkezden merkeze (px) */
     pitch: number;
-    /** Siyah yüzeyin kapladığı alan oranı; delik çapı bundan hesaplanır */
+    /** Yüzeyin kapladığı alan oranı; delik boyu bundan hesaplanır (eşkenar dörtgende en fazla yarı köşegen p/2) */
     cover: number;
   };
   /** Tam ekran videosu */
@@ -315,9 +326,6 @@ export interface Identity {
     /** Tam ekran videosu: görünür olunca sesin 0'dan hedefe yükselmesi / çıkışta kısılması */
     soundIn: number;
     soundOut: number;
-    /** Tam ekran delikli dokunun belirmesi / kaybolması */
-    textureIn: number;
-    textureOut: number;
     /** Video görünür olduktan bu kadar sn sonra kendiliğinden galeriye dönülür */
     autoReturn: number;
     /** Ekran koruyucu: belirme, çıkışta kararma */
@@ -336,9 +344,8 @@ export interface Identity {
     counterDelay: number;
     counterIn: number;
     titleOut: number;
-    /** Tam ekran: saatin sayaçtan sonraki gecikmesi; sahne etiketinin belirmesi */
+    /** Tam ekran: saatin sayaçtan sonraki gecikmesi */
     hourDelay: number;
-    stageIn: number;
     /** Kapatma ikonunun belirmesi / kaybolması */
     closeFade: number;
   };

@@ -32,11 +32,8 @@ export function createCommands(o: { S: State; id: Identity; camera: Camera; gall
   const { S, id, camera, gallery } = o;
   const G = id.gallery;
   const dominant = (a: number, b: number) => (Math.abs(a) >= Math.abs(b) ? a : b);
-  /** Bir adımlık sürükleme mesafesi (px): ortadan sonraki daireye */
-  const stepPx = () => {
-    const C = S.mobile ? G.mobile : G.web;
-    return S.mobile ? Math.abs(C.next[1]) * S.vh : Math.hypot(C.next[0] * S.vw, C.next[1] * S.vh);
-  };
+  /** Bir adımlık sürükleme mesafesi (px): ortadaki ile sonraki dairenin duruş noktaları arası */
+  const stepPx = () => Math.max(1, gallery.step());
   const drag = (dx: number, dy: number) => (S.mobile ? dy : dominant(dx, dy));
   const locked = () => S.open || S.full || S.paused;
   let lastWheel = 0;

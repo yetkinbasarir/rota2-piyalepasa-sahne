@@ -1,5 +1,5 @@
 /* Motor yapısı — kimlikten bağımsız yerleşim. Görsel dil kimlik katmanındadır.
-   Ölçüler (px) motorun yazdığı CSS değişkenlerinden gelir (gallery.ts / state.ts). */
+   Ölçüler (px) motorun yazdığı CSS değişkenlerinden gelir (gallery.ts / screen.ts / state.ts). */
 :root { color-scheme: light; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 /* html / body zemin renginde (Safari üst çubuk alanı); esneme ve dikey kayma yok */
@@ -8,14 +8,16 @@ body { touch-action: none; user-select: none; -webkit-user-select: none; -webkit
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 img, video { -webkit-user-drag: none; }
 
-/* yüzey: zemin, kâğıt dokusu, gölgeler, daireler, yazılar, iris ve tam ekran videosu */
+/* yüzey: zemin, kâğıt dokusu, gölgeler, daireler, açık hâlin görseli ve videosu, yazılar */
 #surface { position: fixed; inset: 0; overflow: hidden; contain: strict; cursor: grab; background: var(--c-bg, #ECEBE8); }
 .layer { position: absolute; inset: 0; pointer-events: none; }
 /* kâğıt dokusu: ekrana sabit, gri tonlu gürültü (theme.ts) */
 .paper { position: absolute; inset: 0; pointer-events: none; background-image: var(--paper); background-size: 300px 300px; opacity: var(--paper-o, .05); }
 
-/* ortak delikli doku (ölçüler texture.ts): siyah yüzey, kare ızgarada yuvarlak delikler */
-.holes {
+/* tam ekran ağı (texture.ts): zemin renginde, kare ızgarada eşkenar dörtgen delikler; piksel ızgarasında */
+.holes { background-image: var(--tex-img); background-size: var(--tex-p) var(--tex-p); }
+/* yükleme ekranının ekran koruyucusu: siyah yüzey, yuvarlak delikler */
+.holes-r {
   background-image: radial-gradient(circle, transparent var(--tex-r), #000 calc(var(--tex-r) + .5px));
   background-size: var(--tex-p) var(--tex-p);
 }
@@ -27,61 +29,23 @@ img, video { -webkit-user-drag: none; }
 .gd {
   position: absolute; left: 0; top: 0; border-radius: 50%; overflow: hidden; pointer-events: auto; cursor: pointer;
   transform-origin: 50% 50%; will-change: transform; backface-visibility: hidden;
-  /* dairesel kırpma alt katmanlara da kesin uygulansın (görseller ayrı katman olsa bile) */
+  /* dairesel kırpma alt katmanlara da kesin uygulansın */
   clip-path: circle(50% at 50% 50%);
 }
 .gd img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
-/* renkli kopya duotone kopyanın üstünde; opaklıkla belirir */
 .gd .phc { opacity: 0; }
 /* zemine düşen gölge: dairelerin arkasında, yalnızca transform / opacity / filter */
 .gsh { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform, opacity; transform-origin: 50% 50%; }
 
-/* ---------- ekrandaki yazılar ---------- */
-#ui { z-index: 1; }
-/* geçişte eski ve yeni içerik üst üste: iç kaplar mutlak konumlu */
-.gx { position: absolute; left: 0; right: 0; }
-.gi { position: absolute; left: var(--gi-left); top: var(--gi-top); width: var(--gi-w); }
-.gi > .gx { top: 0; }
-.gs { position: absolute; left: 0; right: 0; top: var(--gs-top); text-align: center; }
-.gs > .gx { top: 0; }
-.gc { position: absolute; left: 50%; bottom: var(--gc-bottom); width: var(--gc-maxw); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-.gc-t { position: relative; width: 100%; height: 0; margin-bottom: var(--gc-gap); }
-.gc-t > .gx { bottom: 0; text-align: center; }
-.ln { will-change: transform, opacity; }
-/* çizgi + elmas */
-.rl { display: flex; align-items: center; height: var(--gi-dm); }
-.rl > i { flex: 1; height: 1px; background: currentColor; margin-right: -.5px; }
-.rl > .dm { height: var(--gi-dm); width: auto; display: block; fill: currentColor; flex: none; }
-.gr { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
-.gv { display: flex; flex-direction: column; align-items: flex-end; text-align: right; min-width: 0; }
-
-/* logo: kapsayıcı ekranın sol kenarından başlar (çizgi uzantıları, logo.ts) */
-.brand { position: absolute; left: 0; z-index: 1; pointer-events: none; line-height: 0; }
-.brand > i, .brand > svg { position: absolute; }
-/* Üye Ol / Giriş: sağ üst */
-.bnd { position: absolute; z-index: 1; display: flex; gap: var(--cb-gap); pointer-events: none; }
-.bnd button, .gc button { pointer-events: auto; }
-/* daire düğme: içi boş, ince kontur; fare üzerindeyken içi dolar */
-.cb {
-  width: var(--cb-d); height: var(--cb-d); flex: none; border-radius: 50%;
-  border: 1px solid currentColor; background: transparent; font-size: var(--cb-fs);
-  display: grid; place-items: center; text-align: center; line-height: 1.1; padding: 0 .3em;
-  transition: background-color .2s, color .2s;
-}
-
-/* ---------- açılma: iris ve tam ekran ---------- */
-/* iris: renkli fotoğraf dairesel maskeyle bütün ekrana (yazıların ve logonun üstünde) */
-#top { z-index: 2; }
-#top.on { pointer-events: auto; }
-.iris { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.iris img { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; display: block; }
+/* ---------- açık hâl: görsel (video gelene kadar), video ve ağ; yazıların altında ---------- */
+#top, #fv { opacity: 0; visibility: hidden; }
+#top img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
 .phn { position: absolute; left: 0; top: 0; display: block; max-width: none; }
 .phm { filter: url(#duotone); }
-
-/* tam ekran videosu: irisin üstünde; tıklamaları geçirir. Video 16:9 kabul edilir; ekranı kaplayan cover
-   boyutunun --fv-k katına büyütülür, büyütmenin merkezi yatayda orta, dikeyde ekranın üstünden --fv-oy */
-#fv { z-index: 3; overflow: hidden; }
-.fv { position: absolute; inset: 0; overflow: hidden; pointer-events: none; background: #000; }
+/* tam ekran videosu: tıklamaları geçirir. Video 16:9 kabul edilir; ekranı kaplayan cover boyutunun --fv-k
+   katına büyütülür, büyütmenin merkezi yatayda orta, dikeyde ekranın üstünden --fv-oy */
+#fv { overflow: hidden; }
+.fv { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .fv-in {
   --cvw: max(100vw, calc(var(--vvh, 100vh) * 16 / 9));
   --cvh: max(var(--vvh, 100vh), calc(100vw * 9 / 16));
@@ -91,22 +55,52 @@ img, video { -webkit-user-drag: none; }
   top: calc(var(--fv-oy, .5) * var(--vvh, 100vh) + var(--fv-k, 1) * ((.5 - var(--fv-oy, .5)) * var(--vvh, 100vh) - var(--cvh) / 2));
 }
 .fv-in iframe, .fv-in video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; display: block; object-fit: cover; }
-/* tam ekran delikli doku: fotoğraf ve videonun üstünde; ekrana sabit */
-.tex { position: fixed; inset: 0; z-index: 9; pointer-events: none; opacity: 0; visibility: hidden; }
-/* tam ekran başlığı ve sayacı: dokunun ve videonun üstünde; ekranın ortasında */
+.tex { position: absolute; inset: 0; pointer-events: none; opacity: 0; visibility: hidden; }
+
+/* ---------- ekrandaki yazılar ---------- */
+#ui { z-index: 1; }
+/* geçişte eski ve yeni içerik üst üste: iç kaplar mutlak konumlu */
+.gx { position: absolute; left: 0; right: 0; }
+.gi { position: absolute; left: var(--gi-left); top: var(--gi-top); width: var(--gi-w); }
+.gi > .gx { top: 0; }
+.gi-rest { overflow: hidden; }
+/* üst orta: tür + alıntı */
+.gq-top { position: absolute; left: 50%; top: var(--gq-top); width: var(--gq-maxw); transform: translateX(-50%); }
+.gq-top > .gx { top: 0; text-align: center; }
+/* alt orta: sahne adı, altında Bilet Al */
+.gc { position: absolute; left: 0; right: 0; bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.gs { position: relative; width: 100%; height: var(--gs-fs); margin-bottom: var(--gs-gap); }
+.gs > .gx { top: 0; text-align: center; }
+.ln { will-change: transform, opacity; }
+/* çizgi + elmas */
+.rl { display: flex; align-items: center; height: var(--gi-dm); }
+.rl > i { flex: 1; height: 1px; background: currentColor; margin-right: -.5px; }
+.rl > .dm { height: var(--gi-dm); width: auto; display: block; fill: currentColor; flex: none; }
+.gr { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
+.gv { display: flex; flex-direction: column; align-items: flex-end; text-align: right; min-width: 0; }
+
+/* logo: uzun ve kısa logo üst üste (açık hâlde çapraz geçiş); kapsayıcılar ekranın sol kenarından başlar */
+.brand { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; line-height: 0; }
+.brand > div { position: absolute; left: 0; top: 0; }
+.brand i, .brand svg { position: absolute; }
+/* Üye Ol / Giriş: sağ üst */
+.bnd { position: absolute; z-index: 1; display: flex; gap: var(--cb-gap); pointer-events: none; }
+.bnd button, .gc button { pointer-events: auto; }
+/* daire düğme: düz dolgu, kontursuz; yazı tek satır ortada */
+.cb {
+  width: var(--cb-d); height: var(--cb-d); flex: none; border-radius: 50%; border: 0; font-size: var(--cb-fs);
+  display: grid; place-items: center; text-align: center; line-height: 1; padding: 0; white-space: nowrap;
+  transition: opacity .2s;
+}
+.cb > span { display: block; white-space: nowrap; }
+
+/* ---------- tam ekran başlığı ve × ---------- */
 .fst {
   position: fixed; inset: 0; z-index: 9; pointer-events: none; visibility: hidden; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .fst > * { will-change: transform; }
 .fst > :nth-child(n + 2) { position: absolute; left: 0; right: 0; text-align: center; }
-/* tam ekran sahne etiketi: üst ortada; tıklanamaz */
-.fsl {
-  position: fixed; left: 0; right: 0; top: var(--logo-pad); z-index: 10; pointer-events: none;
-  display: flex; justify-content: center; visibility: hidden;
-}
-.is-mobile .fsl { top: calc(var(--safe-top) + var(--mpad)); }
-/* kapatma ikonu: sağ üst köşe, ekrana sabit, en üst katmanda; tam ekranda görünür */
 .xcl {
   position: fixed; top: var(--logo-pad); right: var(--logo-pad); z-index: 12; width: var(--xcl-d, 56px); height: var(--xcl-d, 56px);
   padding: 0; border: 0; background: none; cursor: pointer; line-height: 0; opacity: 0; visibility: hidden; pointer-events: auto;

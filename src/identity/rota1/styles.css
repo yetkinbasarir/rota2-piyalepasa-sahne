@@ -1,71 +1,65 @@
 /* ROTA1 görsel dili (ROTA2 galeri). Motor yapısı src/engine/engine.css içinde.
-   Font rolleri ve renkler motor tarafından CSS değişkeni olarak yazılır
-   (--c-*, --role-<rol>-family|weight|var); ölçüler motorun px değişkenleri. */
+   Yazı rolleri ve renkler motor tarafından CSS değişkeni olarak yazılır (--t-<rol>-family|weight|var,
+   --c-*); ölçüler motorun px değişkenleri. */
 
 body {
-  font-family: var(--role-light-family), 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: var(--role-light-weight);
-  color: var(--c-ink);
+  font-family: var(--t-body-family), serif; font-weight: var(--t-body-weight);
+  color: var(--c-text);
 }
 button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 
-/* sayaç: config-mono-vf, tablo rakamları; her karakter konumu ayrı span */
-.cd {
-  display: inline-flex; align-items: baseline; line-height: 1;
-  font-family: var(--role-counter-family); font-weight: var(--role-counter-weight);
-  font-variation-settings: var(--role-counter-var);
-  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; white-space: nowrap;
+/* rol yardımcıları */
+.num, .cd {
+  font-family: var(--t-number-family); font-weight: var(--t-number-weight); font-variation-settings: var(--t-number-var);
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
 }
+.lb, .gl, .gs-t, .cb {
+  font-family: var(--t-label-family); font-weight: var(--t-label-weight); font-variation-settings: var(--t-label-var);
+  text-transform: uppercase;
+}
+
+/* sayaç: her karakter konumu ayrı span */
+.cd { display: inline-flex; align-items: baseline; line-height: 1; white-space: nowrap; }
 .cd > span { white-space: pre; }
 
-/* ---------- galeri yazıları: metin ve çizgiler mürekkep rengi ---------- */
-#ui, .brand, .bnd { color: var(--c-ink); }
-/* etiket: comma-serif 700, büyük harf, geniş harf aralığı */
-.lb, .gl {
-  font-family: var(--role-bold-family); font-weight: var(--role-bold-weight);
-  font-size: var(--lb-fs); letter-spacing: var(--lb-ls); text-transform: uppercase; line-height: var(--gi-row);
-}
+/* ---------- galeri yazıları: saf siyah ---------- */
+#ui, .brand, .bnd, .xcl { color: var(--c-text); }
 /* künye başlığı: büyük harf, en fazla iki satır */
 .gt {
-  font-family: var(--role-light-family); font-weight: var(--role-light-weight);
+  font-family: var(--t-title-family); font-weight: var(--t-title-weight);
   font-size: var(--gi-title); line-height: 1; letter-spacing: -0.01em; text-transform: uppercase;
   overflow-wrap: break-word; padding-bottom: .12em;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
+/* künye satırları: etiket, değer, sayaç ve tanıtım tek boyda */
+.lb { font-size: var(--gi-value); letter-spacing: var(--gi-ls); line-height: var(--gi-row); }
 .gv { font-size: var(--gi-value); line-height: var(--gi-row); }
 .gv > span { white-space: nowrap; }
-/* sayaç: tarihin hemen altında, ikincil renk */
-.gcd { color: var(--c-muted); line-height: 1; padding-bottom: calc((var(--gi-row) - var(--gi-value)) / 2); }
-.gcd .cd { font-size: var(--gi-cd); }
-/* sahne adı */
-.gs-t { font-size: var(--gs-fs); letter-spacing: var(--gs-ls); text-transform: uppercase; line-height: 1; }
-/* alıntı: tırnak içinde, büyük harf, en fazla iki satır */
+.gcd { line-height: 1; padding-bottom: calc((var(--gi-row) - var(--gi-value)) / 2); }
+.gcd .cd { font-size: var(--gi-value); }
+/* tanıtım: en fazla birkaç satır, kalanı "…" */
+.gdesc {
+  font-size: var(--gi-value); line-height: var(--gi-row); padding-top: calc((var(--gi-row) - var(--gi-value)) / 4);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--gi-lines); line-clamp: var(--gi-lines); overflow: hidden;
+}
+/* tür satırı */
+.gl { font-size: var(--lb-fs); letter-spacing: var(--lb-ls); line-height: 2.4; }
+/* alıntı: tırnak içinde, büyük harf */
 .gq {
-  font-size: var(--gc-quote); line-height: var(--gc-lh); text-transform: uppercase; text-wrap: balance;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--gc-lines); line-clamp: var(--gc-lines); overflow: hidden;
+  font-family: var(--t-quote-family); font-weight: var(--t-quote-weight);
+  font-size: var(--gq-fs); line-height: var(--gq-lh); text-transform: uppercase; text-wrap: balance;
 }
-/* daire düğmeler: comma-serif 400; fare üzerindeyken içi mürekkep, yazı zemin rengi */
-.cb { font-family: var(--role-light-family); font-weight: var(--role-light-weight); color: var(--c-ink); }
+/* sahne adı */
+.gs-t { font-size: var(--gs-fs); letter-spacing: var(--gs-ls); line-height: 1; }
+/* daire düğmeler: düz beyaz, yazı metin renginde */
+.cb { background: var(--c-btn); color: var(--c-text); }
 @media (hover: hover) {
-  .cb:hover { background: var(--c-ink); color: var(--c-bg); }
-}
-/* ekran koruyucudaki kopya (yükleme ekranı): koyu akışın üstünde beyaz */
-.ld-bnd .cb { color: #fff; }
-@media (hover: hover) {
-  .ld-bnd .cb:hover { background: #fff; color: var(--c-ink); }
+  .cb:hover { opacity: .8; }
 }
 
-/* ---------- tam ekran (değişmedi) ---------- */
+/* ---------- tam ekran (başlık, sayaç, saat) ---------- */
 .xcl svg { transition: opacity .2s; }
 .xcl:hover svg { opacity: .7; }
 .xcl:active svg { opacity: .5; }
-.fst-t {
-  font-family: var(--role-light-family), 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: var(--role-light-weight); line-height: 1; white-space: nowrap; color: #fff;
-}
-.fst-c { line-height: 1; color: #fff; }
-.fst-c .cd { font-family: var(--role-counterStrong-family); font-weight: var(--role-counterStrong-weight); font-variation-settings: var(--role-counterStrong-var); }
-.fsl-b {
-  display: inline-block; font-family: var(--role-light-family); font-weight: var(--role-light-weight);
-  color: #000; background: #fff; line-height: 1.2; padding: .4em .9em; border-radius: 999px; white-space: nowrap;
-}
+.fst-t { font-family: var(--t-body-family), serif; font-weight: var(--t-body-weight); line-height: 1; white-space: nowrap; color: var(--c-text); }
+.fst-c { line-height: 1; color: var(--c-text); }

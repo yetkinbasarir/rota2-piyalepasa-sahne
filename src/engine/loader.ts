@@ -89,7 +89,9 @@ export function createLoader(o: { id: Identity; motion: Motion; reveal: HTMLElem
   };
   layoutLd();
   if (base) base.style.color = LD.base;
-  if (tex) tex.className = 'holes';
+  // net logo (çıkışta ve ekran koruyucuda) metin renginde
+  if (fill) fill.style.color = id.screen.text;
+  if (tex) tex.className = 'holes-r';
   /* ---------- 2: opak daireler (canvas) ----------
      Daireler logonun sınır kutusunda (biraz taşarak) mavi gürültü benzeri dağılır; boyutları dramatik
      (çok sayıda küçük, az sayıda çok büyük). Her biri tam opak, düz, tek renk, keskin kenarlı; büyükler önce,

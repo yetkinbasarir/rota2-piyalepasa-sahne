@@ -1,7 +1,8 @@
 # Piyalepaşa Sahne — ROTA2
 
-Çapraz 3B daire galerisi (CSS 3B): daireler hafif bir eğri boyunca dizilir, ortadaki renkli, diğerleri duotone;
-ortadaki daire iris ile açılıp tam ekran video akışını başlatır. Web + mobil PWA.
+Çapraz 3B daire galerisi (CSS 3B): daireler ekrandaki yazılara göre yerleşen bir köşegen boyunca dizilir, ortadaki
+renkli, diğerleri duotone; ortadaki daireye tıklanınca daireler köşegen boyunca çıkar ve tam ekran video (eşkenar
+dörtgen ağ ile) belirir. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
 ```bash
@@ -22,15 +23,17 @@ src/
                           (A, yoksa B) + renk + odak + alıntı ("alinti") + örnek tarih/saat/fiyat
   content/*.generated.json  scripts/build-images.mjs çıktısı: görsel boyutları, fotoğraf renkleri, odak noktaları
   identity/rota1/         KİMLİK KATMANI — motordan ayrı, tek yer
-    index.ts              token'lar: renkler, kâğıt dokusu, galeri (eğri, ölçek, eğim, süzülme, gölge, hareket),
-                          ekran yazıları ve düğmeler, fontlar, tam ekran, yükleme ekranı, süreler, logo
-    templates.ts          künye bloğu, sahne adı, etiket + alıntı, tam ekran başlığı, daire düğmeler, ×
+    index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
+                          hareket, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), tam ekran,
+                          yükleme ekranı, süreler, logo
+    templates.ts          künye bloğu (+ tanıtım), tür + alıntı, sahne adı, tam ekran başlığı, daire düğmeler, ×
     styles.css            görsel dil
   engine/
     types.ts              motor ↔ kimlik/içerik sözleşmesi
     state.ts              durum (galeri konumu S.pos) + ekran ölçüsü
-    gallery.ts            daireler (CSS 3B, Catmull-Rom eğrisi), gölgeler, fare eğimi, iris, tam ekran, yazı geçişleri
-    screen.ts             yazı ölçüleri (CSS değişkenleri), logo, Üye Ol / Giriş
+    gallery.ts            duruş yerleşimi (yazılardan), daireler (CSS 3B, Catmull-Rom), gölgeler, eğim / düzleşme,
+                          açık hâl (çıkış, video, ağ), yazı geçişleri
+    screen.ts             yazı ölçüleri (CSS değişkenleri), uzun / kısa logo, Üye Ol / Giriş, düğme yazısı sığdırma
     camera.ts             konum: sürükleme, atalet, oturma, adım, kendiliğinden ilerleme
     commands.ts           tüm girişlerin çağırdığı komut katmanı
     present.ts            kendi kendine sunum
@@ -38,7 +41,7 @@ src/
     counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
     loader.ts, screensaver.ts  yükleme ekranı ve açılış ekran koruyucusu
     logo.ts               iki parçalı, uzayıp kısalan logo
-    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, delikli doku
+    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, ağ (eşkenar dörtgen / ekran koruyucuda yuvarlak)
     theme.ts              kimlik token'larını sayfaya uygular, DOM iskeleti
     input/pointer.ts      işaretçi / dokunma (Observer)
     input/wheel.ts        tekerlek / trackpad (Observer)

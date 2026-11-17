@@ -12,7 +12,6 @@ export interface Dom {
   video: HTMLElement;
   texture: HTMLElement;
   title: HTMLElement;
-  stageLabel: HTMLElement;
   close: HTMLElement;
   rotate: HTMLElement;
 }
@@ -31,19 +30,18 @@ export function applyIdentity(id: Identity) {
   const root = document.documentElement;
   const set = (k: string, v: string | number) => root.style.setProperty(k, String(v));
   set('--c-bg', id.colors.background);
-  set('--c-ink', id.colors.ink);
-  set('--c-muted', id.colors.muted);
+  set('--c-text', id.screen.text);
+  set('--c-btn', id.screen.button.fill);
   set('--c-focus', id.colors.focus);
   set('--c-overlay', id.colors.overlay);
   set('--paper', paper(id));
   set('--paper-o', id.paper.opacity);
   set('--g-persp', `${id.gallery.perspective}px`);
-  for (const [role, f] of Object.entries(id.fonts.roles)) {
-    set(`--role-${role}-family`, f.family);
-    set(`--role-${role}-weight`, f.weight);
-    set(`--role-${role}-style`, f.style ?? 'normal');
-    set(`--role-${role}-ls`, f.letterSpacing ?? 'normal');
-    set(`--role-${role}-var`, f.variation ?? 'normal');
+  // yazı rolleri: başlık, alıntı, değerler, etiketler / düğmeler, sayılar
+  for (const [role, f] of Object.entries(id.screen.type)) {
+    set(`--t-${role}-family`, f.family);
+    set(`--t-${role}-weight`, f.weight);
+    set(`--t-${role}-var`, f.variation ?? 'normal');
   }
   for (const href of id.fonts.stylesheets) {
     if (!document.querySelector(`link[href="${href}"]`)) {
@@ -97,21 +95,20 @@ export function buildDom(id: Identity): Dom {
   <div class="paper" aria-hidden="true"></div>
   <div id="shadows" class="layer" aria-hidden="true"></div>
   <div id="stage" class="layer"></div>
-  <div id="ui" class="layer"></div>
-  <div class="brand" role="img" aria-label="${id.name}"></div>
-  <div class="bnd"></div>
   <div id="top" class="layer"></div>
   <div id="fv" class="layer"></div>
+  <div class="tex holes" aria-hidden="true"></div>
+  <div id="ui" class="layer"></div>
+  <div class="brand" role="img" aria-label="${id.name}"><div class="lg-l"></div><div class="lg-s"></div></div>
+  <div class="bnd"></div>
 </div>
 <svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>
-<div class="tex holes" aria-hidden="true"></div>
 <div class="fst" aria-live="polite"></div>
-<div class="fsl" aria-hidden="true"></div>
 <button type="button" class="xcl" aria-label="Kapat"></button>
 ${rotateLayer(id)}`;
   const $ = (s: string) => app.querySelector<HTMLElement>(s)!;
   return {
     surface: $('#surface'), shadows: $('#shadows'), stage: $('#stage'), ui: $('#ui'), brand: $('.brand'), members: $('.bnd'),
-    top: $('#top'), video: $('#fv'), texture: $('.tex'), title: $('.fst'), stageLabel: $('.fsl'), close: $('.xcl'), rotate: $('.rot'),
+    top: $('#top'), video: $('#fv'), texture: $('.tex'), title: $('.fst'), close: $('.xcl'), rotate: $('.rot'),
   };
 }
