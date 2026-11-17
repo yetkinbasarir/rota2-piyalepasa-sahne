@@ -4,6 +4,4 @@ export const SURFACE = {
   line: 1,
   /** Künyede en fazla oyuncu */
   castMax: 5,
-  /** Alıntı: tanıtımın ilk cümlesinden en fazla karakter */
-  quoteChars: 70,
 };

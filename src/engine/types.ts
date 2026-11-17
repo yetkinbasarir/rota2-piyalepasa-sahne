@@ -99,13 +99,12 @@ export interface TemplateContext {
 }
 
 export interface Templates {
-  /** Sol üst: başlık; .gi-rest içinde tanıtım. Satır satır geçiş için her satır .ln taşır; mobilde tanıtım yok */
+  /** Sol üst: başlık; .gi-rest içinde logo çizgisi, tanıtım, logo çizgisi. Satır satır geçiş için her satır .ln
+      taşır; mobilde tanıtım yok */
   info(show: Show, ctx: TemplateContext): string;
   /** Sağ alt künye (mobilde başlığın altında): çizgilerle ayrılmış TÜR / TARİH (+ sayaç) / SAHNE / YÖNETEN /
       OYUNCULAR satırları (.ln); mobilde oyuncular yok */
   credits(show: Show, ctx: TemplateContext): string;
-  /** Üst ortadaki alıntı (.ln) */
-  caption(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -141,7 +140,7 @@ export interface GalleryTokens {
     mainY: { web: number; mobile: number };
     /** Bütün daire grubu (daireler ve gölgeleri) bu kadar yukarıda (H oranı); aralık ve ölçüler değişmez */
     lift: { web: number; mobile: number };
-    /** Temel çap: eğik hâlin sınır kutusu alıntının altı ile sahne adının üstü arasında, her iki yanda bu
+    /** Temel çap: eğik hâlin sınır kutusu üye düğmelerinin altı ile Bilet Al'ın üstündeki alt sınır arasında, her iki yanda bu
         boşlukla (H) en büyük */
     gap: number;
     /** Temel çapın üst sınırı (W oranı) */
@@ -207,8 +206,8 @@ export interface GalleryTokens {
 export interface ScreenTokens {
   /** Metin rengi (yazılar, logolar, künye çizgileri, düğme yazıları) */
   text: string;
-  /** Yazı rolleri: künye başlığı, alıntı, değerler / tanıtım, etiketler ve düğmeler, sayılar */
-  type: { title: TypeRole; quote: TypeRole; body: TypeRole; label: TypeRole; number: TypeRole };
+  /** Yazı rolleri: gösteri başlığı, değerler / tanıtım, etiketler ve düğmeler, sayılar */
+  type: { title: TypeRole; body: TypeRole; label: TypeRole; number: TypeRole };
   /** Okuma metni (tanıtım, künye değerleri): clamp(min px, vw·W, max px), satır aralığı */
   body: { min: number; vw: number; max: number; lh: number };
   /** Eş aralıklı etiketler (künye etiketleri, tür satırı, sahne adı, düğme yazıları): clamp(min px, vw·W, max px),
@@ -217,18 +216,16 @@ export interface ScreenTokens {
   /** Sayılar: büyük harf yüksekliği okuma metninkine eşitlenir (canvas ile ölçülen harf) */
   number: { capOf: string };
   /** Sol üst blok (başlık + tanıtım): sol (W), genişlik (W, en az px), başlık (W; web / mobil), başlığın satır
-      aralığı, künye çizgisi kalınlığı (px), tanıtımın en fazla satırı; mobilde kenar boşluğu (H). Masaüstünde
-      başlığın büyük harf üstü Üye Ol / Giriş düğmelerinin üstüyle aynı çizgide */
+      aralığı ve en fazla satırı (sığmazsa yazı küçülür, hiç kısaltılmaz), logo çizgilerinin üstünde ve altında
+      boşluk (W; web / mobil); mobilde kenar boşluğu (H). Masaüstünde başlığın büyük harf üstü Üye Ol / Giriş
+      düğmelerinin üstüyle aynı çizgide. Tanıtım tam gösterilir */
   info: {
     left: number; width: number; minWidth: number; title: { web: number; mobile: number }; titleLh: number;
-    rule: number; descLines: number; mobilePad: number;
+    titleLines: number; ruleGap: { web: number; mobile: number }; mobilePad: number;
   };
   /** Künye: genişlik (W; masaüstünde sağ altta, sağ kenarı Giriş düğmesinin, altı logonun altıyla hizalı, yukarı
       büyür; mobilde başlığın altında ortada) */
   credits: { width: { web: number; mobile: number } };
-  /** Üst orta alıntı: mobilde üstü (H; masaüstünde ilk satırın büyük harf üstü başlığınkiyle hizalı), boyu (W),
-      satır aralığı, en fazla genişlik (W) */
-  quote: { top: number; size: { web: number; mobile: number }; lh: number; maxW: { web: number; mobile: number } };
   /** Dairelerin sığdırıldığı alt sınır: Bilet Al'ın üstünden bu kadar (H) ve bir etiket satırı yukarısı
       (eski sahne adı yeri; daire ölçüleri değişmesin) */
   stage: { gap: number };

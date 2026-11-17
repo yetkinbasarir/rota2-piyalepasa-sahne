@@ -5,7 +5,7 @@
 
    Daireler: her öğe düz, kenarsız bir daire (yalnızca dairesel görsel; odak noktası merkezde, normal
    kaplamanın photoZoom katı). Duruştaki yerleşim (layout) ekrandaki yazılardan hesaplanır:
-   - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H); temel çap, eğik hâlinin sınır kutusu alıntının altı
+   - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H); temel çap, eğik hâlinin sınır kutusu üye düğmelerinin altı
      ile Bilet Al'ın üstündeki alt sınır arasına (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana
      daire bunun mainScale katı;
    - p = +1 köşegen üzerinde, ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W; sığmayan
@@ -29,17 +29,18 @@
    Açık hâl (ana daireye tıklama): diğer daireler yerinde kalır. t = 0'da ana daire düzleşir (eğimsiz), en önde
    kalır ve yerinden, yarıçapı ekranın en uzak köşesine ulaşana kadar büyür (open.dur, open.ease); renkli kalır,
    gölgesi kaybolur. Aynı anda uzun logo kısa logoya çapraz geçer, sol üstte başlığın altındaki tanıtım kaybolup
-   kapanır, alıntı ve künye kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
+   kapanır, künye kaybolur; Bilet Al kalır. Büyüme bitince ekranı kaplayan daireyle birebir aynı
    kırpımdaki keskin görsel altına yerleşir. Video ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
    belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
    birlikte döner.
 
-   Yazılar (sol üstte başlık + tanıtım, alıntı, künye) ana daireye göre değişir: eski satırlar yukarı
+   Yazılar (sol üstte başlık + tanıtım, künye) ana daireye göre değişir: eski satırlar yukarı
    kayarak kaybolur, yeniler aşağıdan gelir (satırlar arası gecikmeyle). */
 import { gsap } from './motion';
 import type { Motion } from './motion';
 import type { Media } from './media';
 import { clamp, mod, type State } from './state';
+import { fitTitles } from './screen';
 import type { Identity, Show, TemplateContext } from './types';
 import type { FullVideoPlayer } from './fullVideo';
 import type { Dom } from './theme';
@@ -227,15 +228,17 @@ export function createGallery(o: {
 
   /* ---------- yazılar: iskelet ---------- */
   dom.ui.innerHTML =
-    '<div class="gi"></div><div class="gq-top"></div><div class="gk"></div>' +
+    '<div class="gi"></div><div class="gk"></div>' +
     `<div class="gc">${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
   const gInfo = dom.ui.querySelector<HTMLElement>('.gi')!;
-  const gCap = dom.ui.querySelector<HTMLElement>('.gq-top')!;
   const gKun = dom.ui.querySelector<HTMLElement>('.gk')!;
   // Bilet Al şimdilik işlevsiz; tıklama galeriye geçmez
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk')!;
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
   ticket.addEventListener('click', (e) => e.stopPropagation());
+
+  /** Başlık en fazla titleLines satır (sığmazsa küçülür) */
+  const fitTitle = (el: ParentNode) => fitTitles(el, T.info.titleLines, T.info.titleLh);
 
   /** Bir yazı grubunun bütün gösteriler için en büyük yüksekliği (gizli ölçüm) */
   function measureMax(group: HTMLElement, html: (s: Show) => string) {
@@ -246,6 +249,7 @@ export function createGallery(o: {
     let h = 0;
     for (const s of shows) {
       probe.innerHTML = html(s);
+      fitTitle(probe);
       h = Math.max(h, probe.offsetHeight);
     }
     probe.remove();
@@ -262,16 +266,16 @@ export function createGallery(o: {
     const gap = GL.gap * H;
     const mpad = T.info.mobilePad * H;
 
-    // üst orta: alıntı (en uzun gösteri)
-    const qTop = css('--gq-top');
-    const q = measureMax(gCap, (s) => id.templates.caption(s, ctx));
-    const qBottom = qTop + q.h;
-    // mobilde: alıntının altında başlık, onun altında künye; daireler künyenin altında
+    // ekrandaki başlık yeni ölçüde en fazla titleLines satır
+    fitTitle(gInfo);
+    // üst sınır: Üye Ol / Giriş düğmelerinin altı
+    const mBottom = css('--members-bottom');
+    // mobilde: üye düğmelerinin altında başlık, onun altında künye; daireler künyenin altında
     let kBottom = 0;
     if (S.mobile) {
-      root.style.setProperty('--gi-top', `${(qBottom + mpad).toFixed(2)}px`);
+      root.style.setProperty('--gi-top', `${(mBottom + mpad).toFixed(2)}px`);
       const k = measureMax(gInfo, (s) => id.templates.info(s, ctx));
-      const kkTop = qBottom + mpad + k.h + mpad;
+      const kkTop = mBottom + mpad + k.h + mpad;
       root.style.setProperty('--gk-top', `${kkTop.toFixed(2)}px`);
       kBottom = kkTop + measureMax(gKun, (s) => id.templates.credits(s, ctx)).h;
     }
@@ -283,10 +287,10 @@ export function createGallery(o: {
     const logoEl = (S.mobile ? lgShort : lgLong).querySelector('svg')?.getBoundingClientRect();
     const logoTop = logoEl && logoEl.width > 0 ? logoEl.top : null;
 
-    // ana daire: sınır kutusunun merkezi (mainX, mainY). Temel çap, eğik hâlinin sınır kutusu alıntının altı
-    // (mobilde künyenin altı) ile alt sınır arasına her iki yanda gap boşlukla sığan en büyük değer
+    // ana daire: sınır kutusunun merkezi (mainX, mainY). Temel çap, eğik hâlinin sınır kutusu üye düğmelerinin
+    // altı (mobilde künyenin altı) ile alt sınır arasına her iki yanda gap boşlukla sığan en büyük değer
     // (en fazla cap); ana daire bunun mainScale katı
-    const top = (S.mobile ? kBottom : qBottom) + gap;
+    const top = (S.mobile ? kBottom : mBottom) + gap;
     const bottom = stageTop - gap;
     const cap = (S.mobile ? GL.cap.mobile : GL.cap.web) * W;
     const mx = (S.mobile ? GL.mainX.mobile : GL.mainX.web) * W;
@@ -487,6 +491,7 @@ export function createGallery(o: {
     nu.className = 'gx';
     nu.innerHTML = html;
     group.append(nu);
+    fitTitle(nu);
     o.onCreate(nu);
     if (!animate || motion.reduced) {
       old?.remove();
@@ -509,7 +514,6 @@ export function createGallery(o: {
     const show = showAt(n);
     const ctx = o.tctx();
     swap(gInfo, id.templates.info(show, ctx), animate);
-    swap(gCap, id.templates.caption(show, ctx), animate);
     swap(gKun, id.templates.credits(show, ctx), animate);
   }
 
@@ -573,7 +577,7 @@ export function createGallery(o: {
     // sol üstte başlık dışındaki her şey (tanıtım) kaybolup kapanır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to([gCap, gKun, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to([gKun, dom.members], { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -679,10 +683,10 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gCap, gKun, dom.members, lgLong, lgShort]);
+      gsap.killTweensOf([dom.close, ...layers(), gKun, dom.members, lgLong, lgShort]);
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([gCap, gKun, dom.members], { autoAlpha: 1 });
+      gsap.set([gKun, dom.members], { autoAlpha: 1 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -692,7 +696,7 @@ export function createGallery(o: {
       textFor = null;
       swaps.forEach((t) => t.kill());
       swaps.clear();
-      for (const g of [gInfo, gCap, gKun]) g.innerHTML = '';
+      for (const g of [gInfo, gKun]) g.innerHTML = '';
     },
     render,
     hit(x, y) {

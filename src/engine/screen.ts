@@ -2,7 +2,7 @@
    Bütün ölçüler kimliğin `screen` token'ları (H'nin, belirtilenler W'nin oranı).
    Masaüstü: uzun logo sol altta, ilk harfi soldan `letter`·W'de, çizgilerin başı ekranın sol kenarında
    kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol alt noktaya oturur ve çizgi aralığı uzun
-   logonunkine eşittir. Mobil: yalnızca kısa logo; alıntının altında başlık, onun altında künye (0.92W). */
+   logonunkine eşittir. Mobil: yalnızca kısa logo; üye düğmelerinin altında başlık, onun altında künye (0.92W). */
 import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
@@ -41,26 +41,25 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   }
   const membersBottom = S.safeTop + pad + d;
 
-  /* üst orta alıntı ve sol üst başlık. Masaüstünde ikisinin ilk satırının büyük harf üstü Üye Ol / Giriş
-     düğmelerinin üstüyle aynı çizgide; mobilde alıntı üye düğmelerinin altında başlar (başlığın üstünü galeri verir) */
-  const quoteFs = (S.mobile ? T.quote.size.mobile : T.quote.size.web) * W;
+  px('--members-bottom', membersBottom);
+
+  /* sol üst başlık: masaüstünde ilk satırın büyük harf üstü Üye Ol / Giriş düğmelerinin üstüyle aynı çizgide;
+     mobilde üye düğmelerinin altında (üstünü galeri verir) */
   const titleFs = (S.mobile ? T.info.title.mobile : T.info.title.web) * W;
   const line = S.safeTop + pad;
-  const quoteTop = S.mobile
-    ? Math.max(S.safeTop + T.quote.top * H, membersBottom + mpad)
-    : line - capOffset(T.type.quote, quoteFs, T.quote.lh);
-  px('--gq-top', quoteTop);
-  px('--gq-fs', quoteFs);
-  root.style.setProperty('--gq-lh', String(T.quote.lh));
-  px('--gq-maxw', (S.mobile ? T.quote.maxW.mobile : T.quote.maxW.web) * W);
-
   px('--gi-left', S.mobile ? mpad : T.info.left * W);
   if (!S.mobile) px('--gi-top', line - capOffset(T.type.title, titleFs, T.info.titleLh));
   px('--gi-w', S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth));
   px('--gi-title', titleFs);
   root.style.setProperty('--gi-title-lh', String(T.info.titleLh));
-  px('--gi-rule', T.info.rule);
-  root.style.setProperty('--gi-lines', String(T.info.descLines));
+  root.style.setProperty('--gi-title-lines', String(T.info.titleLines));
+
+  /* logo çizgisi (başlığın ve tanıtımın altında, künyede aynası): kalınlığı ve elması uzun logonun ekrandaki
+     ölçeğinde (thick / viewBox yüksekliği × uzun logonun yüksekliği); üstünde ve altında ruleGap */
+  const lk = (T.logo.h * H) / logoVbHeight(id.logo.long);
+  px('--lr-t', id.logo.long.thick * lk);
+  px('--lr-d', DIAMOND_H * lk);
+  px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
 
   /* künye: masaüstünde sağ altta (sağ kenarı Giriş düğmesinin sağ kenarı, altı logonun altı; yukarı büyür);
      mobilde başlığın altında ortada (üstünü galeri verir) */
@@ -69,6 +68,8 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--gk-left', (W - kw) / 2);
   px('--gk-right', pad);
   px('--gk-bottom', S.safeBottom + T.logo.bottom * H);
+  // künye çizgileri sağda ekran kenarını geçer: künyenin sağ kenarından ekranın sağ kenarına
+  px('--gk-out', S.mobile ? (W - kw) / 2 : pad);
 
   /* alt orta: yalnızca Bilet Al */
   px('--gs-gap', T.stage.gap * H);
@@ -110,6 +111,35 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     short.style.opacity = '0';
   }
   fitButtons(document.body, T.button.fit);
+}
+
+/** logo-long.svg'deki çizgi ucu elmasının yüksekliği (viewBox birimi; şablondaki elmas SVG'si) */
+const DIAMOND_H = 28.626;
+
+/** Başlık en fazla `lines` satır: sığmıyorsa (ya da bir kelime sütuna sığmıyorsa) yazı boyu sığana kadar küçülür;
+    hiç kısaltılmaz. Belgede (görünmez olabilir) duran başlıklar için */
+export function fitTitles(root: ParentNode, lines: number, lh: number) {
+  for (const el of root.querySelectorAll<HTMLElement>('.gt')) {
+    el.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(el).fontSize);
+    if (!(base > 0)) continue;
+    const fits = (fs: number) => {
+      el.style.fontSize = `${fs.toFixed(2)}px`;
+      return el.getBoundingClientRect().height <= lines * fs * lh + 1 && el.scrollWidth <= el.clientWidth + 1;
+    };
+    if (fits(base)) {
+      el.style.fontSize = '';
+      continue;
+    }
+    let lo = base * 0.2;
+    let hi = base;
+    for (let i = 0; i < 12; i++) {
+      const m = (lo + hi) / 2;
+      if (fits(m)) lo = m;
+      else hi = m;
+    }
+    el.style.fontSize = `${lo.toFixed(2)}px`;
+  }
 }
 
 /** Bir yazı rolünün satır kutusunun üstünden ilk satırın büyük harf ("H") üstüne uzaklık (px): yarım satır

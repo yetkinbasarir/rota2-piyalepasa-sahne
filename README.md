@@ -28,7 +28,7 @@ src/
     index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
                           hareket, açık hâlin ağı, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), ×,
                           yükleme ekranı, süreler, logo
-    templates.ts          başlık + tanıtım, sağ alt künye (tür, tarih, sahne, emek), alıntı, daire düğmeler, ×
+    templates.ts          başlık + tanıtım, sağ alt künye (tür, tarih, sahne, emek; logo çizgileri), daire düğmeler, ×
     styles.css            görsel dil
   engine/
     types.ts              motor ↔ kimlik/içerik sözleşmesi

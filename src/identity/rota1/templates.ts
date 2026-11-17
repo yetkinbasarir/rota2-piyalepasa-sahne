@@ -1,4 +1,4 @@
-/* ROTA1 şablonları: galeri yazıları (sol üstte başlık + tanıtım, sağ altta künye, üst ortada alıntı),
+/* ROTA1 şablonları: galeri yazıları (sol üstte başlık + tanıtım, sağ altta künye),
    daire düğmeler ve kapatma ikonu. Ölçüleri ve yazı rollerini motor CSS değişkenleriyle verir.
    Sayı rolü (.num / .cd) yalnızca künyedeki tarih / saat ve sayaçta; akan metindeki rakamlar metnin fontunda. */
 import type { Show, Templates, TemplateContext } from '../../engine/types';
@@ -18,20 +18,25 @@ function counterChars(s: Show, ctx: TemplateContext) {
 /** Sayacın geri saydığı temsil: henüz geçmemiş ilk temsil, hepsi geçmişse sonuncusu */
 const nextAt = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? s.sample.at.at(-1);
 
-/** Künye çizgisi: düz siyah (kalınlık screen.info.rule), elmassız */
-const rule = () => '<div class="rl ln" aria-hidden="true"></div>';
+/** Logo çizgisi: logo-long.svg'deki yatay çizgi ve sağ ucundaki elmas (viewBox logonun kendi biriminde; kalınlık
+    ve elmas boyu uzun logonun ekrandaki ölçeğinde, screen.ts --lr-t / --lr-d). Çizgi sağda elmasla biter; künyede
+    aynası (elmas solda) */
+const DIAMOND =
+  '<svg class="dm" viewBox="900 154.87 41.732 28.626" aria-hidden="true" focusable="false"><path d="M920.961,177.038l6.458,6.458,14.313-14.313-14.313-14.313-6.458,6.458c-3.769,3.769-8.88,5.886-14.21,5.886H900V171.153H906.751c5.33,0,10.441,2.117,14.21,5.886Z"/></svg>';
+const rule = (mirror = false) => `<div class="lr${mirror ? ' lr-r' : ''} ln" aria-hidden="true"><i></i>${DIAMOND}</div>`;
 
 /** İçerikte gerçek değer yoksa (boş, "—", "Belirtilmedi") gösterilmez */
 const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowerCase('tr') !== 'belirtilmedi';
 
 /* ---------- sol üst: başlık ve altında tanıtım ---------- */
 function info(s: Show, ctx: TemplateContext) {
-  // tanıtım (en fazla birkaç satır, kalanı "…"); açık hâlde kaybolup kapanır, başlık kalır
-  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
-  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${desc}</div>`;
+  // başlığın altında logo çizgisi, tam tanıtım, altında yine logo çizgisi; açık hâlde kaybolup kapanır, başlık kalır
+  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` + rule() : '';
+  return `<h2 class="gt ln">${txt(ctx, s.title)}</h2><div class="gi-rest">${rule()}${desc}</div>`;
 }
 
-/* ---------- sağ alt künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları; aralarda 2px çizgi ---------- */
+/* ---------- sağ alt künye: TÜR, TARİH (+ sayaç), SAHNE, sonra emek satırları; her satırın üstünde aynalı logo
+   çizgisi ---------- */
 const STAGE: Record<string, string> = {
   'Ana Sahne': 'Büyük Sahne',
   'Küçük Sahne': 'Küçük Sahne',
@@ -57,25 +62,7 @@ function credits(s: Show, ctx: TemplateContext) {
     const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
     rows.push(row('Oyuncular', names, ' gv-col'));
   }
-  return rows.length ? rule() + rows.join(rule()) : '';
-}
-
-/* ---------- üst orta: alıntı ---------- */
-/** "alinti" varsa o; yoksa tanıtımın ilk cümlesi (en fazla `quoteChars` karakter, kelime sınırında "…") */
-function quoteOf(s: Show) {
-  if (s.quote) return s.quote;
-  const intro = s.intro.trim();
-  if (!intro) return '';
-  const first = (/^.+?[.!?…](?=\s|$)/.exec(intro)?.[0] ?? intro).trim();
-  const max = SURFACE.quoteChars;
-  if (first.length <= max) return first;
-  const cut = first.slice(0, max - 1);
-  const sp = cut.lastIndexOf(' ');
-  return `${(sp > 0 ? cut.slice(0, sp) : cut).replace(/[\s,;:.–—-]+$/, '')}…`;
-}
-function caption(s: Show, ctx: TemplateContext) {
-  const q = quoteOf(s);
-  return q ? `<p class="gq ln">“${txt(ctx, q)}”</p>` : '';
+  return rows.length ? rule(true) + rows.join(rule(true)) : '';
 }
 
 /* ---------- düğmeler ---------- */
@@ -99,7 +86,6 @@ function closeIcon(_ctx: TemplateContext) {
 export const templates: Templates = {
   info,
   credits,
-  caption,
   circleButtons,
   closeIcon,
 };

@@ -36,7 +36,7 @@ export function applyIdentity(id: Identity) {
   set('--paper', paper(id));
   set('--paper-o', id.paper.opacity);
   set('--g-persp', `${id.gallery.perspective}px`);
-  // yazı rolleri: başlık, alıntı, değerler, etiketler / düğmeler, sayılar
+  // yazı rolleri: başlık, değerler, etiketler / düğmeler, sayılar
   for (const [role, f] of Object.entries(id.screen.type)) {
     set(`--t-${role}-family`, f.family);
     set(`--t-${role}-weight`, f.weight);

@@ -31,8 +31,8 @@ export const rota1: Identity = {
       mainY: { web: 0.518, mobile: 0.608 },
       /* bütün grup (daireler ve gölgeleri) 0.04H yukarıda; aralık ve ölçüler aynı */
       lift: { web: 0.04, mobile: 0.04 },
-      /* temel çap: alıntının altı ile sahne adının üstü arasında 0.03H boşlukla en büyük, en fazla 0.48W (mobil
-         0.82W); ana daire bunun %15 büyüğü (alıntı ve sahne adıyla biraz örtüşür) */
+      /* temel çap: üye düğmelerinin altı ile Bilet Al'ın üstündeki alt sınır arasında 0.03H boşlukla en büyük, en
+         fazla 0.48W (mobil 0.82W); ana daire bunun %15 büyüğü */
       gap: 0.03,
       cap: { web: 0.48, mobile: 0.82 },
       mainScale: 1.15,
@@ -103,12 +103,11 @@ export const rota1: Identity = {
   screen: {
     /* bütün yazılar, logolar ve düğme yazıları saf siyah */
     text: '#000000',
-    /* yazı rolleri (Adobe kiti fpj2hxb): başlık ogg-text 700; tanıtım ve künye değerleri ogg-text 400; alıntı ogg
-       400 italik (başlık ve alıntı içerikteki gibi, büyük harfe çevrilmez); etiketler ve düğmeler config-mono-vf
-       wght 500 (büyük harf); bütün sayılar config-mono-vf wght 300 */
+    /* yazı rolleri (Adobe kiti fpj2hxb): başlık ogg-text 700 (içerikteki gibi, büyük harfe çevrilmez); tanıtım ve
+       künye değerleri ogg-text 400; etiketler ve düğmeler config-mono-vf wght 500 (büyük harf); künyedeki tarih,
+       saat ve sayaç config-mono-vf wght 300 */
     type: {
       title: { family: '"ogg-text", sans-serif', weight: 700, style: 'normal' },
-      quote: { family: '"ogg", sans-serif', weight: 400, style: 'italic' },
       body: { family: '"ogg-text", sans-serif', weight: 400, style: 'normal' },
       label: { family: '"config-mono-vf", monospace', weight: 500, variation: '"wght" 500' },
       number: { family: '"config-mono-vf", monospace', weight: 300, variation: '"wght" 300' },
@@ -119,16 +118,15 @@ export const rota1: Identity = {
     label: { min: 10, vw: 0.0075, max: 12, track: 0.08 },
     /* sayılar: "H" harfinin yüksekliği okuma metninkine eşit (fontlar yüklenince canvas ile ölçülür) */
     number: { capOf: 'H' },
-    /* sol üst: başlık ve altında tanıtım; künye çizgileri 2px düz siyah */
+    /* sol üst: başlık (0.028W, mobilde 0.075W; en fazla 2 satır, sığmazsa küçülür), altında logo çizgisi, tam
+       tanıtım, logo çizgisi. Çizgilerin üstünde ve altında başlık ile tanıtım arasındaki önceki boşluk
+       (0.2 × önceki başlık boyu: 0.0064W, mobilde 0.015W) */
     info: {
-      left: 0.012, width: 0.21, minWidth: 300, title: { web: 0.032, mobile: 0.075 }, titleLh: 1.05,
-      rule: 2, descLines: 6, mobilePad: 0.02,
+      left: 0.012, width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.075 }, titleLh: 1.05,
+      titleLines: 2, ruleGap: { web: 0.0064, mobile: 0.015 }, mobilePad: 0.02,
     },
     /* künye sağ altta: 0.21W (mobilde başlığın altında 0.92W) */
     credits: { width: { web: 0.21, mobile: 0.92 } },
-    /* alıntı: tür satırı yok; masaüstünde ilk satırın büyük harf üstü başlığınkiyle ve Üye Ol / Giriş'in üstüyle
-       aynı çizgide; 0.018W (mobil 0.045W), en fazla 0.42W (mobil 0.86W), 0.50W'de ortalı */
-    quote: { top: 0.05, size: { web: 0.018, mobile: 0.045 }, lh: 1.15, maxW: { web: 0.42, mobile: 0.86 } },
     stage: { gap: 0.015 },
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },

@@ -29,11 +29,12 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 
 /* ---------- galeri yazıları: saf siyah ---------- */
 #ui, .brand, .bnd, .xcl { color: var(--c-text); }
-/* künye başlığı: içerikteki gibi (büyük harfe çevrilmez); hiç kısaltılmaz, gerektiği kadar satıra iner */
+/* gösteri başlığı: içerikteki gibi (büyük harfe çevrilmez); en fazla iki satır, sığmazsa küçülür (screen.ts
+   fitTitles), hiç kısaltılmaz */
 .gt {
   font-family: var(--t-title-family); font-weight: var(--t-title-weight); font-style: var(--t-title-style);
   font-size: var(--gi-title); line-height: var(--gi-title-lh); letter-spacing: -0.01em;
-  overflow-wrap: break-word; padding-bottom: .2em;
+  overflow-wrap: normal;
 }
 /* okuma metni: tanıtım ve künye değerleri */
 .gv, .gdesc { font-size: var(--fs-body); line-height: var(--lh-body); }
@@ -42,15 +43,6 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 .lb { line-height: 1; flex: none; }
 .gv > span { white-space: nowrap; }
 .gcd { line-height: 1; }
-/* tanıtım: başlığın altında, en fazla birkaç satır, kalanı "…" */
-.gdesc {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--gi-lines); line-clamp: var(--gi-lines); overflow: hidden;
-}
-/* alıntı: tırnak içinde, içerikteki gibi (büyük harfe çevrilmez), italik */
-.gq {
-  font-family: var(--t-quote-family); font-weight: var(--t-quote-weight); font-style: var(--t-quote-style);
-  font-size: var(--gq-fs); line-height: var(--gq-lh); text-wrap: balance;
-}
 /* daire düğmeler: düz beyaz, yazı metin renginde */
 .cb { background: var(--c-btn); color: var(--c-text); }
 @media (hover: hover) {
