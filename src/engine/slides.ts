@@ -4,8 +4,9 @@
    sırasıyla kendiliğinden eklenir. Ekran dikeyse ya da mobileMax px'ten darsa mobil set, değilse web seti.
    Her görsel ekranı kaplar (cover), siyah zemin; sonraki ve önceki görsel önceden yüklenir.
 
-   Açma / kapama: sitenin logosuna tıklama (yükleme ekranı kalktıktan sonra) ilk görselden açar; logo yerinde,
-   gösterinin üstünde kalır, tekrar tıklama kapatır (Esc de). fade sn'lik geçiş. Açıkken sitenin kendiliğinden
+   Açma / kapama: sitenin logosuna tıklama (yükleme ekranı kalktıktan sonra) ilk görselden açar; açıkken logo
+   gösteriyle birlikte kaybolur (fade sn), kapanınca geri gelir. Sol alttaki dönüş oku (↩) kapatır (Esc de).
+   fade sn'lik geçiş. Açıkken sitenin kendiliğinden
    ilerlemesi ve oynayan video bekler, kapanınca sürer.
 
    Oynatma: her interval sn'de bir sonraki, sonsuz döngü. Geçiş: yatay itme (yeni görsel eskisini iter),
@@ -50,6 +51,8 @@ export function createSlides(o: {
   set('--sl-ah', `${T.arrow.h}px`);
   set('--sl-aw', `${T.arrow.h * T.arrow.ratio}px`);
   set('--sl-p', `${T.pause}px`);
+  set('--sl-bh', `${T.back.h}px`);
+  set('--sl-hit', `${T.back.hit}px`);
 
   const sw = T.stroke;
   const svg = (w: number, h: number, body: string) =>
@@ -63,6 +66,17 @@ export function createSlides(o: {
   const P = T.pause;
   const ICON_PAUSE = svg(P, P, `<rect x="${sw / 2}" y="${sw / 2}" width="${P - sw}" height="${P - sw}" vector-effect="non-scaling-stroke"/>`);
   const ICON_PLAY = tri(P * T.arrow.ratio * 1.6, P, 1);
+  // dönüş oku: sola bakan ok ucu, sağda aşağı kıvrılıp geri dönen kanca (↩)
+  const ICON_BACK = (() => {
+    const h = T.back.h;
+    const w = h;
+    const e = sw / 2;
+    const a = h * 0.32;
+    const k = h * 0.28;
+    const r = (h - e - a) / 2;
+    const n = (v: number) => +v.toFixed(3);
+    return svg(w, h, `<path d="M${n(e + k)} ${n(a - k)}L${n(e)} ${n(a)}L${n(e + k)} ${n(a + k)}M${n(e)} ${n(a)}H${n(w - e - r)}A${n(r)} ${n(r)} 0 0 1 ${n(w - e - r)} ${n(h - e)}H${n(w * 0.45)}" stroke-linejoin="miter" stroke-linecap="butt" vector-effect="non-scaling-stroke"/>`);
+  })();
 
   const el = document.createElement('div');
   el.className = 'sl';
@@ -72,7 +86,8 @@ export function createSlides(o: {
     '<div class="sl-track"></div>' +
     `<button type="button" class="sl-b sl-prev" aria-label="Önceki">${tri(aw, T.arrow.h, -1)}</button>` +
     `<button type="button" class="sl-b sl-next" aria-label="Sonraki">${tri(aw, T.arrow.h, 1)}</button>` +
-    `<button type="button" class="sl-b sl-pp" aria-label="Duraklat">${ICON_PAUSE}</button>`;
+    `<button type="button" class="sl-b sl-pp" aria-label="Duraklat">${ICON_PAUSE}</button>` +
+    `<button type="button" class="sl-b sl-back" aria-label="Siteye dön">${ICON_BACK}</button>`;
   o.before.before(el);
   const track = el.querySelector<HTMLElement>('.sl-track')!;
   const pp = el.querySelector<HTMLButtonElement>('.sl-pp')!;
@@ -85,7 +100,13 @@ export function createSlides(o: {
   let cur: HTMLImageElement | null = null;
   let anim: gsap.core.Timeline | null = null;
   let timer: gsap.core.Tween | null = null;
-  let fade: gsap.core.Tween | null = null;
+  let fade: gsap.core.Timeline | null = null;
+  /** Gösteri ve site logosu birlikte: açılışta gösteri belirir, logo kaybolur; kapanışta tersi */
+  const fadeTo = (on: boolean, done?: () => void) => {
+    fade?.kill();
+    const d = { duration: T.fade * red, ease: 'none' };
+    fade = gsap.timeline({ onComplete: done }).to(el, { autoAlpha: on ? 1 : 0, ...d }, 0).to(o.before, { autoAlpha: on ? 0 : 1, ...d }, 0);
+  };
 
   const pick = () => {
     const mobile = innerHeight > innerWidth || innerWidth < T.mobileMax;
@@ -161,8 +182,7 @@ export function createSlides(o: {
       o.hold(true);
       show(0);
       setPlaying(true);
-      fade?.kill();
-      fade = gsap.to(el, { autoAlpha: 1, duration: T.fade * red, ease: 'none' });
+      fadeTo(true);
     },
     close() {
       if (!isOpen) return;
@@ -170,16 +190,12 @@ export function createSlides(o: {
       timer?.kill();
       timer = null;
       drag = null;
-      fade?.kill();
-      fade = gsap.to(el, {
-        autoAlpha: 0, duration: T.fade * red, ease: 'none',
-        onComplete: () => {
-          anim?.kill();
-          anim = null;
-          track.innerHTML = '';
-          cur = null;
-          root.classList.remove('sl-open');
-        },
+      fadeTo(false, () => {
+        anim?.kill();
+        anim = null;
+        track.innerHTML = '';
+        cur = null;
+        root.classList.remove('sl-open');
       });
       o.hold(false);
     },
@@ -192,6 +208,7 @@ export function createSlides(o: {
   el.querySelector('.sl-prev')!.addEventListener('click', () => step(-1));
   el.querySelector('.sl-next')!.addEventListener('click', () => step(1));
   pp.addEventListener('click', () => setPlaying(!playing));
+  el.querySelector('.sl-back')!.addEventListener('click', () => api.close());
 
   addEventListener(
     'keydown',

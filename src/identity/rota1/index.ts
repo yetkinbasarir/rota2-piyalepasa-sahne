@@ -80,7 +80,8 @@ export const rota1: Identity = {
   },
 
   /* kimlik slayt gösterisi (logoya tıklayınca): 5 sn'de bir, yatay itme 0.8 sn power2.inOut, açılma / kapanma
-     0.5 sn; denetimler beyaz %60 (üzerindeyken %100), kenardan 0.025W, yan üçgenler 28px, duraklat 16px */
+     0.5 sn; denetimler beyaz %60 (üzerindeyken %100), kenardan 0.025W, yan üçgenler 28px, duraklat 16px;
+     sol altta dönüş oku 20px (görünmez 12px tıklama payı); açıkken site logosu gizli */
   slides: {
     interval: 5,
     dur: 0.8,
@@ -94,6 +95,7 @@ export const rota1: Identity = {
     margin: 0.025,
     arrow: { h: 28, ratio: 0.5 },
     pause: 16,
+    back: { h: 20, hit: 12 },
     swipe: 0.2,
     swipeSpeed: 0.5,
   },

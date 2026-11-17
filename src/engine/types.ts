@@ -268,6 +268,8 @@ export interface SlidesTokens {
   arrow: { h: number; ratio: number };
   /** Duraklat / oynat: boy (px) */
   pause: number;
+  /** Dönüş oku (sol alt, duraklatın aynası): boy (px), çevresindeki görünmez tıklama payı (px) */
+  back: { h: number; hit: number };
   /** Dokunmatik kaydırma: adım için en az kayma (W oranı) ya da hız (px/ms) */
   swipe: number;
   swipeSpeed: number;

@@ -115,7 +115,11 @@ img, video { -webkit-user-drag: none; }
 .sl--touch .sl-prev, .sl--touch .sl-next { display: none; }
 .sl-pp { right: var(--sl-m); bottom: calc(var(--sl-m) + env(safe-area-inset-bottom, 0px)); }
 .sl-pp svg { height: var(--sl-p); width: auto; }
-/* açıkken logo gösterinin üstünde, yerinde; tıklanabilir. × gizli */
+/* dönüş oku: sol altta, duraklatın aynası (iPhone ana çubuğu payı dahil); görünmez tıklama payı --sl-hit */
+.sl-back { left: var(--sl-m); bottom: calc(var(--sl-m) + env(safe-area-inset-bottom, 0px)); }
+.sl-back::before { inset: calc(-1 * var(--sl-hit, 12px)); }
+.sl-back svg { height: var(--sl-bh); width: auto; }
+/* açıkken logo gösteriyle birlikte kaybolur (slides.ts); × gizli */
 .sl-open .brand { z-index: 3; }
 .sl-open .xcl { display: none; }
 .brand.is-live .lg-l svg, .brand.is-live .lg-l i, .brand.is-live .lg-s svg, .brand.is-live .lg-s i { pointer-events: auto; cursor: pointer; }
