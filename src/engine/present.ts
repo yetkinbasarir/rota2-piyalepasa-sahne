@@ -66,7 +66,7 @@ export function startPresentation(o: { S: State; camera: Camera; gallery: Galler
   }
   // 3–4. açılır; video varsa oynar (süre dolunca kendiliğinden döner), yoksa fotoğraf bir süre kalır
   function open() {
-    cmd.openCenter();
+    cmd.openMain();
     if (!S.full) return wait();
     let photoFor = 0;
     const tick = () => {

@@ -26,17 +26,20 @@ export const rota1: Identity = {
   gallery: {
     perspective: 1600,
     layout: {
-      centerX: 0.5,
-      /* ortadaki daire: alıntının altı ile sahne adının üstü arasında 0.03H boşlukla en büyük; en fazla 0.48W (mobil 0.82W) */
+      /* ana daire (p = 0): sınır kutusunun merkezi; dikeyde önceki konum (mobilde önceki gibi ortada) */
+      mainX: { web: 0.54, mobile: 0.5 },
+      mainY: { web: 0.518, mobile: 0.608 },
+      /* temel çap: alıntının altı ile sahne adının üstü arasında 0.03H boşlukla en büyük, en fazla 0.48W (mobil
+         0.82W); ana daire bunun %15 büyüğü (alıntı ve sahne adıyla biraz örtüşür) */
       gap: 0.03,
       cap: { web: 0.48, mobile: 0.82 },
+      mainScale: 1.15,
       /* s(p): p = −3 … +3 */
-      keys: [0.18, 0.3, 0.48, 1, 0.78, 0.5, 0.32],
-      /* p = +1 dairenin genişliğinin %40'ı sağ kenarın dışında */
-      rightOut: 0.4,
-      /* soldaki daireler sağındakinin arkasına en fazla kendi genişliğinin %25'i kadar girer */
-      tuck: 0.25,
-      clear: 0.012,
+      keys: [0.18, 0.3, 0.48, 1, 0.88, 0.5, 0.32],
+      /* p = +1 ile ana daire arası (ekrandaki biçimler, köşegen boyunca) 0.02W */
+      rightGap: 0.02,
+      /* p = −3 logoya değecekse alt kenarı logonun 0.02H üstünde */
+      logoClear: 0.02,
       /* başlangıç köşegeni: sola bir adımda (−0.312W, +0.11H); sığmazsa yatıklaştırılır */
       slope: [-0.312, 0.11],
     },
@@ -48,14 +51,14 @@ export const rota1: Identity = {
     colorFade: 0.6,
     float: { y: 0.006, rx: 1.2, min: 5, max: 7, ease: 'sine.inOut' },
     tilt: { max: 7, stiffness: 140, damping: 14 },
-    /* ortadaki daire düzleşir: 1.08, 0.5 sn power2.out; gölge daha yuvarlak */
+    /* ana daire düzleşir: 1.08, 0.5 sn power2.out; gölge daha yuvarlak */
     flat: { scale: 1.08, dur: 0.5, ease: 'power2.out', shadowHeight: 0.5 },
     shadow: {
       color: '#111214',
       width: 0.9,
       height: 0.35,
       opacity: 0.22,
-      centerOpacity: 0.26,
+      mainOpacity: 0.26,
       blur: 28,
       below: 0.06,
       right: 0.03,
@@ -64,6 +67,8 @@ export const rota1: Identity = {
     },
     settle: { dur: 0.7, ease: 'power3.out' },
     auto: { every: 6, dur: 1.2, ease: 'power2.inOut' },
+    /* açık hâlin ağı: 6px hücre, delikler arası 1px zemin grisi (delik köşegeni 5px), opaklık 0.9 */
+    mesh: { cell: 6, line: 1, opacity: 0.9 },
     /* açılma: her şey aynı anda, 0.8 sn power3.in (dönüş power3.out); video 0.3 sn'de başlayıp 0.6 sn'de belirir */
     open: { dur: 0.8, easeIn: 'power3.in', easeOut: 'power3.out', videoAt: 0.3, videoDur: 0.6 },
     throw: { time: 0.3, max: 4 },
@@ -110,15 +115,8 @@ export const rota1: Identity = {
     stylesheets: ['https://use.typekit.net/fpj2hxb.css'],
   },
 
-  /* Tam ekran başlığı: ekran genişliğinin %11'i (en fazla %90 genişlik); sayaç başlığın yarısı, arası 0.15 */
-  fullTitle: {
-    size: 0.11,
-    maxWidth: 0.9,
-    counter: 0.5,
-    gap: 0.15,
-    pad: 0.034,
-    closeSize: 56,
-  },
+  /* Kapatma ikonu (×): kenar boşluğu (H oranı; yükleme ekranı da kullanır) ve çapı (px) */
+  closeButton: { pad: 0.034, size: 56 },
 
   /* Yükleme ekranı: nokta matrisi logo (2) ya da içi dolan logo (1); en az 1.2 sn */
   loader: {
@@ -146,7 +144,7 @@ export const rota1: Identity = {
   /* Telefonda yatay ekran kapalı: yatay + dokunmatik + görünür yükseklik < 500px */
   rotate: { maxHeight: 500, icon: 0.28, turn: 1.6, hold: 1.2 },
 
-  /* Tam ekran ağı: 4px hücre; eşkenar dörtgen delikler en büyük (yarı köşegen p/2), ekran koruyucuda yuvarlak delik, yüzey %30 */
+  /* Yükleme ekranının ekran koruyucu ağı: 4px aralık, yuvarlak delikler, siyah yüzey %30 (açık hâlin ağı gallery.mesh) */
   texture: {
     pitch: 4,
     cover: 0.3,
@@ -188,13 +186,6 @@ export const rota1: Identity = {
     presentOpen: 5,
     presentPhoto: 8,
     presentResume: 20,
-    /* tam ekran başlığı ve sayacı */
-    titleIn: 1.6,
-    counterDelay: 0.2,
-    counterIn: 0.6,
-    titleOut: 0.5,
-    /* tam ekran: saat sayaçtan 0.15 sn sonra */
-    hourDelay: 0.15,
     closeFade: 0.3,
   },
 

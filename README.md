@@ -1,8 +1,9 @@
 # Piyalepaşa Sahne — ROTA2
 
-Çapraz 3B daire galerisi (CSS 3B): daireler ekrandaki yazılara göre yerleşen bir köşegen boyunca dizilir, ortadaki
-renkli, diğerleri duotone; ortadaki daireye tıklanınca daireler köşegen boyunca çıkar ve tam ekran video (eşkenar
-dörtgen ağ ile) belirir. Web + mobil PWA.
+Çapraz 3B daire galerisi (CSS 3B): daireler bir köşegen boyunca dizilir. Ana daire (p = 0 yuvası: en büyük, renkli,
+en önde; konumu serbest kompozisyon değeri mainX / mainY) renkli, diğerleri duotone; ana daireye tıklanınca daireler
+köşegen boyunca çıkar ve tam ekran video (ince çizgili eşkenar dörtgen ağ ile) belirir; ekranda künye başlığı, kısa
+logo, sahne adı, Bilet Al ve × kalır. Web + mobil PWA.
 Vite + TypeScript, framework yok; animasyon GSAP (CustomEase, InertiaPlugin, Observer).
 
 ```bash
@@ -24,9 +25,9 @@ src/
   content/*.generated.json  scripts/build-images.mjs çıktısı: görsel boyutları, fotoğraf renkleri, odak noktaları
   identity/rota1/         KİMLİK KATMANI — motordan ayrı, tek yer
     index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
-                          hareket, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), tam ekran,
+                          hareket, açık hâlin ağı, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), ×,
                           yükleme ekranı, süreler, logo
-    templates.ts          künye bloğu (+ tanıtım), tür + alıntı, sahne adı, tam ekran başlığı, daire düğmeler, ×
+    templates.ts          künye bloğu (+ tanıtım), tür + alıntı, sahne adı, daire düğmeler, ×
     styles.css            görsel dil
   engine/
     types.ts              motor ↔ kimlik/içerik sözleşmesi
@@ -41,7 +42,7 @@ src/
     counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
     loader.ts, screensaver.ts  yükleme ekranı ve açılış ekran koruyucusu
     logo.ts               iki parçalı, uzayıp kısalan logo
-    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, ağ (eşkenar dörtgen / ekran koruyucuda yuvarlak)
+    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, ağ (açık hâlde eşkenar dörtgen / ekran koruyucuda yuvarlak)
     theme.ts              kimlik token'larını sayfaya uygular, DOM iskeleti
     input/pointer.ts      işaretçi / dokunma (Observer)
     input/wheel.ts        tekerlek / trackpad (Observer)

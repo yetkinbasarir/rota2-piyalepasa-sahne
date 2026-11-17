@@ -1,31 +1,36 @@
 /* ROTA2 çapraz 3B daire galerisi (CSS 3B; WebGL yok). Bütün ölçüler kimliğin `gallery` / `screen` token'ları.
 
+   Ana daire: p = 0 yuvasındaki daire (en büyük, renkli, en önde; fare üzerindeyken düzleşir, tıklanınca videoyu
+   açar). Ekranın ortasına bağlı değildir: konumu serbest bir kompozisyon değeri (mainX, mainY).
+
    Daireler: her öğe düz, kenarsız bir daire (yalnızca dairesel görsel; odak noktası merkezde, normal
    kaplamanın photoZoom katı). Duruştaki yerleşim (layout) ekrandaki yazılardan hesaplanır:
-   - ortadaki daire x = centerX·W'de; çapı, eğik hâlinin ekrandaki sınır kutusu alıntının altı ile sahne
-     adının üstü arasına (her iki yanda gap boşlukla) sığacak en büyük değer (en fazla cap·W);
-   - p = +1 daire genişliğinin rightOut oranı sağ kenarın dışında kalacak şekilde, köşegen üzerinde;
-   - p = −1 ve −2 daireler künye / tanıtım kolonunun altında ve logonun üstündeki boş alanda, tamamı
-     görünür ve hiçbir yazı, düğme ya da logoya değmeden; köşegen (aşağı ve sola = küçük) sığmazsa
-     yatıklaştırılır. Sağındaki dairenin arkasına en fazla kendi genişliğinin tuck oranı kadar girer;
+   - ana dairenin sınır kutusu merkezi (mainX·W, mainY·H); temel çap, eğik hâlinin sınır kutusu alıntının altı
+     ile sahne adının üstü arasına (her iki yanda gap boşlukla) sığan en büyük değer (en fazla cap·W); ana
+     daire bunun mainScale katı;
+   - p = +1 köşegen üzerinde, ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W; sığmayan
+     kısmı sağ kenarda kesilir;
+   - p = −3 sol kenarda kesilir (merkezi x = 0), köşegen üzerinde; logoya değecekse alt kenarı logonun
+     logoClear·H üstünde. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde, bütün komşular arası
+     eşit boşlukla (künye / tanıtımın altına girebilirler; yazı üstte kalır);
    - uzaktakiler aynı adımla sürer. Ara konumlar Catmull-Rom eğrisiyle, ölçek s(p) anahtarlarından.
-   Ortadaki daire en önde. Eğim rotateX · rotateY · rotateZ; rotateY eğri üzerindeki konuma göre değişir.
-   Ortadaki daire renkli, diğerleri duotone; ortaya gelen colorFade sn'de renklenir.
+   Ana daire en önde. Eğim rotateX · rotateY · rotateZ; rotateY eğri üzerindeki konuma göre değişir.
+   Ana daire renkli, diğerleri duotone; ana yuvaya gelen colorFade sn'de renklenir.
    Süzülme: her daire kendi rastgele fazıyla dikeyde ve rotateX'te salınır (yoyo, sine.inOut).
    Fare eğimi (kenardaki daireler): imlece doğru eğilir, yay-sönümle döner (dokunmatikte yok).
-   Düzleşme: ortadaki daire masaüstünde fare üzerindeyken, mobilde galeri durunca düz ve tam daire olur,
+   Düzleşme: ana daire masaüstünde fare üzerindeyken, mobilde galeri durunca düz ve tam daire olur,
    flat.scale'e büyür; fare çıkınca / sürükleme başlayınca eğimine döner.
 
    Gölge: her dairenin gölgesi zemin düzleminde ayrı bir öğe (dairelerin arkasında); dairenin ekrandaki
    izdüşümünden (süzülmesiz) hesaplanır. Yalnızca transform, opacity ve filter.
 
-   Açık hâl (ortadaki daireye tıklama): her şey aynı anda başlar (open.dur, open.easeIn): daireler gölgeleriyle
-   köşegen boyunca ekrandan çıkar (sağdakiler sağ üstten, ortadaki ve soldakiler sol alttan); uzun logo kısa
+   Açık hâl (ana daireye tıklama): her şey aynı anda başlar (open.dur, open.easeIn): daireler gölgeleriyle
+   köşegen boyunca ekrandan çıkar (sağdakiler sağ üstten, ana daire ve soldakiler sol alttan); uzun logo kısa
    logoya çapraz geçer; künyede başlık dışındaki her şey kaybolup kapanır; alıntı kaybolur; sahne adı ve
-   Bilet Al kalır. Video (videoya kadar görsel) ve ağ open.videoAt'te başlayıp open.videoDur'da belirir.
-   Tekrar tıklama (ya da kendiliğinden dönüş): tam tersi, aynı anda, open.easeOut ile.
+   Bilet Al kalır. Video (videoya kadar görsel) ve ağ (mesh.opacity) open.videoAt'te başlayıp open.videoDur'da
+   belirir. Ekranda yeni yazı yok. Tekrar tıklama (ya da kendiliğinden dönüş): tam tersi, open.easeOut ile.
 
-   Yazılar (künye bloğu, tür + alıntı, sahne adı) ortadaki daireye göre değişir: eski satırlar yukarı
+   Yazılar (künye bloğu, tür + alıntı, sahne adı) ana daireye göre değişir: eski satırlar yukarı
    kayarak kaybolur, yeniler aşağıdan gelir (satırlar arası gecikmeyle). */
 import { gsap } from './motion';
 import type { Motion } from './motion';
@@ -43,9 +48,9 @@ export interface Gallery {
   render(): void;
   /** Ekran noktasındaki dairenin sırası */
   hit(x: number, y: number): number | null;
-  /** Ortadaki dairenin sırası */
-  center(): number;
-  /** Bir adımın ekrandaki uzunluğu (px): ortadaki ile sonraki dairenin duruş noktaları arası */
+  /** Ana dairenin sırası */
+  main(): number;
+  /** Bir adımın ekrandaki uzunluğu (px): ana daire ile sonraki dairenin duruş noktaları arası */
   step(): number;
   /** Açık hâl: daireler çıkar, tam ekran video akışı başlar */
   open(): void;
@@ -90,12 +95,6 @@ interface Box {
   w: number;
   h: number;
   bottom: number;
-}
-interface Rect {
-  l: number;
-  t: number;
-  r: number;
-  b: number;
 }
 
 export function createGallery(o: {
@@ -146,7 +145,7 @@ export function createGallery(o: {
   }
   const cr = (p0: number, p1: number, p2: number, p3: number, u: number) =>
     0.5 * (2 * p1 + (p2 - p0) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (3 * p1 - p0 - 3 * p2 + p3) * u * u * u);
-  /** Eğri üzerindeki konum t (ortadan adım): Catmull-Rom */
+  /** Eğri üzerindeki konum t (ana yuvadan adım): Catmull-Rom */
   function place(t: number) {
     const i = Math.floor(t);
     const u = t - i;
@@ -164,22 +163,28 @@ export function createGallery(o: {
     if (tx || ty) m.rotateAxisAngleSelf(1, 0, 0, tx).rotateAxisAngleSelf(0, 1, 0, ty);
     return m.rotateAxisAngleSelf(1, 0, 0, rx).rotateAxisAngleSelf(0, 1, 0, ry).rotateAxisAngleSelf(0, 0, 1, rz);
   }
-  /** Dairenin kenarını perspektifle ekrana iz düşür: sınır kutusu */
-  const RING = Array.from({ length: 24 }, (_, i) => [Math.cos((i / 24) * Math.PI * 2), Math.sin((i / 24) * Math.PI * 2)]);
-  function project(m: DOMMatrix): Box {
+  /** Dairenin kenarını perspektifle ekrana iz düşür: ekrandaki biçim (çokgen) */
+  const ringOf = (n: number) => Array.from({ length: n }, (_, i) => [Math.cos((i / n) * Math.PI * 2), Math.sin((i / n) * Math.PI * 2)]);
+  const RING = ringOf(24);
+  const RING_FINE = ringOf(72);
+  function shape(m: DOMMatrix, ring = RING): [number, number][] {
     const r = D / 2;
     const d = G.perspective;
     const ox = S.vw / 2;
     const oy = S.vh / 2;
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const [c, s] of RING) {
+    return ring.map(([c, s]) => {
       const lx = c * r, ly = s * r;
       const X = m.m11 * lx + m.m21 * ly + m.m41;
       const Y = m.m12 * lx + m.m22 * ly + m.m42;
       const Z = m.m13 * lx + m.m23 * ly + m.m43;
       const k = d / Math.max(1, d - Z);
-      const px = ox + (X - ox) * k;
-      const py = oy + (Y - oy) * k;
+      return [ox + (X - ox) * k, oy + (Y - oy) * k];
+    });
+  }
+  /** Sınır kutusu */
+  function project(m: DOMMatrix): Box {
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const [px, py] of shape(m)) {
       if (px < x0) x0 = px;
       if (px > x1) x1 = px;
       if (py < y0) y0 = py;
@@ -187,9 +192,36 @@ export function createGallery(o: {
     }
     return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0, bottom: y1 };
   }
-  /** Duruştaki k. dairenin (x, y) noktasındaki sınır kutusu */
-  const restBox = (k: number, x: number, y: number) => project(matrix(x, y, scaleAt(k), G.rotate.x, ryAt(k), G.rotate.z));
-  const rectOf = (b: Box): Rect => ({ l: b.cx - b.w / 2, t: b.cy - b.h / 2, r: b.cx + b.w / 2, b: b.cy + b.h / 2 });
+  /** Duruştaki k. dairenin (x, y) noktasındaki matrisi ve sınır kutusu */
+  const restMatrix = (k: number, x: number, y: number) => matrix(x, y, scaleAt(k), G.rotate.x, ryAt(k), G.rotate.z);
+  const restBox = (k: number, x: number, y: number) => project(restMatrix(k, x, y));
+  /** k. dairenin sınır kutusu merkezini (X, Y)'ye getiren duruş noktası */
+  function anchorFor(k: number, X: number, Y: number): [number, number] {
+    let a: [number, number] = [X, Y];
+    for (let i = 0; i < 4; i++) {
+      const b = restBox(k, a[0], a[1]);
+      a = [a[0] + X - b.cx, a[1] + Y - b.cy];
+    }
+    return a;
+  }
+  /** Sınır kutusu merkezi (X, Y) olan k. dairenin ekrandaki biçiminin, merkezden u yönünde kenarına uzaklığı */
+  function reach(k: number, X: number, Y: number, u: [number, number]) {
+    const [ax, ay] = anchorFor(k, X, Y);
+    const pts = shape(restMatrix(k, ax, ay), RING_FINE);
+    let t = 0;
+    for (let i = 0; i < pts.length; i++) {
+      const [px, py] = pts[i];
+      const [qx, qy] = pts[(i + 1) % pts.length];
+      const ex = qx - px, ey = qy - py;
+      const den = u[0] * ey - u[1] * ex;
+      if (Math.abs(den) < 1e-9) continue;
+      const dx = px - X, dy = py - Y;
+      const tt = (dx * ey - dy * ex) / den;
+      const ss = (dx * u[1] - dy * u[0]) / den;
+      if (ss >= 0 && ss <= 1 && tt > t) t = tt;
+    }
+    return t;
+  }
 
   /* ---------- yazılar: iskelet ---------- */
   dom.ui.innerHTML =
@@ -203,25 +235,19 @@ export function createGallery(o: {
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
   ticket.addEventListener('click', (e) => e.stopPropagation());
 
-  /** Bir yazı grubunun bütün gösteriler için en büyük yüksekliği / satır genişliği (gizli ölçüm) */
+  /** Bir yazı grubunun bütün gösteriler için en büyük yüksekliği (gizli ölçüm) */
   function measureMax(group: HTMLElement, html: (s: Show) => string) {
     const probe = document.createElement('div');
     probe.className = 'gx';
     probe.style.cssText = 'visibility:hidden;position:absolute;left:0;top:0';
     group.append(probe);
     let h = 0;
-    let w = 0;
     for (const s of shows) {
       probe.innerHTML = html(s);
       h = Math.max(h, probe.offsetHeight);
-      for (const c of probe.children) {
-        const r = document.createRange();
-        r.selectNodeContents(c);
-        w = Math.max(w, r.getBoundingClientRect().width);
-      }
     }
     probe.remove();
-    return { h, w };
+    return { h };
   }
 
   /* ---------- duruştaki yerleşim ---------- */
@@ -231,159 +257,98 @@ export function createGallery(o: {
     const root = document.documentElement;
     const css = (k: string) => parseFloat(getComputedStyle(root).getPropertyValue(k)) || 0;
     const ctx = o.tctx();
-    const clear = GL.clear * H;
     const gap = GL.gap * H;
     const mpad = T.info.mobilePad * H;
 
     // üst orta: tür + alıntı (en uzun gösteri)
     const qTop = css('--gq-top');
-    const qMaxW = css('--gq-maxw');
     const q = measureMax(gCap, (s) => id.templates.caption(s, ctx));
     const qBottom = qTop + q.h;
     // künye: mobilde alıntının altında
     if (S.mobile) root.style.setProperty('--gi-top', `${(qBottom + mpad).toFixed(2)}px`);
     const kTop = css('--gi-top');
-    const kLeft = css('--gi-left');
-    const kW = css('--gi-w');
     const k = measureMax(gInfo, (s) => id.templates.info(s, ctx));
     // alt orta: sahne adı + Bilet Al
     const tD = T.ticket.d * H;
     const gcBottom = css('--gc-bottom');
     const stageTop = H - gcBottom - tD - css('--gs-gap') - css('--gs-fs');
-    const st = measureMax(gStage, (s) => id.templates.stageName(s, ctx));
-    const stageW = Math.max(st.w, tD);
 
-    // engeller: yazılar, düğmeler, logo (clear kadar genişletilmiş)
-    const grow = (r: Rect): Rect => ({ l: r.l - clear, t: r.t - clear, r: r.r + clear, b: r.b + clear });
-    const domRect = (el: Element | null): Rect | null => {
-      const b = el?.getBoundingClientRect();
-      return b && b.width > 0 ? { l: b.left, t: b.top, r: b.right, b: b.bottom } : null;
-    };
-    const logo = domRect((S.mobile ? lgShort : lgLong).querySelector('svg'));
-    const obstacles: Rect[] = [
-      { l: W / 2 - qMaxW / 2, t: qTop, r: W / 2 + qMaxW / 2, b: qBottom },
-      { l: kLeft, t: kTop, r: kLeft + kW, b: kTop + k.h },
-      { l: W / 2 - stageW / 2, t: stageTop, r: W / 2 + stageW / 2, b: H - gcBottom },
-      logo ? { l: 0, t: logo.t, r: logo.r, b: logo.b } : null,
-      domRect(dom.members),
-    ].filter((r): r is Rect => !!r).map(grow);
+    const logoEl = (S.mobile ? lgShort : lgLong).querySelector('svg')?.getBoundingClientRect();
+    const logoTop = logoEl && logoEl.width > 0 ? logoEl.top : null;
 
-    // ortadaki daire: yazılar arasına sığan en büyük çap
+    // ana daire: sınır kutusunun merkezi (mainX, mainY). Temel çap, eğik hâlinin sınır kutusu alıntının altı
+    // (mobilde künyenin altı) ile sahne adının üstü arasına her iki yanda gap boşlukla sığan en büyük değer
+    // (en fazla cap); ana daire bunun mainScale katı
     const top = (S.mobile ? kTop + k.h : qBottom) + gap;
     const bottom = stageTop - gap;
     const cap = (S.mobile ? GL.cap.mobile : GL.cap.web) * W;
-    const cx0 = GL.centerX * W;
-    const cy0 = (top + bottom) / 2;
+    const mx = (S.mobile ? GL.mainX.mobile : GL.mainX.web) * W;
+    const my = (S.mobile ? GL.mainY.mobile : GL.mainY.web) * H;
     D = cap;
-    for (let i = 0; i < 4; i++) {
-      const b = restBox(0, cx0, cy0);
-      D = Math.min(cap, D * (Math.max(1, bottom - top) / b.h));
-    }
+    for (let i = 0; i < 4; i++) D = Math.min(cap, D * (Math.max(1, bottom - top) / restBox(0, mx, (top + bottom) / 2).h));
+    D *= GL.mainScale;
     P = new Map();
-    const c0 = restBox(0, cx0, cy0);
-    const p0: [number, number] = [cx0 + (cx0 - c0.cx), cy0 + (cy0 - c0.cy)];
+    const p0 = anchorFor(0, mx, my);
     P.set(0, p0);
-    const centerBox = rectOf(restBox(0, p0[0], p0[1]));
+    const M: [number, number] = [mx, my];
+    const unit = (v: [number, number]): [number, number] => {
+      const l = Math.hypot(v[0], v[1]) || 1;
+      return [v[0] / l, v[1] / l];
+    };
+    const neg = (u: [number, number]): [number, number] => [-u[0], -u[1]];
+    const at = (u: [number, number], t: number): [number, number] => [M[0] + u[0] * t, M[1] + u[1] * t];
 
-    /** Kutunun (genişlik w, yükseklik h; sağ kenarı xr) engellerin dışında kalabileceği üst kenar aralıkları */
-    const freeTops = (xr: number, w: number, h: number) => {
-      const l = xr - w;
-      let free: [number, number][] = [[clear, H - clear - h]];
-      for (const r of obstacles) {
-        if (l >= r.r || xr <= r.l) continue;
-        const a = r.t - h;
-        const b = r.b;
-        free = free.flatMap(([u, v]): [number, number][] => (b <= u || a >= v ? [[u, v]] : [[u, Math.min(v, a)], [Math.max(u, b), v]])).filter(([x, y]) => y >= x);
-      }
-      return free;
-    };
-    const nearest = (free: [number, number][], target: number) => {
-      let best: number | null = null;
-      for (const [u, v] of free) {
-        const y = clamp(target, u, v);
-        if (best === null || Math.abs(y - target) < Math.abs(best - target)) best = y;
-      }
-      return best;
-    };
-    /** Engellerle ve ekran dışıyla örtüşen alan (sığmayan dairenin en az kötü yeri için) */
-    const overlap = (r: Rect) => {
-      let a = 0;
-      for (const o of obstacles) a += Math.max(0, Math.min(r.r, o.r) - Math.max(r.l, o.l)) * Math.max(0, Math.min(r.b, o.b) - Math.max(r.t, o.t));
-      const inside = Math.max(0, Math.min(r.r, W) - Math.max(r.l, 0)) * Math.max(0, Math.min(r.b, H) - Math.max(r.t, 0));
-      return a + (r.r - r.l) * (r.b - r.t) - inside;
-    };
-
-    // sol: p = −1, −2, −3 tamamı görünür ve birbirine değmeden; yalnızca ortadaki dairenin arkasına en fazla
-    // tuck kadar girer. Köşegen hedefi sığmazsa yatıklaşır
-    const slope = (GL.slope[1] * H) / Math.abs(GL.slope[0] * W);
-    let right = { box: restBox(0, p0[0], p0[1]), rect: centerBox };
-    for (let n = 1; n <= 3; n++) {
-      const kk = -n;
-      const trialX = right.box.cx - right.box.w / 2;
-      const trial = restBox(kk, trialX, right.box.cy);
-      const offX = trial.cx - trialX;
-      const offY = trial.cy - right.box.cy;
-      const w = trial.w;
-      const h = trial.h;
-      const xrMax = n === 1 ? centerBox.l + GL.tuck * w : Math.min(right.rect.l, centerBox.l + GL.tuck * w);
-      const targetAt = (bcx: number) => right.box.cy + (right.box.cx - bcx) * slope;
-      let found: [number, number] | null = null;
-      for (let xr = xrMax; xr - w >= clear; xr -= 2) {
-        const bcx = xr - w / 2;
-        const top = nearest(freeTops(xr, w, h), targetAt(bcx) - h / 2);
-        if (top !== null) {
-          found = [bcx, top + h / 2];
-          break;
-        }
-      }
-      if (!found && n < 3) {
-        // hiçbir yerde tamamı görünür sığmıyor (dar ekran): engellerle ve ekran dışıyla en az örtüşen yer
-        let cost = Infinity;
-        for (let xr = xrMax; xr >= w * 0.3; xr -= 4) {
-          const bcx = xr - w / 2;
-          for (let t = clear; t <= H - clear - h; t += 4) {
-            const c = overlap({ l: xr - w, t, r: xr, b: t + h }) + Math.abs(t + h / 2 - targetAt(bcx)) * 0.01;
-            if (c < cost) {
-              cost = c;
-              found = [bcx, t + h / 2];
-            }
-          }
-        }
-      }
-      // daha uzaktakiler sığmıyorsa ekranın solunda
-      if (!found) found = [-w / 2 - clear, clamp(targetAt(-w / 2), h / 2, H - h / 2)];
-      const pt: [number, number] = [found[0] - offX, found[1] - offY];
-      P.set(kk, pt);
-      const b = restBox(kk, pt[0], pt[1]);
-      right = { box: b, rect: rectOf(b) };
+    // sağ: p = +1 köşegen üzerinde (sağ yukarı); ana daireyle ekrandaki biçimleri arası köşegen boyunca rightGap·W.
+    // Sığmayan kısmı sağ kenarda kesilir; uzaktakiler aynı adımla
+    const uR = unit([-GL.slope[0] * W, -GL.slope[1] * H]);
+    const e0R = reach(0, mx, my, uR);
+    let tR = e0R + GL.rightGap * W + D / 2;
+    for (let i = 0; i < 4; i++) {
+      const c = at(uR, tR);
+      tR = e0R + GL.rightGap * W + reach(1, c[0], c[1], neg(uR));
     }
-
-    // sağ: p = +1 genişliğinin rightOut oranı ekranın dışında; köşegen üzerinde, yazı ve düğmelere değmeyen en
-    // yakın yükseklikte; uzaktakiler aynı adımla
-    const pm1 = P.get(-1)!;
-    const dSlope = (pm1[1] - p0[1]) / Math.min(-1, pm1[0] - p0[0]);
-    const trial = restBox(1, W, p0[1]);
-    const bcx = W + GL.rightOut * trial.w - trial.w / 2;
-    const want = p0[1] + (bcx - p0[0]) * dSlope;
-    const topR = nearest(freeTops(bcx + trial.w / 2, trial.w, trial.h), want - trial.h / 2);
-    const bcy = topR !== null ? topR + trial.h / 2 : clamp(want, trial.h / 2 + clear, H - trial.h / 2 - clear);
-    const p1: [number, number] = [bcx - (trial.cx - W), bcy - (trial.cy - p0[1])];
+    const c1 = at(uR, tR);
+    const p1 = anchorFor(1, c1[0], c1[1]);
     P.set(1, p1);
     const step: [number, number] = [p1[0] - p0[0], p1[1] - p0[1]];
     P.set(2, [p1[0] + step[0], p1[1] + step[1]]);
     P.set(3, [p1[0] + 2 * step[0], p1[1] + 2 * step[1]]);
 
-    const unit = (v: [number, number]): [number, number] => {
-      const l = Math.hypot(v[0], v[1]) || 1;
-      return [v[0] / l, v[1] / l];
+    // sol: p = −3 sol kenarda kesilir (sınır kutusu merkezi x = 0), köşegen üzerinde; logoya değecekse alt kenarı
+    // logonun üstünden logoClear·H yukarıda. p = −1 ve −2 ana daire ile p = −3 arasındaki doğru üzerinde, bütün
+    // komşular arası (ekrandaki biçimler, köşegen boyunca) eşit boşlukla. Künye / tanıtımın altına girebilirler
+    // (yazı üstte kalır)
+    const slope = (GL.slope[1] * H) / Math.abs(GL.slope[0] * W);
+    const h3 = restBox(-3, 0, my).h;
+    let y3 = Math.min(my + mx * slope, H - h3 / 2);
+    if (logoTop !== null) y3 = Math.min(y3, logoTop - GL.logoClear * H - h3 / 2);
+    const E: [number, number] = [0, y3];
+    const uL = unit([E[0] - mx, E[1] - my]);
+    const L = Math.hypot(E[0] - mx, E[1] - my);
+    /** İki komşu arası boşluk: köşegen (merkezleri birleştiren doğru) boyunca, ekrandaki biçimlerin kenarları arası */
+    const gapOf = (ka: number, A: [number, number], kb: number, B: [number, number]) => {
+      const u = unit([B[0] - A[0], B[1] - A[1]]);
+      return Math.hypot(B[0] - A[0], B[1] - A[1]) - reach(ka, A[0], A[1], u) - reach(kb, B[0], B[1], neg(u));
     };
-    outR = unit(step);
-    outL = unit([pm1[0] - p0[0], pm1[1] - p0[1]]);
+    const ts = [L / 3, (2 * L) / 3];
+    const centers = (): [number, number][] => [M, ...ts.map((t) => at(uL, t)), E];
+    // eşit boşluk: t1, t2 doğru üzerinde kaydırılır (sönümlü yineleme)
+    for (let i = 0; i < 40; i++) {
+      const c = centers();
+      const g = [0, 1, 2].map((n) => gapOf(-n, c[n], -(n + 1), c[n + 1]));
+      if (Math.abs(g[0] - g[1]) < 0.25 && Math.abs(g[1] - g[2]) < 0.25) break;
+      ts[0] += (g[1] - g[0]) * 0.4;
+      ts[1] += (g[2] - g[1]) * 0.4;
+    }
+    centers().slice(1).forEach((c, i) => P.set(-(i + 1), anchorFor(-(i + 1), c[0], c[1])));
+
+    outR = uR;
+    outL = uL;
     // daireler yeni çapla yeniden kurulur
     items.forEach(drop);
     items.clear();
     hovered = null;
-    lastCenter = null;
+    lastMain = null;
   }
 
   /** Daire içindeki fotoğraf: odak noktası dairenin merkezinde, kaplama boyutunun photoZoom katı */
@@ -438,7 +403,7 @@ export function createGallery(o: {
     it.el.remove();
     it.sh.remove();
   }
-  /** Renklenme: ortadaki renkli, diğerleri duotone */
+  /** Renklenme: ana daire renkli, diğerleri duotone */
   function light(it: Disc, on: boolean) {
     if (it.lit === on || !it.col) return;
     it.lit = on;
@@ -451,17 +416,17 @@ export function createGallery(o: {
     gsap.to(it.fz, { v: on ? 1 : 0, duration: G.flat.dur * red, ease: G.flat.ease, overwrite: true });
   }
 
-  /* ---------- fare: kenardaki dairelerde eğim, ortadakinde düzleşme ---------- */
+  /* ---------- fare: kenardaki dairelerde eğim, ana dairede düzleşme ---------- */
   let hovered: Disc | null = null;
-  let hoverCenter = false;
+  let hoverMain = false;
   function hover(e: PointerEvent | null) {
     let hit: Disc | null = null;
-    hoverCenter = false;
+    hoverMain = false;
     if (e && e.pointerType === 'mouse' && !S.open && !S.pressed) {
       const el = (e.target as Element | null)?.closest?.<HTMLElement>('.gd');
       if (el) hit = items.get(+el.dataset.n!) ?? null;
       if (hit && hit.n === Math.round(S.pos)) {
-        hoverCenter = true;
+        hoverMain = true;
         hit = null;
       } else if (hit && !motion.reduced) {
         const b = hit.box;
@@ -540,77 +505,12 @@ export function createGallery(o: {
     swap(gStage, id.templates.stageName(show, ctx), animate);
   }
 
-  /* ---------- tam ekran başlığı ve × ---------- */
+  /* ---------- × ---------- */
   let closeOn = false;
   function closeIcon(on: boolean) {
     if (closeOn === on) return;
     closeOn = on;
     gsap.to(dom.close, { autoAlpha: on ? 1 : 0, duration: motion.dur('closeFade'), ease: motion.ease.fade, overwrite: true });
-  }
-  let titleTl: gsap.core.Timeline | null = null;
-  const titleParts = () => [...dom.title.children] as HTMLElement[];
-  function titleClear() {
-    titleTl?.kill();
-    titleTl = null;
-    gsap.killTweensOf(titleParts());
-    dom.title.innerHTML = '';
-    dom.title.style.visibility = 'hidden';
-  }
-  /** Açık hâl yerine oturunca: başlık soldan kayıp ortada durur, sayaç ve saat ardından aşağıdan belirir */
-  function titleShow(show: Show) {
-    titleClear();
-    const F = id.fullTitle;
-    dom.title.innerHTML = id.templates.fullTitle(show, o.tctx());
-    o.onCreate(dom.title);
-    const [t, k, hr] = titleParts();
-    let size = S.vw * F.size;
-    t.style.fontSize = `${size}px`;
-    const max = S.vw * F.maxWidth;
-    const w0 = t.getBoundingClientRect().width;
-    if (w0 > max) {
-      size *= max / w0;
-      t.style.fontSize = `${size}px`;
-    }
-    let cs = size * F.counter;
-    k.style.fontSize = `${cs}px`;
-    hr.style.fontSize = `${cs}px`;
-    if (S.mobile) {
-      const cw0 = (k.firstElementChild as HTMLElement | null)?.getBoundingClientRect().width ?? 0;
-      if (cw0 > max) {
-        cs *= max / cw0;
-        k.style.fontSize = `${cs}px`;
-        hr.style.fontSize = `${cs}px`;
-      }
-    }
-    const gap = size * F.gap;
-    const lh = t.getBoundingClientRect().height;
-    const kh = k.getBoundingClientRect().height;
-    const hh = hr.getBoundingClientRect().height;
-    const top0 = (S.vh - (lh + gap + kh + gap + hh)) / 2;
-    t.style.position = 'relative';
-    t.style.top = `${top0 + lh / 2 - S.vh / 2}px`;
-    k.style.top = `${top0 + lh + gap}px`;
-    hr.style.top = `${top0 + lh + gap + kh + gap}px`;
-    dom.title.style.visibility = 'visible';
-    if (motion.reduced) return;
-    const tw = t.getBoundingClientRect().width;
-    gsap.set(t, { x: -(S.vw / 2 + tw / 2) });
-    gsap.set([k, hr], { autoAlpha: 0, y: cs * 0.6 });
-    titleTl = gsap
-      .timeline()
-      .to(t, { x: 0, duration: motion.dur('titleIn'), ease: 'expo.out' })
-      .to(k, { y: 0, autoAlpha: 1, duration: motion.dur('counterIn'), ease: 'power3.out' }, `>${motion.dur('counterDelay')}`)
-      .to(hr, { y: 0, autoAlpha: 1, duration: motion.dur('counterIn'), ease: 'power3.out' }, `<${motion.dur('hourDelay')}`);
-  }
-  /** Çıkış başlarken başlık, sayaç ve saat birlikte sağa kayarak ekrandan çıkar */
-  function titleHide() {
-    titleTl?.kill();
-    const parts = titleParts();
-    if (!parts.length || motion.reduced) return titleClear();
-    gsap.to(parts, {
-      x: (_k: number, el: HTMLElement) => S.vw / 2 + el.getBoundingClientRect().width / 2 + 2,
-      duration: motion.dur('titleOut'), ease: 'power2.in', overwrite: true, onComplete: titleClear,
-    });
   }
 
   /* ---------- açık hâl ---------- */
@@ -654,18 +554,21 @@ export function createGallery(o: {
     tl.to([gCap, dom.members], { autoAlpha: on ? 0 : 1, ...all }, 0);
     // video (ve video gelene kadar görsel) ile ağ: açılışta videoAt'te başlayıp videoDur'da belirir;
     // kapanışta hemen kaybolmaya başlar
-    tl.to(layers(), { autoAlpha: on ? 1 : 0, duration: O.videoDur * red, ease: 'none', overwrite: true }, on ? O.videoAt * red : 0);
+    const fade = { duration: O.videoDur * red, ease: 'none', overwrite: true };
+    const at = on ? O.videoAt * red : 0;
+    tl.to([dom.top, dom.video], { autoAlpha: on ? 1 : 0, ...fade }, at);
+    tl.to(dom.texture, { autoAlpha: on ? G.mesh.opacity : 0, ...fade }, at);
     return tl;
   }
 
   /* ---------- çizim ---------- */
-  let lastCenter: number | null = null;
+  let lastMain: number | null = null;
   let visibleEls: Element[] = [];
   function render() {
     const dt = Math.min(0.1, gsap.ticker.deltaRatio() / 60);
     const H = S.vh;
     const c = Math.round(S.pos);
-    // pencere: ortadan ±around adım
+    // pencere: ana yuvadan ±around adım
     for (let n = c - G.around; n <= c + G.around; n++) if (!items.has(n)) items.set(n, make(n, n === c));
     for (const [n, it] of items) {
       if (Math.abs(n - c) <= G.around) continue;
@@ -673,14 +576,14 @@ export function createGallery(o: {
       drop(it);
       items.delete(n);
     }
-    if (c !== lastCenter) {
-      lastCenter = c;
+    if (c !== lastMain) {
+      lastMain = c;
       items.forEach((it) => light(it, it.n === c));
       texts(c, textFor !== null);
     }
-    // ortadaki daire düzleşir: masaüstünde fare üzerindeyken, mobilde galeri durunca
+    // ana daire düzleşir: masaüstünde fare üzerindeyken, mobilde galeri durunca
     const rest = !S.pressed && !o.busy() && Math.abs(S.pos - c) < 1e-3;
-    const flatOn = !S.open && (S.mobile ? rest : hoverCenter);
+    const flatOn = !S.open && (S.mobile ? rest : hoverMain);
     const R = G.rotate;
     const Sh = G.shadow;
     const dist = (Math.hypot(S.vw, S.vh) + D) * ex.v;
@@ -706,7 +609,7 @@ export function createGallery(o: {
       if (tf !== it.tf) {
         it.tf = tf;
         it.el.style.transform = tf;
-        // ortadaki en önde; uzaklaştıkça geride
+        // ana daire en önde; uzaklaştıkça geride
         it.el.style.zIndex = String(Math.round(1000 - Math.abs(t) * 100));
       }
       // gölge: süzülmesiz izdüşümün altında; yukarı süzüldükçe küçülür, bulanıklaşır, açılır; düzleşince yuvarlaklaşır
@@ -714,7 +617,7 @@ export function createGallery(o: {
       const lift = fl * (1 - fz);
       const k = 1 - lift * Sh.lift.shrink;
       const blur = Sh.blur + lift * (Sh.lift.blur - Sh.blur);
-      const op0 = lerp(Sh.centerOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1));
+      const op0 = lerp(Sh.mainOpacity, Sh.opacity, clamp(Math.abs(t), 0, 1));
       const op = Math.max(0, op0 * (1 + (lift * (Sh.lift.opacity - Sh.opacity)) / Sh.opacity));
       const sx = (-it.tilt.y / G.tilt.max) * Sh.tiltShift * H;
       const sy = (it.tilt.x / G.tilt.max) * Sh.tiltShift * H;
@@ -734,7 +637,7 @@ export function createGallery(o: {
       }
     }
     const cur = gInfo.lastElementChild;
-    visibleEls = cur ? [cur, dom.title] : [dom.title];
+    visibleEls = cur ? [cur] : [];
   }
 
   const api: Gallery = {
@@ -742,7 +645,6 @@ export function createGallery(o: {
     rebuild() {
       o.video.remove();
       clearAuto();
-      titleClear();
       openTl?.kill();
       openTl = null;
       openShow = null;
@@ -759,8 +661,8 @@ export function createGallery(o: {
       items.forEach(drop);
       items.clear();
       hovered = null;
-      hoverCenter = false;
-      lastCenter = null;
+      hoverMain = false;
+      lastMain = null;
       textFor = null;
       swaps.forEach((t) => t.kill());
       swaps.clear();
@@ -771,7 +673,7 @@ export function createGallery(o: {
       const el = (document.elementFromPoint(x, y) as HTMLElement | null)?.closest<HTMLElement>('.gd');
       return el ? +el.dataset.n! : null;
     },
-    center: () => Math.round(S.pos),
+    main: () => Math.round(S.pos),
     step() {
       const a = P.get(0);
       const b = P.get(1);
@@ -800,18 +702,14 @@ export function createGallery(o: {
       });
       openTl?.kill();
       openTl = moves(true);
-      openTl.call(() => {
-        if (S.full && openShow === show && !exiting) titleShow(show);
-      });
     },
     close() {
       if (!S.full || exiting) return;
-      // tam tersi: her şey aynı anda; başlık çıkar, ses kısılır, video kaybolurken daireler geri gelir
+      // tam tersi: her şey aynı anda; ses kısılır, video kaybolurken daireler geri gelir
       exiting = true;
       S.full = false;
       clearAuto();
       closeIcon(false);
-      titleHide();
       o.video.hide();
       openTl?.kill();
       openTl = moves(false);

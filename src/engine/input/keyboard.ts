@@ -1,6 +1,6 @@
 /* Klavye ve TV kumandası → komut katmanı.
    Sağ / aşağı (kanal 427): sonraki daire ortaya gelir; sol / yukarı (kanal 428): önceki.
-   Enter: ortadaki daireyi açar. Esc / Backspace / kumanda geri (10009 Tizen, 461 webOS): tam ekrandan galeriye. */
+   Enter: ana daireyi açar. Esc / Backspace / kumanda geri (10009 Tizen, 461 webOS): tam ekrandan galeriye. */
 import type { Commands } from '../commands';
 
 const BACK_KEYS = new Set(['Escape', 'Backspace', 'BrowserBack', 'GoBack']);
@@ -15,7 +15,7 @@ export function bindKeyboard(cmd: Commands) {
     let handled = true;
     if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || c === 427) cmd.arrow(1);
     else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp' || c === 428) cmd.arrow(-1);
-    else if (k === 'Enter') cmd.openCenter();
+    else if (k === 'Enter') cmd.openMain();
     else if (BACK_KEYS.has(k) || BACK_CODES.has(c)) cmd.close();
     else handled = false;
     if (handled) e.preventDefault();

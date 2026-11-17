@@ -54,10 +54,10 @@ export function measure(S: State, id: Identity) {
   root.classList.toggle('is-mobile', S.mobile);
   root.style.setProperty('--H', `${H}px`);
   // tam ekran ikonlarının ve yükleme ekranının kenar boşluğu
-  const pad = `${snapPx(id.fullTitle.pad * H)}px`;
+  const pad = `${snapPx(id.closeButton.pad * H)}px`;
   root.style.setProperty('--logo-pad', pad);
   root.style.setProperty('--mpad', pad);
-  root.style.setProperty('--xcl-d', `${id.fullTitle.closeSize}px`);
+  root.style.setProperty('--xcl-d', `${id.closeButton.size}px`);
   root.style.setProperty('--safe-top', `${S.safeTop}px`);
   // görünür alan yüksekliği (tam ekran video kaplaması); masaüstünde 100vh ile aynı
   root.style.setProperty('--vvh', `${S.vh}px`);

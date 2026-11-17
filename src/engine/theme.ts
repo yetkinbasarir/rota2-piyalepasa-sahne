@@ -11,7 +11,6 @@ export interface Dom {
   top: HTMLElement;
   video: HTMLElement;
   texture: HTMLElement;
-  title: HTMLElement;
   close: HTMLElement;
   rotate: HTMLElement;
 }
@@ -103,12 +102,11 @@ export function buildDom(id: Identity): Dom {
   <div class="bnd"></div>
 </div>
 <svg class="duo" aria-hidden="true" width="0" height="0" style="position:absolute"><filter id="duotone" color-interpolation-filters="sRGB">${duotone(id)}</filter></svg>
-<div class="fst" aria-live="polite"></div>
 <button type="button" class="xcl" aria-label="Kapat"></button>
 ${rotateLayer(id)}`;
   const $ = (s: string) => app.querySelector<HTMLElement>(s)!;
   return {
     surface: $('#surface'), shadows: $('#shadows'), stage: $('#stage'), ui: $('#ui'), brand: $('.brand'), members: $('.bnd'),
-    top: $('#top'), video: $('#fv'), texture: $('.tex'), title: $('.fst'), close: $('.xcl'), rotate: $('.rot'),
+    top: $('#top'), video: $('#fv'), texture: $('.tex'), close: $('.xcl'), rotate: $('.rot'),
   };
 }

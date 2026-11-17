@@ -21,8 +21,8 @@ export interface Commands {
   /** Ok tuşları / kumanda: +1 sonraki, −1 önceki */
   arrow(d: 1 | -1): void;
   tap(x: number, y: number): void;
-  /** Ortadaki daireyi aç (kendi kendine sunum da bunu kullanır) */
-  openCenter(): void;
+  /** Ana daireyi aç (kendi kendine sunum da bunu kullanır) */
+  openMain(): void;
   /** Geri: tam ekrandan galeriye */
   close(): void;
   isOpen(): boolean;
@@ -32,7 +32,7 @@ export function createCommands(o: { S: State; id: Identity; camera: Camera; gall
   const { S, id, camera, gallery } = o;
   const G = id.gallery;
   const dominant = (a: number, b: number) => (Math.abs(a) >= Math.abs(b) ? a : b);
-  /** Bir adımlık sürükleme mesafesi (px): ortadaki ile sonraki dairenin duruş noktaları arası */
+  /** Bir adımlık sürükleme mesafesi (px): ana daire ile sonraki dairenin duruş noktaları arası */
   const stepPx = () => Math.max(1, gallery.step());
   const drag = (dx: number, dy: number) => (S.mobile ? dy : dominant(dx, dy));
   const locked = () => S.open || S.full || S.paused;
@@ -72,13 +72,13 @@ export function createCommands(o: { S: State; id: Identity; camera: Camera; gall
       if (locked()) return;
       const n = gallery.hit(x, y);
       if (n === null) return;
-      // kenardaki daire ortaya gelir; ortadaki (yerine oturmuşsa) açılır
+      // kenardaki daire ana yuvaya gelir; ana daire (yerine oturmuşsa) açılır
       if (n === Math.round(S.pos) && !camera.busy()) {
         camera.stop();
         gallery.open();
       } else camera.go(n);
     },
-    openCenter() {
+    openMain() {
       if (locked()) return;
       camera.stop();
       camera.settle();

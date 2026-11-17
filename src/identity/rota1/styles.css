@@ -24,12 +24,11 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 
 /* ---------- galeri yazıları: saf siyah ---------- */
 #ui, .brand, .bnd, .xcl { color: var(--c-text); }
-/* künye başlığı: büyük harf, en fazla iki satır */
+/* künye başlığı: büyük harf; hiç kısaltılmaz, gerektiği kadar satıra iner */
 .gt {
   font-family: var(--t-title-family); font-weight: var(--t-title-weight);
   font-size: var(--gi-title); line-height: 1; letter-spacing: -0.01em; text-transform: uppercase;
   overflow-wrap: break-word; padding-bottom: .12em;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
 /* künye satırları: etiket, değer, sayaç ve tanıtım tek boyda */
 .lb { font-size: var(--gi-value); letter-spacing: var(--gi-ls); line-height: var(--gi-row); }
@@ -57,9 +56,7 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
   .cb:hover { opacity: .8; }
 }
 
-/* ---------- tam ekran (başlık, sayaç, saat) ---------- */
+/* ---------- × ---------- */
 .xcl svg { transition: opacity .2s; }
 .xcl:hover svg { opacity: .7; }
 .xcl:active svg { opacity: .5; }
-.fst-t { font-family: var(--t-body-family), serif; font-weight: var(--t-body-weight); line-height: 1; white-space: nowrap; color: var(--c-text); }
-.fst-c { line-height: 1; color: var(--c-text); }

@@ -79,17 +79,6 @@ function caption(s: Show, ctx: TemplateContext) {
   return label + (q ? `<p class="gq ln">“${txt(ctx, q)}”</p>` : '');
 }
 
-/* ---------- tam ekran ---------- */
-/** Tam ekran: çok büyük tek satır başlık ve altında etiketsiz sayaç ve saat; boyları motor verir */
-function fullTitle(s: Show, ctx: TemplateContext) {
-  const at = nextAt(s);
-  const d = at ? new Date(at) : null;
-  const hour = d ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}` : '';
-  return `<div class="fst-t">${txt(ctx, s.title)}</div>` +
-    `<div class="fst-c"><div class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</div></div>` +
-    `<div class="fst-c fst-h"><div class="cd">${hour}</div></div>`;
-}
-
 /* ---------- düğmeler ---------- */
 /** Daire düğmeler: düz beyaz, konturusuz, yazı ortada tek satır (motor sığdırır) */
 function circleButtons(items: [string, string][], ctx: TemplateContext) {
@@ -112,7 +101,6 @@ export const templates: Templates = {
   info,
   stageName,
   caption,
-  fullTitle,
   circleButtons,
   closeIcon,
 };

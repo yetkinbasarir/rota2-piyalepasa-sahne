@@ -106,8 +106,6 @@ export interface Templates {
   stageName(show: Show, ctx: TemplateContext): string;
   /** Üst ortadaki tür satırı ve alıntı (.ln satırları) */
   caption(show: Show, ctx: TemplateContext): string;
-  /** Tam ekran başlığı ve sayacı: .fst-t başlık (tek satır), .fst-c sayaç ([data-cd]) */
-  fullTitle(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -136,21 +134,23 @@ export interface GalleryTokens {
   perspective: number;
   /** Duruştaki yerleşim */
   layout: {
-    /** Ortadaki dairenin merkezi x (W oranı) */
-    centerX: number;
-    /** Ortadaki daire: alıntının altı ile sahne adının üstü arasında, her iki yanda bu boşlukla (H) en büyük çap */
+    /** Ana dairenin (p = 0) sınır kutusu merkezi: x (W oranı), y (H oranı); web / mobil */
+    mainX: { web: number; mobile: number };
+    mainY: { web: number; mobile: number };
+    /** Temel çap: eğik hâlin sınır kutusu alıntının altı ile sahne adının üstü arasında, her iki yanda bu
+        boşlukla (H) en büyük */
     gap: number;
-    /** Çap üst sınırı (W oranı) */
+    /** Temel çapın üst sınırı (W oranı) */
     cap: { web: number; mobile: number };
+    /** Ana dairenin çapı: temel çapın katı */
+    mainScale: number;
     /** Ölçek anahtarları s(p), p = −3 … +3 (arası sürekli) */
     keys: number[];
-    /** p = +1 dairenin ekranın sağ kenarı dışında kalan genişlik oranı */
-    rightOut: number;
-    /** Soldaki daire sağındaki dairenin arkasına kendi genişliğinin en fazla bu oranı kadar girebilir */
-    tuck: number;
-    /** Yazı, düğme ve logodan en az boşluk (H) */
-    clear: number;
-    /** Başlangıç köşegeni (sola bir adımda [W, H] oranı); sığmazsa yatıklaştırılır */
+    /** p = +1 ile ana daire arası: ekrandaki biçimleri arası, köşegen boyunca (W oranı) */
+    rightGap: number;
+    /** p = −3 logoya değecekse alt kenarı ile logonun üstü arası (H) */
+    logoClear: number;
+    /** Köşegen yönü (sola bir adımda [W, H] oranı): p = +1 bunun tersi yönde; p = −3 bu yönde, sol kenarda */
     slope: [number, number];
   };
   /** 3B eğim (°): x, z sabit; y eğri üzerinde sol uçtan (yLeft, leftAt adım) sağ uca (yRight, rightAt adım) */
@@ -165,7 +165,7 @@ export interface GalleryTokens {
   float: { y: number; rx: number; min: number; max: number; ease: string };
   /** Fare eğimi (kenardaki daireler): en fazla açı (°), yay sertliği ve sönüm (dönüş) */
   tilt: { max: number; stiffness: number; damping: number };
-  /** Ortadaki daire düzleşir (masaüstünde fare üzerindeyken, mobilde duruşta): ölçek, süre, eğri; gölgenin
+  /** Ana daire düzleşir (masaüstünde fare üzerindeyken, mobilde duruşta): ölçek, süre, eğri; gölgenin
       yükseklik oranı (düz hâlde) */
   flat: { scale: number; dur: number; ease: string; shadowHeight: number };
   /** Zemine düşen gölge */
@@ -175,7 +175,7 @@ export interface GalleryTokens {
     width: number;
     height: number;
     opacity: number;
-    centerOpacity: number;
+    mainOpacity: number;
     blur: number;
     /** Dairenin alt kenarından aşağı, sağa (H oranı) */
     below: number;
@@ -188,6 +188,8 @@ export interface GalleryTokens {
   /** Hareket: oturma, kendiliğinden ilerleme */
   settle: { dur: number; ease: string };
   auto: { every: number; dur: number; ease: string };
+  /** Açık hâlin ağı: hücre (px, piksel ızgarasında), delikler arası zemin grisi (px), opaklık */
+  mesh: { cell: number; line: number; opacity: number };
   /** Açılma: süre, açılış / kapanış eğrisi, videonun belirme başlangıcı ve süresi (sn) */
   open: { dur: number; easeIn: string; easeOut: string; videoAt: number; videoDur: number };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
@@ -250,21 +252,8 @@ export interface Identity {
   fonts: {
     stylesheets: string[];
   };
-  /** Tam ekran başlığı ve sayacı */
-  fullTitle: {
-    /** Başlık yazı boyu (ekran genişliğinin oranı) */
-    size: number;
-    /** Başlığın en fazla kaplayacağı genişlik (ekran genişliğinin oranı); uzunsa küçültülür */
-    maxWidth: number;
-    /** Sayaç yazı boyu (başlık boyunun oranı) */
-    counter: number;
-    /** Başlıkla sayaç arası (başlık boyunun oranı) */
-    gap: number;
-    /** Kapatma ikonunun ve yükleme ekranının kenar boşluğu (H oranı) */
-    pad: number;
-    /** Kapatma ikonunun çapı (px) */
-    closeSize: number;
-  };
+  /** Kapatma ikonu (×): kenar boşluğu (H oranı; yükleme ekranı da kullanır) ve çapı (px) */
+  closeButton: { pad: number; size: number };
   /** Yükleme ekranı: logo animasyonu (1: içi dolan, 2: nokta matrisi), en kısa görünme süresi (sn),
       içi dolan logonun koyu zemini */
   loader: {
@@ -291,11 +280,11 @@ export interface Identity {
   /** Telefonda yatay ekran katmanı: koşul (yatay, dokunmatik, görünür yükseklik < maxHeight px),
       telefon simgesinin yüksekliği (ekran yüksekliğinin oranı), dönüş ve bekleme süreleri (sn) */
   rotate: { maxHeight: number; icon: number; turn: number; hold: number };
-  /** Tam ekran ağı: zemin renginde yüzey, kare ızgarada eşkenar dörtgen delikler (ekran koruyucuda yuvarlak) */
+  /** Yükleme ekranının ekran koruyucu ağı: siyah yüzey, yuvarlak delikler (açık hâlin ağı gallery.mesh) */
   texture: {
     /** Delik aralığı, merkezden merkeze (px) */
     pitch: number;
-    /** Yüzeyin kapladığı alan oranı; delik boyu bundan hesaplanır (eşkenar dörtgende en fazla yarı köşegen p/2) */
+    /** Yüzeyin kapladığı alan oranı; delik çapı bundan hesaplanır */
     cover: number;
   };
   /** Tam ekran videosu */
@@ -339,13 +328,6 @@ export interface Identity {
     presentOpen: number;
     presentPhoto: number;
     presentResume: number;
-    /** Tam ekran başlığı: soldan girip ortada durma, sayacın gecikmesi ve belirmesi, çıkışta sağa kayma */
-    titleIn: number;
-    counterDelay: number;
-    counterIn: number;
-    titleOut: number;
-    /** Tam ekran: saatin sayaçtan sonraki gecikmesi */
-    hourDelay: number;
     /** Kapatma ikonunun belirmesi / kaybolması */
     closeFade: number;
   };
