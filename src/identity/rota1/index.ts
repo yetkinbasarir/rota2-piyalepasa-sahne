@@ -82,7 +82,9 @@ export const rota1: Identity = {
        video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Logo, başlık ve altındaki çizgi ile × açılışla birlikte
        0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
        aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
-    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
+    open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut',
+      /* masaüstü: tarih satırı (tarih · saat, sütun genişliğinde sayaç) başlıkla kalır, 0.5 sn'de çizginin altına kayar */
+      dateMove: { dur: 0.5, ease: 'power2.inOut' } },
     /* mobil dikey sayfa: ana daire 0.82W ortada, ekrandaki üstü logonun (en alt çizgisinin) altından 0.08W aşağıda;
        komşular ona göre yerinde (sağdakiler üye düğmelerinin arkasına çıkabilir); ana dairenin altından 0.14W aşağıda
        başlığın büyük harf üstü; başlık, tarih + sayaç, tanıtım, künye (her zaman açık) ve sayfanın sonunda ortada Bilet Al;

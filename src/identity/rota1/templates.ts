@@ -67,7 +67,13 @@ function credits(s: Show, ctx: TemplateContext): string[] {
   const rows: string[] = [];
   if (present(s.genre)) rows.push(row('Tür', txt(ctx, initials(s.genre))));
   const w = ctx.mobile ? null : when(s, ctx);
-  if (w) rows.push(row('Tarih', `<span class="num">${w.date}</span>${w.counter}`));
+  // masaüstü: tarih · saat satırda, altında sayaç sütun genişliğinde (yazı boyu genişliğe sığdırılır: fitCounters)
+  if (w) {
+    rows.push(
+      `<div class="gdr ln"><div class="gr"><span class="lb">Tarih</span><span class="gv"><span class="num">${w.date}</span></span></div>` +
+        `<div class="gcdw"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></div></div>`,
+    );
+  }
   const stage = STAGE[s.stage];
   if (stage) rows.push(row('Sahne', txt(ctx, stage)));
   const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');

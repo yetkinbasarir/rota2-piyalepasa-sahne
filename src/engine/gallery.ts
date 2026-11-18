@@ -47,7 +47,7 @@ import { gsap } from './motion';
 import type { Motion } from './motion';
 import type { Media } from './media';
 import { clamp, mod, type State } from './state';
-import { fitTitles, capOffset } from './screen';
+import { fitTitles, fitCounters, capOffset } from './screen';
 import type { Identity, Show, TemplateContext } from './types';
 import type { FullVideoPlayer } from './fullVideo';
 import type { Dom } from './theme';
@@ -270,6 +270,7 @@ export function createGallery(o: {
 
     // ekrandaki başlık yeni ölçüde en fazla titleLines satır
     fitTitle(gInfo);
+    fitCounters(gInfo);
     // üst sınır (masaüstü)
     const mBottom = css('--fit-top');
     // alt sınır: Bilet Al'ın üstünden stage.gap ve bir etiket satırı yukarısı (eski sahne adı yeri)
@@ -511,6 +512,7 @@ export function createGallery(o: {
     nu.innerHTML = html;
     group.append(nu);
     fitTitle(nu);
+    fitCounters(nu);
     o.onCreate(nu);
     if (!animate || motion.reduced) {
       old?.remove();
@@ -695,7 +697,17 @@ export function createGallery(o: {
     }
     // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
-    if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
+    const dr = rest?.querySelector<HTMLElement>('.gdr') ?? null;
+    if (rest && (S.mobile || !dr)) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
+    else if (rest && dr) {
+      // masaüstü: tarih satırı (tarih · saat ve sayaç) başlıkla kalır, başlığın çizgisinin hemen altına kayar
+      // (dateMove); sütunun geri kalanı kaybolur. Kapanışta geri döner, künye çevresinde belirir
+      const others = [...rest.children].filter((e) => e !== dr);
+      if (others.length) tl.to(others, { autoAlpha: on ? 0 : 1, ...all }, t0);
+      const DM = O.dateMove;
+      const dy = on ? rest.getBoundingClientRect().top - (dr.getBoundingClientRect().top - (Number(gsap.getProperty(dr, 'y')) || 0)) : 0;
+      tl.to(dr, { y: dy, duration: DM.dur * red, ease: DM.ease, overwrite: 'auto' }, at(0, DM.dur * red));
+    }
     tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
     // Bilet Al açık hâlde hiç görünmez: açılışta t = 0'da kaybolur (tıklanamaz); kapanışta ancak açık hâl tamamen
     // kapandıktan sonra döner (showTicket())

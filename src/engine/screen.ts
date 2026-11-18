@@ -148,6 +148,21 @@ export function fitTitles(root: ParentNode, lines: number, lh: number) {
   }
 }
 
+/** Künyedeki sayaç: bütün dizi kapsayıcısının (künye sütunu) genişliğini soldan sağa kaplar; yazı boyu genişliğe
+    sığdırılır (eşit genişlikte rakamlar: genişlik değişmez) */
+export function fitCounters(root: ParentNode) {
+  for (const el of root.querySelectorAll<HTMLElement>('.gcdw .cd')) {
+    const box = el.parentElement!;
+    const w = box.clientWidth;
+    if (!(w > 0)) continue;
+    el.style.display = 'inline-flex';
+    el.style.fontSize = '100px';
+    const n = el.getBoundingClientRect().width;
+    el.style.fontSize = n > 0 ? `${((100 * w) / n).toFixed(3)}px` : '';
+    el.style.display = '';
+  }
+}
+
 /** Bir yazı rolünün satır kutusunun üstünden ilk satırın büyük harf ("H") üstüne uzaklık (px): yarım satır
     aralığı + fontun üst payı − büyük harf yüksekliği (canvas measureText) */
 export function capOffset(role: TypeRole, fs: number, lh: number) {
