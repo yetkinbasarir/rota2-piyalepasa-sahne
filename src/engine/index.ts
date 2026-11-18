@@ -182,6 +182,8 @@ export async function startEngine(id: Identity, shows: Show[]) {
     logoLive = true;
     dom.brand.classList.add('is-live');
     camera.autoplay(true);
+    // ana dairenin videosu duruşta önceden hazırlanır
+    gallery.preload(true);
     presenter = startPresentation({ S, camera, gallery, cmd, motion, id });
   });
 

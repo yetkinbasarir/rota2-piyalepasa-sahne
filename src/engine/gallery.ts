@@ -73,6 +73,8 @@ export interface Gallery {
   suspend(on: boolean): void;
   /** Slayt gösterisi: video ve kendiliğinden dönüş zamanlayıcısı bekler (on) / sürer (off; kullanıcı dokunuşunun içinde) */
   hold(on: boolean): void;
+  /** Video ön yüklemesi açık / kapalı (ilk ekran sürerken kapalı) */
+  preload(on: boolean): void;
   /** Fare hareketi (eğim, düzleşme); null: fare yüzeyden çıktı */
   hover(e: PointerEvent | null): void;
   /** Fontlar yüklenince yazıları yeniden kur */
@@ -698,6 +700,11 @@ export function createGallery(o: {
     return tl;
   }
 
+  /* ---------- video ön yüklemesi ---------- */
+  let preloadOn = false;
+  let restAt: number | null = null;
+  let restFor: number | null = null;
+
   /* ---------- çizim ---------- */
   let lastMain: number | null = null;
   let visibleEls: Element[] = [];
@@ -720,6 +727,17 @@ export function createGallery(o: {
     if (S.mobile) mobileFrame();
     // ana daire düzleşir: masaüstünde fare üzerindeyken, mobilde galeri durunca
     const rest = !S.pressed && !o.busy() && Math.abs(S.pos - c) < 1e-3;
+    // video ön yüklemesi: ana daire preload.rest sn duruşta kalınca oynatıcısı görünmez, sessiz hazırlanır
+    // (ilk ekran, slayt gösterisi ve açık hâl sürerken değil)
+    if (rest && preloadOn && !S.open && !S.slides && !S.paused) {
+      const now = performance.now();
+      if (restAt === null || restFor !== c) {
+        restAt = now;
+        restFor = c;
+      } else if (now - restAt >= G.preload.rest * 1000 && !o.video.prepared(showAt(c).fullVideo)) {
+        o.video.prepare(showAt(c).fullVideo);
+      }
+    } else restAt = null;
     const flatOn = !S.open && (S.mobile ? rest : hoverMain);
     const R = G.rotate;
     const Sh = G.shadow;
@@ -794,7 +812,8 @@ export function createGallery(o: {
   const api: Gallery = {
     layout,
     rebuild() {
-      o.video.remove();
+      o.video.clear();
+      restAt = null;
       clearAuto();
       openTl?.kill();
       openTl = null;
@@ -853,8 +872,8 @@ export function createGallery(o: {
       openN = it.n;
       photo(show, it.n);
       closeIcon(true);
-      // tıklamanın içinde, eşzamanlı: video sesle başlar (hazır değilse hazır olunca)
-      o.video.prepare(show.fullVideo);
+      // tıklamanın içinde, eşzamanlı: hazır oynatıcı başlangıca sarılıp sesle oynar; hazır değilse şimdi kurulur
+      // (dairenin büyümesiyle paralel), hazır olunca oynar
       clearAuto();
       o.video.start(show.fullVideo, () => {
         clearAuto();
@@ -891,6 +910,10 @@ export function createGallery(o: {
     videoActive: () => o.video.active(),
     suspend(on) {
       o.video.suspend(on);
+    },
+    preload(on) {
+      preloadOn = on;
+      restAt = null;
     },
     hold(on) {
       if (on) {

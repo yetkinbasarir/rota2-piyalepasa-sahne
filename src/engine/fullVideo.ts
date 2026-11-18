@@ -1,4 +1,8 @@
-/* Tam ekran videosu. Yalnızca tam ekranda oynar; aynı anda en fazla bir video yüklüdür.
+/* Tam ekran videosu. Yalnızca tam ekranda (sesli) oynar.
+   Ön yükleme: galeri bir süre durunca ana dairenin oynatıcısı görünmez katmanda, sessiz kurulur ve başlangıç
+   noktasında bekletilir (YouTube'da sessiz kısa bir oynatmayla tamponlanıp başlangıçta duraklatılır); en fazla
+   `POOL` hazır oynatıcı tutulur (güncel ve bir önceki ana daire), daha eskiler kaldırılır. Tıklamada hazır
+   oynatıcı başlangıca sarılıp hemen oynatılır; hazır değilse tıklama anında kurulur.
    Tam ekran açılınca video fotoğrafın arkasında (görünmez katmanda) yüklenmeye başlar; gerçekten
    oynamaya başladığı an (YouTube IFrame API: PLAYING, Vimeo Player SDK: 'playing', mp4: 'playing')
    opaklıkla videoya geçilir. Belirli süre içinde başlamazsa katman kaldırılır, fotoğraf kalır.
@@ -17,8 +21,12 @@ import type { Motion } from './motion';
 import type { FullVideo, Identity } from './types';
 
 export interface FullVideoPlayer {
-  /** Açılmış öğe: oynatıcıyı arka planda (görünmez, gerçek boyutunda) kur ve başlangıca hazırla; oynamaz */
+  /** Ön yükleme: oynatıcıyı arka planda (görünmez, sessiz) kur ve başlangıca hazırla; havuzda en fazla POOL */
   prepare(v: FullVideo | undefined): void;
+  /** Bu video için hazır (ya da hazırlanan) oynatıcı var mı */
+  prepared(v: FullVideo | undefined): boolean;
+  /** Bütün oynatıcıları kaldır (yeniden kurulum) */
+  clear(): void;
   /** Tam ekran: videoyu oynat (hazırsa tıklamanın içinde eşzamanlı; sesi açmayı dener) */
   start(v: FullVideo | undefined, onShown?: () => void): void;
   /** Sesi kıs, sonra videodan fotoğrafa geri geç (oynuyorsa opaklıkla); bitince çözülür */
@@ -112,7 +120,12 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
     vol: { v: number };
     reveal: () => void;
   };
+  /** Oynayan (tam ekranda başlatılmış) oynatıcı */
   let cur: Cur | null = null;
+  /** Kurulu oynatıcılar (hazır bekleyenler ve oynayan); eskiden yeniye */
+  const pool: Cur[] = [];
+  const POOL = 2;
+  const alive = (me: Cur) => pool.includes(me);
   const V = o.id.video;
   const fadeSound = (c: Cur, to: number, dur: number) =>
     new Promise<void>((res) => {
@@ -130,10 +143,10 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       });
     });
 
-  function remove() {
-    if (!cur) return;
-    const c = cur;
-    cur = null;
+  function dispose(c: Cur) {
+    const i = pool.indexOf(c);
+    if (i >= 0) pool.splice(i, 1);
+    if (cur === c) cur = null;
     clearTimeout(c.timer);
     gsap.killTweensOf(c.wrap);
     gsap.killTweensOf(c.vol);
@@ -144,10 +157,14 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
     }
     c.wrap.remove();
   }
+  /** Oynayan oynatıcıyı kaldır */
+  function remove() {
+    if (cur) dispose(cur);
+  }
 
   /** Oynatıcı hazır: bekleyen oynatma isteği varsa hemen uygula */
   const markReady = (me: Cur) => {
-    if (cur !== me || me.ready) return;
+    if (!alive(me) || me.ready) return;
     me.ready = true;
     if (me.pending) {
       const g = me.pending.gesture;
@@ -156,11 +173,28 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
     }
   };
 
-  /** Oynatıcıyı kur (görünmez, gerçek boyutunda; oynamaz) ve başlangıca hazırla */
-  function prepare(v: FullVideo | undefined) {
-    if (cur && cur.v === v) return;
-    remove();
-    if (!v || motion.reduced) return;
+  /** Ön yükleme: havuzda yoksa kur; havuz POOL'u aşarsa en eski (oynamayan) kaldırılır */
+  function prepare(v: FullVideo | undefined): Cur | null {
+    if (!v || motion.reduced) return null;
+    const have = pool.find((p) => p.v === v);
+    if (have) {
+      // en yeniye taşı
+      pool.splice(pool.indexOf(have), 1);
+      pool.push(have);
+      return have;
+    }
+    const me = create(v);
+    if (!me) return null;
+    while (pool.length > POOL) {
+      const old = pool.find((p) => p !== cur && p !== me);
+      if (!old) break;
+      dispose(old);
+    }
+    return me;
+  }
+
+  /** Oynatıcıyı kur (görünmez, gerçek boyutunda, sessiz) ve başlangıca hazırla */
+  function create(v: FullVideo): Cur | null {
     const wrap = document.createElement('div');
     wrap.className = 'fv';
     wrap.style.opacity = '0';
@@ -172,7 +206,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       v, wrap, started: false, shown: false, ready: false, pending: null, unmutedAt: 0, timer: 0, held: false, pause: () => {},
       dispose: () => {}, play: () => {}, volume: () => {}, vol: { v: 0 }, reveal: () => {},
     };
-    cur = me;
+    pool.push(me);
 
     // oynamaya gerçekten başladığında fotoğraftan videoya geç
     me.reveal = () => {
@@ -225,6 +259,8 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
         el.pause();
       };
       me.play = (gesture) => {
+        // hazır bekleyen oynatıcı: başlangıç noktasına geri
+        if (from > 0 && Math.abs(el.currentTime - from) > 0.5) el.currentTime = from;
         if (gesture) {
           // tıklamanın içinde, eşzamanlı: ses açık (iOS'ta tam seviye, diğerlerinde 0'dan yükselir)
           el.muted = false;
@@ -257,7 +293,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
         el.removeAttribute('src');
         el.load();
       };
-      return;
+      return me;
     }
 
     const iframe = document.createElement('iframe');
@@ -278,6 +314,8 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       let player: any = null;
       let hold = 0;
       let watch = 0;
+      /** Ön yükleme: sessiz kısa oynatma (tamponlama), ilk PLAYING'de başlangıçta duraklatılır */
+      let warm = false;
       const tail = o.id.video.youtubeTail;
       /** Hesaplanan başlangıç (-1: henüz süre okunmadı); start parametresine güvenilmez, seekTo ile gidilir */
       let from = -1;
@@ -307,6 +345,9 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       };
       me.play = (gesture) => {
         if (!player?.playVideo) return;
+        warm = false;
+        // hazır bekleyen oynatıcı: başlangıç noktasına geri
+        if (from > 0) player.seekTo(from, true);
         if (gesture) {
           // tıklamanın içinde, eşzamanlı: sesi aç (iOS'ta tam seviye), oynat
           player.unMute();
@@ -326,7 +367,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       };
       youtubeApi()
         .then((YT) => {
-          if (cur !== me) return;
+          if (!alive(me)) return;
           // otomatik altyazılar kapalı: altyazı modülü boşaltılır
           const noCaptions = () => {
             try {
@@ -340,12 +381,29 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
             events: {
               onReady: () => {
                 noCaptions();
-                // süre biliniyorsa başlangıca hazırla (oynatmadan)
+                // süre biliniyorsa başlangıca hazırla
                 position(true);
                 markReady(me);
+                // henüz tam ekranda değilse: sessiz kısa oynatmayla tamponla (ilk PLAYING'de duraklatılır)
+                if (!me.started) {
+                  warm = true;
+                  player.mute();
+                  player.playVideo();
+                }
               },
               onStateChange: (e: { data: number }) => {
-                if (!me.started || me.held) return;
+                if (!me.started) {
+                  // ön yükleme: oynamaya başladı (tamponlandı) → başlangıçta beklet
+                  if (warm && e.data === YT.PlayerState.PLAYING) {
+                    warm = false;
+                    position();
+                    if (from < 0) from = 0;
+                    player.pauseVideo();
+                    player.seekTo(from, true);
+                  }
+                  return;
+                }
+                if (me.held) return;
                 if (e.data === YT.PlayerState.PLAYING) {
                   position();
                   // başlangıç noktasından oynamıyorsa (henüz) oraya git ve bekle
@@ -391,7 +449,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
         clearInterval(watch);
         player?.destroy?.();
       };
-      return;
+      return me;
     }
 
     if (v.kind === 'vimeo' && v.id) {
@@ -403,7 +461,7 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       let span = 0;
       vimeoApi()
         .then((Vimeo) => {
-          if (cur !== me || !Vimeo) return;
+          if (!alive(me) || !Vimeo) return;
           player = new Vimeo.Player(iframe);
           const quiet = () => {
             gsap.killTweensOf(me.vol);
@@ -412,6 +470,8 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
             player.play().catch(() => {});
           };
           me.play = (gesture) => {
+            // hazır bekleyen oynatıcı: başlangıç noktasına geri (promise beklenmez)
+            if (from > 0) player.setCurrentTime(from).catch(() => {});
             if (gesture) {
               // tıklamanın içinde, eşzamanlı (promise'ler beklenmez)
               if (!IOS) player.setVolume(0).catch(() => {});
@@ -476,9 +536,10 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
         clearInterval(span);
         player?.destroy?.();
       };
-      return;
+      return me;
     }
-    remove();
+    dispose(me);
+    return null;
   }
 
   /** Tam ekran: videoyu oynat. Tıklamanın işleyicisi içinde çağrılırsa ses eşzamanlı açılır */
@@ -487,10 +548,11 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
       remove();
       return;
     }
-    // hazır oynatıcı yoksa (ya da başka videoysa) mevcut yolla kur
-    if (!cur || cur.v !== v) prepare(v);
-    const me = cur;
+    // hazır oynatıcı varsa o, yoksa tıklama anında kurulur
+    if (cur && cur.v !== v) remove();
+    const me = prepare(v);
     if (!me) return;
+    cur = me;
     me.started = true;
     me.onShown = onShown;
     const gesture = inGesture();
@@ -527,7 +589,9 @@ export function createFullVideo(o: { root: HTMLElement; motion: Motion; id: Iden
   }
 
   return {
-    prepare,
+    prepare: (v) => void prepare(v),
+    prepared: (v) => !!v && pool.some((p) => p.v === v),
+    clear: () => [...pool].forEach(dispose),
     start,
     suspend,
     remove,

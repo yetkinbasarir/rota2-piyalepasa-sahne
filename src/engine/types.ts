@@ -201,6 +201,8 @@ export interface GalleryTokens {
       başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sağdan
       kırpılıp kısa logoya geçişi (colorDur sn, logoEase) */
   open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string; logoEase: string };
+  /** Video ön yüklemesi: ana daire bu kadar sn duruşta kalınca oynatıcısı görünmez, sessiz hazırlanır */
+  preload: { rest: number };
   /** Mobil dikey sayfa: ana dairenin çapı (W), ana dairenin ekrandaki üstünün logonun altından uzaklığı (W), ana dairenin altı ile başlığın büyük harf üstü arası (W), açık hâlde video oynayınca alttaki başlık bloğunun
       kayboluşu (sn), sayfa kaydırmanın ataleti (bırakma hızının ileri izdüşüm süresi
       ve oturma süresi, sn) */
