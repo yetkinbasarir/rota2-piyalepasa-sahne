@@ -11,16 +11,17 @@
      üstü, altı logonun altı; sağ kenarı sağ sütunun sağ boşluğunda;
    - mobil (QR yok): düğmeler yan yana sağ altta, üstleri kısa logonun üstüyle hizalı.
 
-   Işık: siyah zeminde tek, yumuşak eliptik ışık havuzu (galerinin daire köşegeni açısında); merkezi galeri zemin
-   grisi, kenara doğru uzun ve yumuşak bir düşüşle siyaha. Hafifçe nefes alır (opaklık). Önceden çizilmiş tek
-   gradyan katmanı.
+   Işık: zemine düşen ışık; ekranın altında, perspektifle görülen geniş, yassı, hafif çapraz bir elips (altta ve
+   yanlarda ekran dışına taşar). Merkez tepesi yok: içte eşit parlaklıkta düz plato (galeri grisinin `level`
+   parlaklığı), dış bantta smoothstep ile siyaha; uzak (üst) kenarın bandı yanlardan dar. Hafifçe nefes alır
+   (opaklık). Önceden çizilmiş tek katman; üstünde bütün ekranda çok hafif durağan gren (zemin dokusu).
 
    Daireler: galeri daireleri gibi eğik (aynı perspektif, rotateX · rotateY · rotateZ), her biri farklı bir
    gösterinin görseli, tam renkli, aynı odak / kırpımla. Rastgele temel eğim; süzülürken açılar kendi sinüsleriyle
    yavaşça salınır. Çaplar rastgele (az büyük, çok küçük); küçükler uzakta: opaklık ve bulanıklık çapa göre,
    büyükler önde. Her biri kendi yönünde süzülür (büyükler biraz daha hızlı), dik yönde sinüs salınımıyla; ekrandan
    çıkan karşı kenardan girer. İlk görünüşte rastgele sırayla belirir.
-   Işık katsayısı (0..1): dairenin merkezi elipsin içindeyse 1, dışında düşer; karanlıktaki daireler üstlerindeki
+   Işık katsayısı (0..1): dairenin merkezindeki ışık profili; karanlıktaki daireler üstlerindeki
    siyah örtüyle (opaklık en fazla dim) kararır. Her dairenin zemine düşen bulanık eliptik gölgesi (galeri
    gölgeleri gibi) dairenin altında, eğimini izler; opaklığı galeri gölge opaklığı × gölgenin yerindeki ışık.
 
@@ -102,14 +103,28 @@ export function createLoader(o: {
   field.style.perspective = `${id.gallery.perspective}px`;
   field.style.perspectiveOrigin = '50% 50%';
   // ışık havuzu (önceden çizilmiş gradyan), çıkışta her yeri kaplayan düz gri; gölgeler dairelerin arkasında
-  const light = document.createElement('div');
+  const light = document.createElement('canvas');
   light.className = 'ld-light';
+  // zemin: çok hafif, durağan, tek renkli ince gren (aydınlık alanda görünür; siyahta kaybolur)
+  const grain = document.createElement('div');
+  grain.className = 'ld-grain';
+  {
+    const G = LD.grain;
+    const svg =
+      `<svg xmlns='http://www.w3.org/2000/svg' width='${G.tile}' height='${G.tile}'>` +
+      `<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='${G.frequency}' numOctaves='2' stitchTiles='stitch'/>` +
+      `<feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`;
+    grain.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    grain.style.backgroundSize = `${G.tile}px ${G.tile}px`;
+    grain.style.opacity = String(G.opacity);
+  }
   const flat = document.createElement('div');
   flat.className = 'ld-flat';
   flat.style.background = id.colors.background;
   const shadows = document.createElement('div');
   shadows.className = 'ld-sh';
   root.insertBefore(light, field);
+  root.insertBefore(grain, field);
   root.insertBefore(flat, field);
   root.insertBefore(shadows, field);
   gsap.set(flat, { opacity: 0 });
@@ -123,27 +138,53 @@ export function createLoader(o: {
   const lt = { cx: 0, cy: 0, rx: 1, ry: 1, a: 0 };
   /** Çıkış: ışığın büyümesi (1 → exit.lightScale) ve yataylaşması (0..1) */
   const grow = { s: 1, level: 0 };
+  const smooth = (e0: number, e1: number, x: number) => {
+    const f = clamp01((x - e0) / Math.max(1e-6, e1 - e0));
+    return f * f * (3 - 2 * f);
+  };
+  /** Işık profili (elips çerçevesinde, yarıçapa bölünmüş u, v): içte düz plato (1), dış bantta smoothstep ile 0'a.
+      Bant yanlarda ve altta `fade`, üstte (uzak kenar, perspektifle sıkışmış) `topFade` kalınlığında */
+  function profile(u: number, v: number) {
+    const q = Math.hypot(u, v);
+    if (q >= 1) return 0;
+    const up = q > 0 ? Math.max(0, -v / q) : 0;
+    const band = lerp(L.fade, L.topFade, up);
+    return 1 - smooth(1 - band, 1, q);
+  }
   function layoutLight() {
     const mob = isMobile();
     lt.cx = L.x * W;
     lt.cy = L.y * H;
     lt.rx = (mob ? L.rx.mobile : L.rx.web) * W;
     lt.ry = (mob ? L.ry.mobile : L.ry.web) * H;
-    // galerinin daire köşegeni: sola bir adımda (slope[0]·W, slope[1]·H); büyük eksen bu doğrultuda
-    const sl = id.gallery.layout.slope;
-    lt.a = (Math.atan2(-sl[1] * H, -sl[0] * W) * 180) / Math.PI;
-    // merkezde zemin grisi, kenara doğru uzun ve yumuşak düşüş (saydamlık; altta siyah zemin)
+    lt.a = L.rotation;
+    // zemine düşen ışık: önceden çizilmiş tek katman (düşük çözünürlükte, CSS ile büyütülür); renk galeri grisinin
+    // `level` parlaklığı, saydamlık profil (altta siyah zemin)
     const n = parseInt(id.colors.background.replace('#', ''), 16);
-    const rgb = `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
-    const stops: string[] = [];
-    for (let i = 0; i <= 10; i++) {
-      const t = i / 10;
-      stops.push(`rgba(${rgb},${Math.pow(1 - t * t, L.curve).toFixed(4)}) ${i * 10}%`);
+    const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => Math.round(c * L.level));
+    const cw = Math.max(2, Math.round(2 * lt.rx * L.resolution));
+    const ch = Math.max(2, Math.round(2 * lt.ry * L.resolution));
+    light.width = cw;
+    light.height = ch;
+    const g = light.getContext('2d');
+    if (g) {
+      const img = g.createImageData(cw, ch);
+      for (let y = 0; y < ch; y++) {
+        const v = ((y + 0.5) / ch) * 2 - 1;
+        for (let x = 0; x < cw; x++) {
+          const u = ((x + 0.5) / cw) * 2 - 1;
+          const i = (y * cw + x) * 4;
+          img.data[i] = rgb[0];
+          img.data[i + 1] = rgb[1];
+          img.data[i + 2] = rgb[2];
+          img.data[i + 3] = Math.round(profile(u, v) * 255);
+        }
+      }
+      g.putImageData(img, 0, 0);
     }
     light.style.cssText =
       `width:${(2 * lt.rx).toFixed(1)}px;height:${(2 * lt.ry).toFixed(1)}px;` +
-      `left:${(lt.cx - lt.rx).toFixed(1)}px;top:${(lt.cy - lt.ry).toFixed(1)}px;` +
-      `background:radial-gradient(ellipse closest-side,${stops.join(',')})`;
+      `left:${(lt.cx - lt.rx).toFixed(1)}px;top:${(lt.cy - lt.ry).toFixed(1)}px`;
     lightTransform();
   }
   function lightTransform() {
@@ -154,17 +195,14 @@ export function createLoader(o: {
   const breathe = motion.reduced
     ? null
     : gsap.fromTo(light, { opacity: L.breathe[1] }, { opacity: L.breathe[0], duration: L.cycle / 2, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-  /** Işık katsayısı: elipsin içinde 1, dışında falloff kat uzaklıkta 0'a (yumuşak) */
+  /** Işık katsayısı: noktadaki ışık profili (platoda 1, kenara doğru 0) */
   function lightAt(x: number, y: number) {
     const r = ((lt.a * (1 - grow.level)) * Math.PI) / 180;
     const dx = x - lt.cx;
     const dy = y - lt.cy;
     const u = dx * Math.cos(r) + dy * Math.sin(r);
     const v = -dx * Math.sin(r) + dy * Math.cos(r);
-    const q = Math.hypot(u / (lt.rx * grow.s), v / (lt.ry * grow.s));
-    if (q <= 1) return 1;
-    const f = clamp01(1 - (q - 1) / (L.falloff - 1));
-    return f * f * (3 - 2 * f);
+    return profile(u / (lt.rx * grow.s), v / (lt.ry * grow.s));
   }
 
   /* ---------- süzülen eğik daireler ---------- */

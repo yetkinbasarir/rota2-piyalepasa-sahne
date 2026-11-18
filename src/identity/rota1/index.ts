@@ -161,7 +161,7 @@ export const rota1: Identity = {
   closeButton: { pad: 0.034, size: 56 },
 
   /* Yükleme ekranı: nokta matrisi logo (2) ya da içi dolan logo (1); en az 1.2 sn */
-  /* ilk ekran: düz siyah, logo beyaz (galerideki yerinde). Süzülen daireler: web 14 (0.04–0.16W), mobil 8
+  /* ilk ekran: düz siyah, logo beyaz (galerideki yerinde). Süzülen daireler: web 40 (0.04–0.16W), mobil 20
      (0.10–0.34W), az büyük çok küçük; opaklık 0.45 (en küçük) – 1 (en büyük), bulanıklık 0.004W – 0; hız
      0.01–0.03W/sn (büyükler hızlı, ±%15), dik salınım 0.01W, 6–12 sn; 1.5 sn içinde rastgele sırayla 0.5 sn'de
      belirir. Çıkış ışıkla (aşağıda). Logo sol altta (alt boşluğu galerideki Üye Ol / Giriş'inki); web: sağ altta logoyla aynı üst ve
@@ -170,7 +170,7 @@ export const rota1: Identity = {
      düğmeler aynı sürede galerideki yerlerine (düğmeler galerideki boyuna) gider */
   loader: {
     background: '#000000', logoColor: '#FFFFFF',
-    count: { web: 14, mobile: 8 },
+    count: { web: 40, mobile: 20 },
     size: { web: [0.04, 0.16], mobile: [0.1, 0.34] }, sizeSkew: 2.2,
     opacity: [0.45, 1], blur: 0.004,
     speed: [0.01, 0.03], speedJitter: 0.15,
@@ -179,10 +179,16 @@ export const rota1: Identity = {
     /* eğik daireler (galerinin eğimi ve perspektifi): temel eğim rastgele rotateX 20–34°, rotateY −30…−14°,
        rotateZ −12…−4°; açılar ±15° sinüsle, 10–20 sn periyot, rastgele fazla salınır */
     tilt: { x: [20, 34], y: [-30, -14], z: [-12, -4], sway: 15, period: [10, 20] },
-    /* ışık havuzu: merkez 0.50W, 0.60H; yarıçap 0.45W × 0.22H (mobil 0.60W × 0.30H), galeri köşegeni açısında;
-       merkezde zemin grisi, (1 − t²)² ile siyaha; yoğunluk 0.92–1, 8 sn döngü. Işık katsayısı elipste 1, yarıçapın
-       1.8 katında 0; karanlıktaki daire siyah örtüyle (en fazla 0.65) %35 parlaklığa */
-    light: { x: 0.5, y: 0.6, rx: { web: 0.45, mobile: 0.6 }, ry: { web: 0.22, mobile: 0.3 }, curve: 2, breathe: [0.92, 1], cycle: 8, falloff: 1.8, dim: 0.65 },
+    /* zemine düşen ışık: merkez 0.50W, 0.88H; yarıçap 0.80W × 0.42H (mobil 0.95W × 0.40H), −6°; altta ve yanlarda
+       ekran dışına taşar. İçte %70 düz plato (galeri grisinin %85 parlaklığı), dış %30'da smoothstep ile siyaha;
+       uzak (üst) kenarın bandı %15. Çizim 1/4 çözünürlükte. Yoğunluk 0.92–1, 8 sn döngü. Karanlıktaki daire siyah
+       örtüyle (en fazla 0.65) %35 parlaklığa */
+    light: {
+      x: 0.5, y: 0.88, rx: { web: 0.8, mobile: 0.95 }, ry: { web: 0.42, mobile: 0.4 }, rotation: -6,
+      fade: 0.3, topFade: 0.15, level: 0.85, resolution: 0.25, breathe: [0.92, 1], cycle: 8, dim: 0.65,
+    },
+    /* zemin greni: ince tek renkli gürültü, %5 opaklık, bütün ekranda (aydınlık alanda görünür) */
+    grain: { opacity: 0.05, frequency: 0.9, tile: 200 },
     /* gölge: dairenin 0.6 çap altında, galeri gölgesi gibi; en küçük dairede bulanıklık 0.6 kat (daha küçük, yumuşak) */
     shadow: { below: 0.6, softSmall: 0.6 },
     /* çıkış ışıkla: 1.0 sn power2.inOut ışık 4 katına büyüyüp yataylaşır, her yer griye döner; daireler, gölgeler

@@ -301,8 +301,9 @@ export interface Identity {
       küçüklere eğilim (kuvvet üssü); derinlik: opaklık [en küçük, en büyük], en küçüğün bulanıklığı (W); hız
       [en küçük, en büyük] (W/sn) ve rastgele sapma oranı; dik salınım genliği (W) ve periyot aralığı (sn); ilk
       belirme toplam süresi ve her dairenin belirme süresi (sn); eğim (°: temel aralıklar, ±salınım, periyot);
-      ışık havuzu (merkez W / H, yarıçaplar web / mobil, düşüş eğrisi üssü, nefes [en az, en çok] ve döngü sn,
-      sıfırlandığı uzaklık (elips yarıçapının katı), karanlıkta örtünün en fazla opaklığı); gölgenin dairenin altında
+      zemine düşen ışık (merkez W / H, yarıçaplar web / mobil, dönüş °, kenar bandı (yarıçapın oranı; yanlar / üst),
+      platonun parlaklığı (galeri grisinin katı), çizim çözünürlüğü, nefes [en az, en çok] ve döngü sn, karanlıkta
+      örtünün en fazla opaklığı); zemin greni (opaklık, gürültü frekansı, karo px); gölgenin dairenin altında
       uzaklığı (çapın katı) ve en küçük dairede bulanıklık katı; çıkış (ışıkla: süre, eğri, ışığın büyüme katı,
       dairelerin kayboluşu sn ve dışa kayması W, galerinin belirme başlangıcı ve süresi); QR'ın sessiz alanı */
   loader: {
@@ -315,9 +316,10 @@ export interface Identity {
     fadeIn: { total: number; each: number };
     tilt: { x: [number, number]; y: [number, number]; z: [number, number]; sway: number; period: [number, number] };
     light: {
-      x: number; y: number; rx: { web: number; mobile: number }; ry: { web: number; mobile: number };
-      curve: number; breathe: [number, number]; cycle: number; falloff: number; dim: number;
+      x: number; y: number; rx: { web: number; mobile: number }; ry: { web: number; mobile: number }; rotation: number;
+      fade: number; topFade: number; level: number; resolution: number; breathe: [number, number]; cycle: number; dim: number;
     };
+    grain: { opacity: number; frequency: number; tile: number };
     shadow: { below: number; softSmall: number };
     exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };
     qr: { margin: number };
