@@ -63,16 +63,9 @@ img, video { -webkit-user-drag: none; }
 /* açık hâlde kapanır (overflow gizli); logo çizgileri sağ kenarın dışına uzanabilsin diye kutu sağa genişler */
 .gi-rest { overflow: hidden; margin-right: calc(-1 * var(--gi-out) - 2px); padding-right: calc(var(--gi-out) + 2px); }
 /* mobil dikey sayfa: yazılar, logo ve üye düğmeleri sayfa kaydırmasıyla (--scroll: gallery.ts) yukarı kayar;
-   Bilet Al ana dairenin hemen altında (--gc-top), künye onun altında, ilk dokunuşta açılır (--gk-top) */
+   Bilet Al ana dairenin hemen altında (--gc-top), başlık / tanıtım / künye onun altında (--gi-top) */
 .is-mobile #ui, .is-mobile .brand, .is-mobile .bnd { transform: translate3d(0, calc(-1 * var(--scroll, 0px)), 0); }
 .is-mobile .gc { top: var(--gc-top); bottom: auto; }
-.gk { display: none; }
-.is-mobile .gk {
-  display: block; position: absolute; left: var(--gi-left); top: var(--gk-top); height: 0; overflow: hidden;
-  width: calc(var(--gi-w) + var(--gi-out) + 2px); padding-right: calc(var(--gi-out) + 2px);
-}
-.is-mobile .gk > .gx { top: 0; right: calc(var(--gi-out) + 2px); }
-.gk .lr { margin-right: calc(-1 * var(--gi-out) - 2px); }
 /* Bilet Al: ana dairenin altında ortalı (--gc-x: gallery.ts) */
 .gc { position: absolute; left: var(--gc-x, 50%); transform: translateX(-50%); bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
 .ln { will-change: transform, opacity; }

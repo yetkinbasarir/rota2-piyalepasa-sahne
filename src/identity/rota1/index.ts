@@ -83,9 +83,9 @@ export const rota1: Identity = {
        0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
        aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
     open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
-    /* mobil dikey sayfa: ana daire 0.82W, ortada, tanıtımın çizgisinin hemen altında; metin değişince daireler
-       0.5 sn'de yeni yerine kayar; künye ilk dokunuşta 0.5 sn power2.out açılır; sayfa kaydırma ataleti 0.3 sn */
-    mobile: { mainD: 0.82, flow: { dur: 0.5, ease: 'power2.out' }, kunye: { dur: 0.5, ease: 'power2.out' }, throw: 0.3 },
+    /* mobil dikey sayfa: logonun hemen altında daire şeridi, ana daire 0.82W ortada; altında Bilet Al, başlık,
+       tanıtım ve künye (her zaman açık); sayfa kaydırma ataleti 0.3 sn, 0.5 sn'de oturur */
+    mobile: { mainD: 0.82, throw: 0.3, settle: 0.5 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },

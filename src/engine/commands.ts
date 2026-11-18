@@ -94,9 +94,7 @@ export function createCommands(o: { S: State; id: Identity; camera: Camera; gall
       // kenardaki daire ana yuvaya gelir; ana daire (yerine oturmuşsa) açılır
       if (n === Math.round(S.pos) && !camera.busy()) {
         camera.stop();
-        // mobil: ilk dokunuş künyeyi açar, ikincisi videoyu
-        if (S.mobile && !gallery.kunyeOpen()) gallery.kunye(true);
-        else gallery.open();
+        gallery.open();
       } else camera.go(n);
     },
     openMain() {

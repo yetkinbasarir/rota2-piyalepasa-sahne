@@ -38,9 +38,8 @@
    belirir. Kapanma tam tersi: video görsele döner, sonra daire yerine ve eğimine küçülür; geri kalanı onunla
    birlikte döner.
 
-   Mobil (dikey sayfa): üstte uzun logo ve üye düğmeleri, başlık, tanıtım; altında daire şeridi (ana daire ortada,
-   mobile.mainD·W), hemen altında Bilet Al, onun altında künye (ana daireye ilk dokunuşta açılır, ikincisi videoyu
-   açar; başka daireye geçince kapanır). Yatay sürükleme daireleri, dikey sürükleme sayfayı kaydırır.
+   Mobil (dikey sayfa): üstte uzun logo ve üye düğmeleri; logonun hemen altında daire şeridi (ana daire ortada,
+   mobile.mainD·W), hemen altında Bilet Al; onun altında başlık, tanıtım ve künye (her zaman açık). Yatay sürükleme daireleri, dikey sürükleme sayfayı kaydırır.
 
    Yazılar (başlık + tanıtım, künye) ana daireye göre değişir: eski satırlar yukarı
    kayarak kaybolur, yeniler aşağıdan gelir (satırlar arası gecikmeyle). */
@@ -79,9 +78,6 @@ export interface Gallery {
   /** Fontlar yüklenince yazıları yeniden kur */
   refresh(): void;
   visible(): Element[];
-  /** Mobil: künye açık mı; aç / kapat */
-  kunyeOpen(): boolean;
-  kunye(on: boolean): void;
   /** Mobil dikey sayfa: kaydır (px) ve bırakma hızıyla (px/sn) ataletli kaydır */
   scrollBy(dy: number): void;
   flingScroll(v: number): void;
@@ -244,10 +240,9 @@ export function createGallery(o: {
 
   /* ---------- yazılar: iskelet ---------- */
   dom.ui.innerHTML =
-    '<div class="gi"></div><div class="gk"></div>' +
+    '<div class="gi"></div>' +
     `<div class="gc">${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
   const gInfo = dom.ui.querySelector<HTMLElement>('.gi')!;
-  const gKun = dom.ui.querySelector<HTMLElement>('.gk')!;
   // Bilet Al şimdilik işlevsiz; tıklama galeriye geçmez
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk')!;
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -361,8 +356,8 @@ export function createGallery(o: {
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
     mainH = restBox(0, mx, my - lift).h;
-    // mobil: daireler tanıtımın çizgisinin altında, künye kapalı
-    flowTo(false);
+    // mobil: daire şeridi logonun hemen altında
+    flowTo();
     // daireler yeni çapla yeniden kurulur
     items.forEach(drop);
     items.clear();
@@ -522,9 +517,8 @@ export function createGallery(o: {
     const show = showAt(n);
     const ctx = o.tctx();
     swap(gInfo, id.templates.info(show, ctx), animate);
-    swap(gKun, S.mobile ? id.templates.credits(show, ctx) : '', false);
-    // mobil: metin değişince daireler yeni yerine kayar
-    flowTo(animate);
+    // mobil: sayfanın altı (künyenin altı) yeni yazıya göre
+    giH = (gInfo.lastElementChild as HTMLElement | null)?.offsetHeight ?? 0;
   }
 
   /* ---------- × ---------- */
@@ -548,74 +542,48 @@ export function createGallery(o: {
     autoTimer = null;
   };
   /* ---------- mobil dikey sayfa ----------
-     Sayfa: üstte logo ve üye düğmeleri, başlık ve tanıtım (.gi), altında daire şeridi (ana dairenin dikey yeri
-     güncel metnin yüksekliğine göre: flow), hemen altında Bilet Al, onun altında künye (ilk dokunuşta açılır).
-     Dikey kaydırma sanal: yazılar, logo ve düğmeler --scroll kadar yukarı kayar, daireler aynı kadar yukarıda
-     çizilir. */
+     Sayfa: üstte logo ve üye düğmeleri; logonun hemen altında daire şeridi (ana daire ortada), ana dairenin hemen
+     altında Bilet Al; onun altında başlık, tanıtım ve künye (.gi; her zaman açık). Dikey kaydırma sanal: yazılar,
+     logo ve düğmeler --scroll kadar yukarı kayar, daireler aynı kadar yukarıda çizilir. */
   const flow = { v: 0 };
   const scroll = { v: 0 };
   let mainH = 0;
-  let kOpen = false;
+  /** Güncel başlık / tanıtım / künye yüksekliği (yazı değişince ölçülür) */
+  let giH = 0;
   let lastScroll = -1;
   const rootStyle = document.documentElement.style;
   const shiftY = () => (S.mobile ? flow.v - scroll.v : 0);
   const pagePad = () => T.info.mobilePad * S.vh;
-  /** Ana dairenin (sınır kutusu) sayfadaki üst ve alt kenarı, Bilet Al ve künyenin üstü */
+  /** Sayfadaki yerler: ana dairenin (sınır kutusu) üstü, Bilet Al'ın ve başlığın üstü */
   function pageMarks() {
     const H = S.vh;
     const discTop = flow.v + H / 2 - mainH / 2;
-    const discBottom = discTop + mainH;
-    const gcTop = discBottom + pagePad();
-    const gkTop = gcTop + T.ticket.d * H + pagePad();
-    return { discTop, gcTop, gkTop };
+    const gcTop = discTop + mainH + pagePad();
+    const giTop = gcTop + T.ticket.d * H + pagePad();
+    return { discTop, gcTop, giTop };
   }
-  function kunyeHeight() {
-    return (gKun.lastElementChild as HTMLElement | null)?.offsetHeight ?? 0;
+  /** Sayfanın en çok kaydırılması: künyenin altına kadar */
+  function maxScroll() {
+    return Math.max(0, pageMarks().giTop + giH + pagePad() + S.safeBottom - S.vh);
   }
-  /** Sayfanın en çok kaydırılması: sayfanın altı (künye açıkken ya da açılıp kapanırken onun o anki boyu) */
-  function maxScroll(full = false) {
-    const m = pageMarks();
-    const kh = full ? kunyeHeight() : Number(gsap.getProperty(gKun, 'height')) || 0;
-    const bottom = kh > 0 ? m.gkTop + kh : m.gcTop + T.ticket.d * S.vh;
-    return Math.max(0, bottom + pagePad() + S.safeBottom - S.vh);
-  }
-  /** Daireleri güncel metnin altına yerleştir (mobil) */
-  function flowTo(animate: boolean) {
+  /** Daire şeridini logonun hemen altına yerleştir (mobil; yazıdan bağımsız, sabit) */
+  function flowTo() {
     if (!S.mobile) {
       flow.v = 0;
       return;
     }
-    const css = (k: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(k)) || 0;
-    const cur = gInfo.lastElementChild as HTMLElement | null;
-    const giBottom = css('--gi-top') + (cur?.offsetHeight ?? 0);
-    const target = giBottom + GL.gap * S.vh + mainH / 2 - S.vh / 2;
-    gsap.killTweensOf(flow);
-    if (animate && !motion.reduced) gsap.to(flow, { v: target, duration: G.mobile.flow.dur, ease: G.mobile.flow.ease });
-    else flow.v = target;
-  }
-  /** Her karede (mobil): Bilet Al ve künyenin yeri, sayfa kaydırması */
-  function mobileFrame() {
+    const logoBottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--logo-bottom')) || 0;
+    flow.v = logoBottom + pagePad() + mainH / 2 - S.vh / 2;
     const m = pageMarks();
     rootStyle.setProperty('--gc-top', `${m.gcTop.toFixed(1)}px`);
-    rootStyle.setProperty('--gk-top', `${m.gkTop.toFixed(1)}px`);
+    rootStyle.setProperty('--gi-top', `${m.giTop.toFixed(1)}px`);
+  }
+  /** Her karede (mobil): sayfa kaydırması */
+  function mobileFrame() {
     if (!gsap.isTweening(scroll)) scroll.v = clamp(scroll.v, 0, maxScroll());
     if (Math.abs(scroll.v - lastScroll) > 0.05) {
       lastScroll = scroll.v;
       rootStyle.setProperty('--scroll', `${scroll.v.toFixed(1)}px`);
-    }
-  }
-  /** Künye: ana dairenin ve Bilet Al'ın altında aşağı doğru açılır; sayfa ana daire görünür kalacak, künye altında
-      başlayacak şekilde kayar */
-  function kunye(on: boolean) {
-    if (!S.mobile || kOpen === on) return;
-    kOpen = on;
-    const K = G.mobile.kunye;
-    const h = kunyeHeight();
-    gsap.to(gKun, { height: on ? h : 0, duration: K.dur * red, ease: K.ease, overwrite: true });
-    if (on) {
-      const m = pageMarks();
-      const to = clamp(m.discTop - S.safeTop - pagePad(), 0, maxScroll(true));
-      gsap.to(scroll, { v: Math.max(scroll.v, to), duration: K.dur * red, ease: K.ease, overwrite: true });
     }
   }
 
@@ -668,7 +636,7 @@ export function createGallery(o: {
     // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to([dom.members, gTicket, gKun], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to([dom.members, gTicket], { autoAlpha: on ? 0 : 1, ...all }, t0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -695,8 +663,6 @@ export function createGallery(o: {
       items.delete(n);
     }
     if (c !== lastMain) {
-      // başka daireye geçince künye kapanır
-      if (lastMain !== null && kOpen) kunye(false);
       lastMain = c;
       texts(c, textFor !== null);
     }
@@ -771,7 +737,7 @@ export function createGallery(o: {
     }
     // sayaç künyede: yalnızca güncel içerik
     // sayaç künyede (mobilde ayrı künye): yalnızca güncel içerik
-    visibleEls = [gInfo.lastElementChild, gKun.lastElementChild].filter((e): e is Element => !!e);
+    visibleEls = [gInfo.lastElementChild].filter((e): e is Element => !!e);
   }
 
   const api: Gallery = {
@@ -788,17 +754,15 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, gTicket, gKun, dom.brand, lgLong, lgShort, flow, scroll]);
+      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, gTicket, dom.brand, lgLong, lgShort, flow, scroll]);
       gsap.set(lgLong, { clipPath: 'inset(0px 0px 0px 0px)', opacity: 1 });
       gsap.set(lgShort, { opacity: 0 });
-      kOpen = false;
-      gsap.set(gKun, { height: 0, autoAlpha: 1 });
       scroll.v = 0;
       flow.v = 0;
       gsap.set([dom.brand, gInfo, dom.close], { clearProps: 'color' });
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([dom.members, gTicket, gKun], { autoAlpha: 1 });
+      gsap.set([dom.members, gTicket], { autoAlpha: 1 });
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -809,7 +773,6 @@ export function createGallery(o: {
       swaps.forEach((t) => t.kill());
       swaps.clear();
       gInfo.innerHTML = '';
-      gKun.innerHTML = '';
     },
     render,
     hit(x, y) {
@@ -890,15 +853,13 @@ export function createGallery(o: {
       }
     },
     visible: () => visibleEls,
-    kunyeOpen: () => kOpen,
-    kunye,
     scrollBy(dy) {
       gsap.killTweensOf(scroll);
       scroll.v = clamp(scroll.v + dy, 0, maxScroll());
     },
     flingScroll(v) {
       const to = clamp(scroll.v + v * G.mobile.throw, 0, maxScroll());
-      gsap.to(scroll, { v: to, duration: G.mobile.flow.dur, ease: 'power3.out', overwrite: true });
+      gsap.to(scroll, { v: to, duration: G.mobile.settle, ease: 'power3.out', overwrite: true });
     },
   };
   return api;
