@@ -72,7 +72,8 @@ export async function startEngine(id: Identity, shows: Show[]) {
   // logo (yükleme ekranı kalktıktan sonra, görünen logo): slayt gösterisini açar / kapatır; tıklama galeriye geçmez
   let logoLive = false;
   const logoHit = (e: Event) => {
-    if (!logoLive) return false;
+    // mobilde slayt gösterisi yok: logoya dokunmak bir şey yapmaz
+    if (!logoLive || S.mobile) return false;
     const part = (e.target as Element | null)?.closest?.<HTMLElement>('.lg-l, .lg-s');
     return !!part && parseFloat(getComputedStyle(part).opacity) >= 0.5;
   };
@@ -177,6 +178,8 @@ export async function startEngine(id: Identity, shows: Show[]) {
     }, 150);
   });
 
+  // ilk ekrandan çıkış başlarken galeri en üstünden gelir (sanal sayfa kaydırması da başa)
+  loader.onExit(() => gallery.scrollBy(-1e9));
   // ilk ekran tamamen kalkınca kendiliğinden ilerleme ve kendi kendine sunumun sayacı başlar
   loader.onGone(() => {
     logoLive = true;

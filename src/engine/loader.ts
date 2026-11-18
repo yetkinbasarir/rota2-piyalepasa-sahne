@@ -49,6 +49,8 @@ export interface Loader {
   start(o: { shows: Show[]; media: Media; mobile: () => boolean }): void;
   /** Katman tamamen kalktıktan sonra */
   onGone(f: () => void): void;
+  /** Çıkış başlarken (galeri görünmeden önce): sayfa kaydırması başa */
+  onExit(f: () => void): void;
 }
 
 interface Circle {
@@ -91,7 +93,7 @@ export function createLoader(o: {
   gallery: HTMLElement[];
 }): Loader {
   const root = document.getElementById('ld');
-  if (!root) return { start() {}, onGone: (f) => f() };
+  if (!root) return { start() {}, onGone: (f) => f(), onExit() {} };
   const { id, motion } = o;
   const LD = id.loader;
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -591,24 +593,51 @@ export function createLoader(o: {
   let ready = false;
   let exited = false;
   let goneCb: () => void = () => {};
-  // ilk ekran sürerken hiçbir giriş galeriye geçmez; düğmeler ve QR dışındaki ilk tıklama / dokunma / tuş çıkar
+  let exitCb: () => void = () => {};
+  /* ilk ekran sürerken hiçbir giriş galeriye geçmez, sayfa hiç kaymaz (touchmove engellenir). Düğmeler ve QR
+     dışındaki ilk dokunma (her yöne kaydırma da dokunmayla başlar) / tıklama / tuş çıkar. Çıkışı tetikleyen
+     hareket galeriye taşınmaz: o dokunma bitip releaseAfter sn geçene kadar girişler engellenmeye devam eder */
+  let released = false;
+  let down = false;
+  let relTimer = 0;
+  const releaseLater = () => {
+    clearTimeout(relTimer);
+    relTimer = window.setTimeout(release, LD.releaseAfter * 1000);
+  };
   const swallow = (e: Event) => {
-    if (exited) return;
+    if (released) return;
     e.stopPropagation();
     e.stopImmediatePropagation();
-    if (e.type === 'keydown' || e.type === 'wheel') e.preventDefault();
+    const t = e.type;
+    if (t === 'keydown' || t === 'wheel' || t === 'touchmove') e.preventDefault();
+    if (t === 'pointerdown' || t === 'touchstart') down = true;
+    else if (t === 'pointerup' || t === 'touchend' || t === 'touchcancel' || t === 'pointercancel') {
+      down = false;
+      if (exited) releaseLater();
+    }
+    if (exited) return;
     const onUi = !!(e.target as HTMLElement | null)?.closest?.('.ld-qr, .bnd');
-    if (ready && !onUi && (e.type === 'pointerdown' || e.type === 'keydown' || e.type === 'touchstart')) exit();
+    if (ready && !onUi && (t === 'pointerdown' || t === 'keydown' || t === 'touchstart')) exit();
   };
-  const types = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'keydown', 'wheel'];
+  const types = [
+    'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'click',
+    'touchstart', 'touchmove', 'touchend', 'touchcancel', 'keydown', 'wheel',
+  ];
   types.forEach((t) => addEventListener(t, swallow, { capture: true, passive: false }));
-  const release = () => types.forEach((t) => removeEventListener(t, swallow, { capture: true }));
+  function release() {
+    if (released) return;
+    released = true;
+    types.forEach((t) => removeEventListener(t, swallow, { capture: true }));
+  }
 
   function exit() {
     if (exited) return;
     exited = true;
-    // tıklamanın bıraktığı olaylar (pointerup / click) da galeriye geçmesin
-    window.setTimeout(release, 400);
+    // tetikleyen dokunma bitince (dokunma yoksa hemen) releaseAfter sn sonra girişler serbest
+    if (!down) releaseLater();
+    // galeri hep en üstünden gelir
+    window.scrollTo(0, 0);
+    exitCb();
     const X = LD.exit;
     const k = motion.reduced ? 0.25 : 1;
     const btns = buttons();
@@ -660,6 +689,9 @@ export function createLoader(o: {
     },
     onGone(f) {
       goneCb = f;
+    },
+    onExit(f) {
+      exitCb = f;
     },
   };
 }

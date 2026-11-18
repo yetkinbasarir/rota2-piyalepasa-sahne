@@ -337,6 +337,8 @@ export interface Identity {
     shadow: { below: number; softSmall: number };
     exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };
     qr: { margin: number };
+    /** Çıkışı tetikleyen dokunma bittikten sonra girişlerin engellenmeye devam ettiği süre (sn) */
+    releaseAfter: number;
   };
   /** Sitenin herkese açık adresi (QR kodu); boşsa sayfanın kendi adresi */
   site: { publicUrl: string };

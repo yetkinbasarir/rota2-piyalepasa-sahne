@@ -3,7 +3,20 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { videosApi } from './tools/videos-api.mjs';
 
 export default defineConfig({
-  build: { target: 'es2022', assetsInlineLimit: 0 },
+  build: {
+    target: 'es2022',
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      output: {
+        // slayt görselleri kendi klasörlerinde: mobil set service worker önbelleğine alınmaz (mobilde slayt yok)
+        assetFileNames: (info: { originalFileNames?: string[]; names?: string[] }) => {
+          const src = info.originalFileNames?.[0] ?? '';
+          const m = /src\/slides\/(web|mobile)\//.exec(src);
+          return m ? `assets/slides/${m[1]}/[name]-[hash][extname]` : 'assets/[name]-[hash][extname]';
+        },
+      },
+    },
+  },
   plugins: [
     videosApi(),
     VitePWA({
@@ -31,7 +44,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        globIgnores: ['img/**'],
+        globIgnores: ['img/**', 'assets/slides/mobile/**'],
         navigateFallback: '/index.html',
         runtimeCaching: [
           {

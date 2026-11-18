@@ -174,7 +174,8 @@ export function createSlides(o: {
       return isOpen;
     },
     open() {
-      if (isOpen) return;
+      // mobilde slayt gösterisi yok (mobil görseller yüklenmez)
+      if (isOpen || document.documentElement.classList.contains('is-mobile')) return;
       list = pick();
       if (!list.length) return;
       isOpen = true;
