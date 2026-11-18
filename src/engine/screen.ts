@@ -82,7 +82,7 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--lr-d', DIAMOND_H * lk);
   px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
 
-  /* Bilet Al: ana dairenin altında ortalı (yatay merkezi galeri yazar: --gc-x), alt boşluk ticket.bottom */
+  /* Bilet Al: masaüstünde altta, künye sütununun sol kenarında; mobilde sayfanın sonunda; alt boşluk ticket.bottom */
   px('--gs-gap', T.stage.gap * H);
   const gcBottom = S.safeBottom + T.ticket.bottom * H;
   const tD = T.ticket.d * H;

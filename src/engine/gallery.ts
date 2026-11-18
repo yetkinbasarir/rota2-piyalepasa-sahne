@@ -141,7 +141,6 @@ export function createGallery(o: {
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
   const lgLong = dom.brand.querySelector<HTMLElement>('.lg-l')!;
   const lgShort = dom.brand.querySelector<HTMLElement>('.lg-s')!;
-  const gTicket = dom.ui.querySelector<HTMLElement>('.gc')!;
 
   /* ---------- geometri ---------- */
   /** Ölçek 1'deki daire çapı (px); duruştaki yerleşim noktaları p = −3 … +3 */
@@ -271,6 +270,7 @@ export function createGallery(o: {
     // ekrandaki başlık yeni ölçüde en fazla titleLines satır
     fitTitle(gInfo);
     fitCounters(gInfo);
+    sizeColumn();
     // üst sınır (masaüstü)
     const mBottom = css('--fit-top');
     // alt sınır: Bilet Al'ın üstünden stage.gap ve bir etiket satırı yukarısı (eski sahne adı yeri)
@@ -360,7 +360,6 @@ export function createGallery(o: {
     }
 
     // Bilet Al ana dairenin altında ortalı
-    root.style.setProperty('--gc-x', `${mx.toFixed(2)}px`);
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
@@ -539,13 +538,22 @@ export function createGallery(o: {
     const cur = gInfo.lastElementChild as HTMLElement | null;
     giH = cur?.offsetHeight ?? 0;
     // künye satırları arası: satırın üst + alt iç boşluğu ve aradaki çizgi
-    const row = cur?.querySelector<HTMLElement>('.gr');
-    const rl = cur?.querySelector<HTMLElement>('.gr + .lr');
+    const row = [...(cur?.querySelectorAll<HTMLElement>('.gr') ?? [])].find((r) => !r.parentElement?.classList.contains('gdr'));
+    const rl = cur?.querySelector<HTMLElement>('.gkr > .lr + .gr, .gi-rest > .lr + .gr')?.previousElementSibling as HTMLElement | null | undefined;
     if (row) {
       const cs = getComputedStyle(row);
       rowGap = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + (rl?.offsetHeight ?? 0);
     }
     if (S.mobile) rootStyle.setProperty('--gc-top', `${gcTop().toFixed(1)}px`);
+    sizeColumn();
+  }
+  /** Masaüstü: sütunun yüksekliği Bilet Al'ın üstünden bir künye satırı aralığı yukarıya kadar; künye bu alta
+      yaslanır ve yukarı büyür */
+  function sizeColumn() {
+    if (S.mobile) return;
+    const css = (k: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(k)) || 0;
+    const top = S.vh - css('--gc-bottom') - T.ticket.d * S.vh;
+    rootStyle.setProperty('--gi-h', `${Math.max(0, top - rowGap - css('--gi-top')).toFixed(1)}px`);
   }
 
   /* ---------- × ---------- */
@@ -637,13 +645,9 @@ export function createGallery(o: {
       img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
-  /** Bilet Al: açık hâlde gizli ve tıklanamaz (kök sınıfı is-video); açık hâl tamamen kapanınca geri gelir */
-  function showTicket(on: boolean) {
-    document.documentElement.classList.toggle('is-video', !on);
-    gsap.killTweensOf(gTicket);
-    if (on) gsap.to(gTicket, { autoAlpha: 1, duration: G.open.colorDur * red, ease: 'none', onStart: () => gsap.set(gTicket, { clearProps: 'pointerEvents' }) });
-    else gsap.set(gTicket, { pointerEvents: 'none' });
-  }
+  /** Açık hâl sınıfı (html.is-video): açılışın t = 0'ında konur, kapanış tamamen bitince kalkar. Bilet Al'ın
+      görünürlüğünü yalnızca bu sınıf belirler (engine.css) */
+  const videoClass = (on: boolean) => document.documentElement.classList.toggle('is-video', on);
   /** Uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo aynı yerde belirir (on); tersi */
   function logoShort(tl: gsap.core.Timeline, on: boolean, t: number) {
     const O = G.open;
@@ -702,16 +706,14 @@ export function createGallery(o: {
     else if (rest && dr) {
       // masaüstü: tarih satırı (tarih · saat ve sayaç) başlıkla kalır, başlığın çizgisinin hemen altına kayar
       // (dateMove); sütunun geri kalanı kaybolur. Kapanışta geri döner, künye çevresinde belirir
-      const others = [...rest.children].filter((e) => e !== dr);
+      // tarih satırı dışındaki her şey (künye bloğunun içindekiler dahil)
+      const others = [...rest.children].flatMap((e) => (e.contains(dr) && e !== dr ? [...e.children] : [e])).filter((e) => e !== dr);
       if (others.length) tl.to(others, { autoAlpha: on ? 0 : 1, ...all }, t0);
       const DM = O.dateMove;
       const dy = on ? rest.getBoundingClientRect().top - (dr.getBoundingClientRect().top - (Number(gsap.getProperty(dr, 'y')) || 0)) : 0;
       tl.to(dr, { y: dy, duration: DM.dur * red, ease: DM.ease, overwrite: 'auto' }, at(0, DM.dur * red));
     }
     tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
-    // Bilet Al açık hâlde hiç görünmez: açılışta t = 0'da kaybolur (tıklanamaz); kapanışta ancak açık hâl tamamen
-    // kapandıktan sonra döner (showTicket())
-    if (on) tl.to(gTicket, { autoAlpha: 0, ...all }, 0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -846,7 +848,7 @@ export function createGallery(o: {
       grow.v = 0;
       openN = null;
       closeOn = false;
-      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, gTicket, dom.brand, lgLong, lgShort, flow, scroll]);
+      gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, dom.brand, lgLong, lgShort, flow, scroll]);
       gsap.killTweensOf(gVid);
       gsap.set(gVid, { autoAlpha: 0 });
       gVid.innerHTML = '';
@@ -859,8 +861,8 @@ export function createGallery(o: {
       gsap.set([dom.brand, gInfo, dom.close], { clearProps: 'color' });
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([dom.members, gTicket], { autoAlpha: 1, clearProps: 'pointerEvents' });
-      document.documentElement.classList.remove('is-video');
+      gsap.set(dom.members, { autoAlpha: 1 });
+      videoClass(false);
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -890,7 +892,7 @@ export function createGallery(o: {
       hover(null);
       S.open = true;
       S.full = true;
-      showTicket(false);
+      videoClass(true);
       const show = it.show;
       openShow = show;
       openN = it.n;
@@ -930,7 +932,7 @@ export function createGallery(o: {
         S.open = false;
         exiting = false;
         // açık hâl tamamen kapandı: Bilet Al geri gelir
-        showTicket(true);
+        videoClass(false);
       });
     },
     videoActive: () => o.video.active(),

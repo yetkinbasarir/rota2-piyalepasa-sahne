@@ -39,8 +39,10 @@ function info(s: Show, ctx: TemplateContext) {
   // mobil: tarih · saat ve altında sayaç, başlığın çizgisi ile tanıtım arasında (künyede TARİH satırı yok)
   const w = ctx.mobile ? when(s, ctx) : null;
   let rest = w ? `<div class="gdt ln"><span class="num">${w.date}</span>${w.counter}</div>` : '';
-  if (desc) rest += desc + (rows.length ? rule(true) : '');
-  rest += rows.join(rule());
+  // masaüstü: künye ayrı blokta, sütunun altına (Bilet Al'ın üstüne) yaslanır; her satırın üstünde çizgi.
+  // mobil: tanıtımın çizgisinin altında akar
+  if (desc) rest += desc + (rows.length || !ctx.mobile ? rule(true) : '');
+  if (rows.length) rest += `<div class="gkr">${ctx.mobile ? '' : rule()}${rows.join(rule())}</div>`;
   return `<h2 class="gt ln">${txt(ctx, s.title)}</h2>${rule(true)}<div class="gi-rest">${rest}</div>`;
 }
 

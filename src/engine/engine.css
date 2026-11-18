@@ -66,9 +66,19 @@ img, video { -webkit-user-drag: none; }
    başlık / tanıtım / künye daire şeridinin altında (--gi-top), Bilet Al künyenin altında (--gc-top) */
 .is-mobile #ui, .is-mobile .brand, .is-mobile .bnd { transform: translate3d(0, calc(-1 * var(--scroll, 0px)), 0); }
 /* mobil: Bilet Al sayfanın sonunda, künyenin son satırının altında ortada (sayfayla kayar) */
-.is-mobile .gc { left: 50%; top: var(--gc-top); bottom: auto; }
-/* Bilet Al: ana dairenin altında ortalı (--gc-x: gallery.ts) */
-.gc { position: absolute; left: var(--gc-x, 50%); transform: translateX(-50%); bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.is-mobile .gc { top: var(--gc-top); bottom: auto; }
+/* Bilet Al: masaüstünde altta, künye sütununun sol kenarında (künye çizgilerinin elmas ucu); alt boşluğu Üye Ol /
+   Giriş'inki. Açık hâlde (html.is-video) hiç görünmez, tıklanamaz: görünürlüğünü yalnızca bu sınıf belirler */
+.gc {
+  position: absolute; left: var(--gi-left); bottom: var(--gc-bottom); display: flex; flex-direction: column; align-items: flex-start;
+  pointer-events: none; transition: opacity .3s, visibility 0s;
+}
+html.is-video .gc { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; transition: opacity .3s, visibility 0s linear .3s; }
+html.is-video .gc button { pointer-events: none !important; }
+/* masaüstü: sütun Bilet Al'ın üstüne kadar (--gi-h); başlık ve tanıtım üstte, künye alta yaslanır, yukarı büyür */
+html:not(.is-mobile) .gi > .gx { display: flex; flex-direction: column; min-height: var(--gi-h, 0px); }
+html:not(.is-mobile) .gi-rest { flex: 1 0 auto; display: flex; flex-direction: column; }
+html:not(.is-mobile) .gkr { margin-top: auto; }
 .ln { will-change: transform, opacity; }
 /* logo çizgisi: logodaki çizgi kalınlığı (--lr-t) ve sağ ucunda logodaki elmas (--lr-d); 1px üst üste biner.
    Sütunda aynası: elmas sütunun sol kenarında, çizgi sağda ekran kenarını geçer; başlığın ve tanıtımın altındakilerin
@@ -94,8 +104,6 @@ img, video { -webkit-user-drag: none; }
 /* Üye Ol / Giriş: sağ üst */
 .bnd { position: absolute; z-index: 1; display: flex; gap: var(--cb-gap); pointer-events: none; }
 .bnd button, .gc button { pointer-events: auto; }
-/* açık hâlde (video) Bilet Al hiç görünmez ve tıklanamaz */
-.is-video .gc, .is-video .gc button { pointer-events: none !important; }
 /* daire düğme: düz dolgu, kontursuz; yazı tek satır ortada */
 .cb {
   width: var(--cb-d); height: var(--cb-d); flex: none; border-radius: 50%; border: 0; font-size: var(--cb-fs, var(--fs-label));
