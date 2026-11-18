@@ -23,7 +23,7 @@ src/
   content/shows.ts        içerik modeli: tek kaynak ../icerik_kunye.json (id ile eşleşir) + fotoğraf eşlemesi
                           (A, yoksa B) + renk + odak + alıntı ("alinti") + örnek tarih/saat/fiyat
   content/*.generated.json  scripts/build-images.mjs çıktısı: görsel boyutları, fotoğraf renkleri, odak noktaları
-  slides/web, slides/mobile  slayt gösterisinin görselleri (16:9 / dikey PNG); klasöre bırakılan her PNG eklenir
+  slides/web, slides/mobile  slayt gösterisinin görselleri (web: WebP / PNG / JPG, mobil: dikey PNG); klasöre bırakılan her görsel dosya adı sırasıyla eklenir
   identity/rota1/         KİMLİK KATMANI — motordan ayrı, tek yer
     index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
                           hareket, açık hâlin ağı, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), ×,
@@ -37,7 +37,7 @@ src/
                           açık hâl (ana dairenin büyümesi, video, ağ), yazı geçişleri
     screen.ts             yazı ölçüleri (CSS değişkenleri; sayıların büyük harf yüksekliği canvas ile), uzun / kısa logo, Üye Ol / Giriş, düğme yazısı sığdırma
     camera.ts             konum: sürükleme, atalet, oturma, adım, kendiliğinden ilerleme
-    slides.ts             kimlik slayt gösterisi (logoya tıklayınca): src/slides/web|mobile/*.png, dosya adı sırasıyla
+    slides.ts             kimlik slayt gösterisi (logoya tıklayınca): src/slides/web/*.webp|png|jpg (mobilde slayt yok), dosya adı sırasıyla
     commands.ts           tüm girişlerin çağırdığı komut katmanı
     present.ts            kendi kendine sunum
     fullVideo.ts          tam ekran videosu (YouTube / Vimeo / mp4, ses)

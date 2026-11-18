@@ -1,6 +1,6 @@
 /* Kimlik slayt gösterisi: tam ekran, kendi başına bir modül. Bütün ölçüler kimliğin `slides` token'ları.
 
-   Görseller: src/slides/web/*.png (16:9) ve src/slides/mobile/*.png (dikey); klasöre bırakılan her PNG dosya adı
+   Görseller: src/slides/web/*.webp|png|jpg ve src/slides/mobile/*.png (dikey); klasöre bırakılan her görsel dosya adı
    sırasıyla kendiliğinden eklenir. Ekran dikeyse ya da mobileMax px'ten darsa mobil set, değilse web seti.
    Her görsel ekranı kaplar (cover), siyah zemin; sonraki ve önceki görsel önceden yüklenir.
 
@@ -21,7 +21,7 @@ const byName = (g: Record<string, string>) =>
   Object.keys(g)
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     .map((k) => g[k]);
-const WEB = byName(import.meta.glob('/src/slides/web/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>);
+const WEB = byName(import.meta.glob('/src/slides/web/*.{webp,png,jpg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>);
 const MOBILE = byName(import.meta.glob('/src/slides/mobile/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>);
 
 export interface Slides {
