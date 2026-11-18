@@ -6,6 +6,7 @@ import data from '../../icerik_kunye.json';
 import manifest from './photos.generated.json';
 import photoColors from './colors.generated.json';
 import photoFocus from './focus.generated.json';
+import focusOverrides from './focus.overrides.json';
 import videoList from './videos.json';
 
 interface SourceShow {
@@ -38,8 +39,14 @@ const photo = (id?: string): Photo | undefined => (id && M[id] ? { id, ...M[id] 
 const PC = photoColors as Record<string, { renk: string }>;
 /** Derleme sırasında hesaplanan odak noktaları (yüz algılama / attention) */
 const PF = photoFocus as Record<string, { x: number; y: number; yuzUst?: number; yuzYukseklik?: number }>;
-/** Hesaplanan odak: nokta + varsa yüz kutusunun üst kenarı ve yüksekliği */
+/** Elle düzeltilmiş odaklar (focus.overrides.json): hesaplananın önüne geçer; görseller yeniden üretilince
+    (scripts/build-images.mjs yalnızca focus.generated.json'u yazar) kaybolmaz. Galeri dairesi, ilk ekran daireleri
+    ve tam ekran görseli aynı odağı kullanır */
+const FO = focusOverrides as Record<string, { x: number; y: number }>;
+/** Hesaplanan odak: nokta + varsa yüz kutusunun üst kenarı ve yüksekliği (elle düzeltilmişse yalnızca nokta) */
 function autoFocus(pid?: string) {
+  const o = pid ? FO[pid] : undefined;
+  if (o && Number.isFinite(o.x) && Number.isFinite(o.y)) return { x: o.x, y: o.y };
   const f = pid ? PF[pid] : undefined;
   if (!f) return undefined;
   return f.yuzUst != null && f.yuzYukseklik != null ? { x: f.x, y: f.y, faceTop: f.yuzUst, faceH: f.yuzYukseklik } : { x: f.x, y: f.y };
