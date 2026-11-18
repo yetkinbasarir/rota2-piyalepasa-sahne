@@ -207,8 +207,6 @@ export const rota1: Identity = {
        ve QR 0.6 sn'de 0.04W dışa kayarak kaybolur; galeri 0.6 sn'de başlayıp 0.5 sn'de belirir */
     exit: { dur: 1.0, ease: 'power2.inOut', lightScale: 4, fade: 0.6, drift: 0.04, galleryAt: 0.6, galleryDur: 0.5 },
     qr: { margin: 1 },
-    /* mobil: logo üstte, sağ ucu sağ kenardan 0.04W içeride (0.96W); sayaç altta; üye düğmeleri yok */
-    mobileLogoW: 0.96,
   },
   /* QR kodunun göstereceği herkese açık adres (boşsa sayfanın kendi adresi) */
   site: { publicUrl: '' },

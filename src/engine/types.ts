@@ -332,8 +332,6 @@ export interface Identity {
     shadow: { below: number; softSmall: number };
     exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };
     qr: { margin: number };
-    /** Mobil: ilk ekranda (üstte) uzun logonun genişliği (W; sağ ucu dahil ekrana sığar) */
-    mobileLogoW: number;
   };
   /** Sitenin herkese açık adresi (QR kodu); boşsa sayfanın kendi adresi */
   site: { publicUrl: string };
