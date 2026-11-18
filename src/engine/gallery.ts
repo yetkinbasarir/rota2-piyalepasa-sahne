@@ -505,7 +505,7 @@ export function createGallery(o: {
     const olds = [...group.children] as HTMLElement[];
     // önceki geçişten kalanlar: yalnızca en son içerik çıkışa katılır
     olds.slice(0, -1).forEach((e) => e.remove());
-    const old = olds.at(-1) ?? null;
+    const old = olds[olds.length - 1] ?? null;
     const nu = document.createElement('div');
     nu.className = 'gx';
     nu.innerHTML = html;
@@ -759,7 +759,15 @@ export function createGallery(o: {
         restAt = now;
         restFor = c;
       } else if (now - restAt >= G.preload.rest * 1000 && !o.video.prepared(showAt(c).fullVideo)) {
-        o.video.prepare(showAt(c).fullVideo);
+        // ön yükleme başarısız olursa yalnızca bu özellik atlanır
+        try {
+          o.video.prepare(showAt(c).fullVideo);
+        } catch (e) {
+          console.error('[rota2] video ön yüklemesi', e);
+          restFor = null;
+          restAt = null;
+          preloadOn = false;
+        }
       }
     } else restAt = null;
     const flatOn = !S.open && (S.mobile ? rest : hoverMain);

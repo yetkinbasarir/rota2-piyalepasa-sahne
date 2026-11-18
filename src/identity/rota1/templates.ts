@@ -16,7 +16,7 @@ function counterChars(s: Show, ctx: TemplateContext) {
 }
 
 /** Sayacın geri saydığı temsil: henüz geçmemiş ilk temsil, hepsi geçmişse sonuncusu */
-const nextAt = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? s.sample.at.at(-1);
+const nextAt = (s: Show) => s.sample.at.find((t) => t > Date.now()) ?? s.sample.at[s.sample.at.length - 1];
 
 /** Logo çizgisi: logo-long.svg'deki yatay çizgi ve sağ ucundaki elmas (viewBox logonun kendi biriminde; kalınlık
     ve elmas boyu uzun logonun ekrandaki ölçeğinde, screen.ts --lr-t / --lr-d). Çizgi sağda elmasla biter; künyede

@@ -46,7 +46,7 @@ import { capOffset } from './screen';
 
 export interface Loader {
   /** Galeri hazır: daireler başlar, çıkış açılır */
-  start(o: { shows: Show[]; media: Media; mobile: () => boolean }): void;
+  start(o: { shows: Show[]; media: Media | null; mobile: () => boolean }): void;
   /** Katman tamamen kalktıktan sonra */
   onGone(f: () => void): void;
   /** Çıkış başlarken (galeri görünmeden önce): sayfa kaydırması başa */
@@ -499,7 +499,12 @@ export function createLoader(o: {
     }
   }
   /* görünür alan yüksekliği: 100dvh desteklenmiyorsa visualViewport */
-  const dvh = typeof CSS !== 'undefined' && CSS.supports?.('height', '100dvh');
+  let dvh = false;
+  try {
+    dvh = typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('height', '100dvh');
+  } catch {
+    /* desteklenmiyor */
+  }
   const fitHeight = () => {
     if (!dvh && window.visualViewport) root.style.height = `${window.visualViewport.height}px`;
   };
@@ -519,6 +524,14 @@ export function createLoader(o: {
   let qrBox: HTMLElement | null = null;
   let qrSide = 0;
   function syncQr(q: { left: number; top: number; side: number } | null) {
+    // QR üretilemezse yalnızca QR atlanır
+    try {
+      syncQrUnsafe(q);
+    } catch (e) {
+      console.error('[rota2] QR', e);
+    }
+  }
+  function syncQrUnsafe(q: { left: number; top: number; side: number } | null) {
     const url = id.site.publicUrl || (isLocal(location.hostname) ? '' : location.origin);
     if (!q || !url) {
       qrBox?.remove();

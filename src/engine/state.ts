@@ -73,7 +73,12 @@ export function measure(S: State, id: Identity) {
 /** Mobil: görünür alan yüksekliği (100dvh; desteklenmiyorsa visualViewport) ve güvenli alanlar */
 function viewportMetrics() {
   const probe = document.createElement('div');
-  const dvh = typeof CSS !== 'undefined' && CSS.supports?.('height', '100dvh');
+  let dvh = false;
+  try {
+    dvh = typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('height', '100dvh');
+  } catch {
+    /* desteklenmiyor */
+  }
   probe.style.cssText =
     'position:fixed;left:0;top:0;width:0;visibility:hidden;pointer-events:none;box-sizing:border-box;' +
     `height:${dvh ? '100dvh' : '0'};padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)`;
@@ -81,7 +86,7 @@ function viewportMetrics() {
   const cs = getComputedStyle(probe);
   const top = parseFloat(cs.paddingTop) || 0;
   const bottom = parseFloat(cs.paddingBottom) || 0;
-  const h = dvh ? probe.getBoundingClientRect().height : (visualViewport?.height ?? innerHeight);
+  const h = dvh ? probe.getBoundingClientRect().height : (window.visualViewport?.height ?? innerHeight);
   probe.remove();
   return { h: h || innerHeight, top, bottom };
 }

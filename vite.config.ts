@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import legacy from '@vitejs/plugin-legacy';
 import { videosApi } from './tools/videos-api.mjs';
 
 export default defineConfig({
   build: {
-    target: 'es2022',
+    // eski tarayıcılar (Safari 13 / iOS 13, Chrome 80, Firefox 78): ayrıca plugin-legacy ile eski paket
+    target: ['es2019', 'safari13', 'chrome80', 'firefox78'],
     assetsInlineLimit: 0,
     rollupOptions: {
       output: {
@@ -19,6 +21,12 @@ export default defineConfig({
   },
   plugins: [
     videosApi(),
+    legacy({
+      targets: ['defaults', 'safari >= 13', 'ios >= 13', 'chrome >= 80', 'firefox >= 78'],
+      // modern paket de Safari 13.0 / iOS 13'te çalışsın (isteğe bağlı zincirleme vb. dönüştürülür)
+      modernTargets: ['safari >= 13', 'ios >= 13', 'chrome >= 80', 'firefox >= 78', 'edge >= 80'],
+      modernPolyfills: true,
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
@@ -45,6 +53,10 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         globIgnores: ['img/**', 'assets/slides/mobile/**'],
+        // yeni sürüm hemen devralır; eski önbellekler silinir
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
