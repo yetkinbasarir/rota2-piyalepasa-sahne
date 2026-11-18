@@ -27,7 +27,7 @@ src/
   identity/rota1/         KİMLİK KATMANI — motordan ayrı, tek yer
     index.ts              token'lar: renkler, kâğıt dokusu, galeri (yerleşim, s(p), eğim, süzülme, düzleşme, gölge,
                           hareket, açık hâlin ağı, açılma), ekran (metin rengi, yazı rolleri, ölçüler, düğmeler, logo), ×,
-                          yükleme ekranı, süreler, logo
+                          ilk ekran, süreler, logo
     templates.ts          sağ sütun: başlık, tanıtım, künye (tür, tarih, sahne, emek; aynalı logo çizgileri), daire düğmeler, ×
     styles.css            görsel dil
   engine/
@@ -42,9 +42,9 @@ src/
     present.ts            kendi kendine sunum
     fullVideo.ts          tam ekran videosu (YouTube / Vimeo / mp4, ses)
     counter.ts            canlı geri sayım (tek zamanlayıcı, yalnızca görünen sayaçlar)
-    loader.ts, screensaver.ts  yükleme ekranı ve açılış ekran koruyucusu
+    loader.ts             ilk ekran: siyah zemin, süzülen gösteri daireleri, QR; tıklayınca yukarı kayar
     logo.ts               iki parçalı, uzayıp kısalan logo
-    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, delikli doku (ROTA1 ile aynı; açık hâlin ağı ve ekran koruyucu)
+    media.ts, crop.ts, texture.ts  srcset + önceden yükleme, tam ekran yerleşimi, delikli doku (ROTA1 ile aynı; açık hâlin ağı)
     theme.ts              kimlik token'larını sayfaya uygular, DOM iskeleti
     input/pointer.ts      işaretçi / dokunma (Observer)
     input/wheel.ts        tekerlek / trackpad (Observer)

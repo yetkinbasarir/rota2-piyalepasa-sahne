@@ -12,7 +12,6 @@ import { createCommands } from './commands';
 import { startPresentation } from './present';
 import { createLoader } from './loader';
 import { layoutScreen } from './screen';
-import { createScreensaver } from './screensaver';
 import { bindPointer } from './input/pointer';
 import { bindWheel } from './input/wheel';
 import { bindKeyboard } from './input/keyboard';
@@ -25,14 +24,8 @@ export async function startEngine(id: Identity, shows: Show[]) {
   const dom = buildDom(id);
   const S = createState();
   measure(S, id);
-  // yükleme ekranı (index.html'de satır içi): yazılar, logo ve üye düğmeleri çıkışa kadar gizli
-  const loader = createLoader({
-    id, motion,
-    reveal: [dom.ui, dom.brand, dom.members],
-    // nokta matrisinin paleti: bütün gösterilerin renkleri
-    colors: shows.map((s) => s.color ?? id.palette[s.k % id.palette.length]),
-  });
-  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+  // ilk ekran (index.html'de satır içi siyah katman): galerinin üstünde, sitenin logosu ve üye düğmelerinin altında
+  const loader = createLoader({ id, motion, surface: dom.surface, brand: dom.brand, members: dom.members });
 
   const media = await createMedia();
   let visible: () => Iterable<Element> = () => [];
@@ -106,20 +99,18 @@ export async function startEngine(id: Identity, shows: Show[]) {
     cmd.close();
   });
 
-  // yükleme işleri: fontlar, içerik, ilk ekranda görünecek daire görselleri, (web) ekran koruyucunun ilk oynatıcıları
+  // ilk ekranda görünecek daire görselleri
   const N = shows.length;
   const A = id.gallery.around;
   const firstScreen = new Set<Show>();
   for (let n = -A; n <= A; n++) firstScreen.add(shows[((n % N) + N) % N]);
   const discW = () => id.gallery.layout.cap[S.mobile ? 'mobile' : 'web'] * S.vw * id.gallery.photoZoom;
   const firstImages = media.preload([...firstScreen], discW());
-  const ss = loader.ssRoot ? createScreensaver({ root: loader.ssRoot, shows, media, id, mobile: S.mobile, reduced: motion.reduced }) : null;
-  loader.attach(ss);
-  // oynatıcılar yüklemeyi geciktirmez: hazır olmayanların kesmelerinde fotoğraf yedeği gösterilir
-  loader.track([fontsReady, Promise.resolve(shows), firstImages]);
   // Görselleri ilk çizimden önce yükle + decode et (en fazla kısa bir süre bekle)
   await Promise.race([firstImages, new Promise((r) => setTimeout(r, 1200))]);
   gsap.ticker.add(gallery.render);
+  // ilk ekranın daireleri başlar; çıkış açılır (galeri altında hazır)
+  loader.start({ shows, media, mobile: () => S.mobile });
   const later = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 300));
   later(() => media.preload(shows, discW()));
 
@@ -183,7 +174,7 @@ export async function startEngine(id: Identity, shows: Show[]) {
     }, 150);
   });
 
-  // ekran koruyucu tamamen kalkınca kendiliğinden ilerleme ve kendi kendine sunumun sayacı başlar
+  // ilk ekran tamamen kalkınca kendiliğinden ilerleme ve kendi kendine sunumun sayacı başlar
   loader.onGone(() => {
     logoLive = true;
     dom.brand.classList.add('is-live');

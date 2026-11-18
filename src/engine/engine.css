@@ -15,7 +15,7 @@ img, video { -webkit-user-drag: none; }
 .paper { position: absolute; inset: 0; pointer-events: none; background-image: var(--paper); background-size: 300px 300px; opacity: var(--paper-o, .05); }
 
 /* delikli doku (texture.ts; ROTA1 ile aynı): siyah yüzey, kare ızgarada yuvarlak delikler. Açık hâlde videonun
-   üstündeki ağ (arada başka katman yok) ve yükleme ekranının ekran koruyucusu */
+   üstündeki ağ (arada başka katman yok) */
 .holes-r {
   background-image: radial-gradient(circle, transparent var(--tex-r), #000 calc(var(--tex-r) + .5px));
   background-size: var(--tex-p) var(--tex-p);
@@ -121,6 +121,11 @@ img, video { -webkit-user-drag: none; }
 .sl-open .brand { z-index: 3; }
 .sl-open .xcl { display: none; }
 .brand.is-live .lg-l svg, .brand.is-live .lg-l i, .brand.is-live .lg-s svg, .brand.is-live .lg-s i { pointer-events: auto; cursor: pointer; }
+
+/* ---------- ilk ekran (loader.ts): süzülen daireler, QR ---------- */
+.ldc { position: absolute; left: 0; top: 0; border-radius: 50%; overflow: hidden; will-change: transform, opacity; }
+.ldc img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
+.ld-qr { position: absolute; background: #fff; pointer-events: auto; line-height: 0; display: flex; align-items: center; justify-content: center; }
 
 /* ---------- × ---------- */
 .xcl {

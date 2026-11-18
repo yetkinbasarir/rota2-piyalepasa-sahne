@@ -151,8 +151,6 @@ export const rota1: Identity = {
   /* sayaç noktalı: ay.gün.saat.dakika.saniye */
   counterFormat: { sep: '.' },
 
-  /* Fotoğrafı olmayan öğelerin rengi (ROTA1 artboard renkleri); yükleme ekranının nokta paleti */
-  palette: ['#64AADC', '#9FC54E', '#6AB27A', '#4070B8', '#C9222A'],
 
   /* Adobe Fonts kiti fpj2hxb (comma-serif 100–900, config-mono-vf 200–700). Yazı rolleri screen.type'ta */
   fonts: {
@@ -163,32 +161,28 @@ export const rota1: Identity = {
   closeButton: { pad: 0.034, size: 56 },
 
   /* Yükleme ekranı: nokta matrisi logo (2) ya da içi dolan logo (1); en az 1.2 sn */
+  /* ilk ekran: düz siyah, logo beyaz (galerideki yerinde). Süzülen daireler: web 14 (0.04–0.16W), mobil 8
+     (0.10–0.34W), az büyük çok küçük; opaklık 0.45 (en küçük) – 1 (en büyük), bulanıklık 0.004W – 0; hız
+     0.01–0.03W/sn (büyükler hızlı, ±%15), dik salınım 0.01W, 6–12 sn; 1.5 sn içinde rastgele sırayla 0.5 sn'de
+     belirir. Çıkış: zemin, daireler ve QR 0.9 sn power3.inOut yukarı kayar. QR karesi 272px (yalnızca web) */
   loader: {
-    logoAnim: 2, minTime: 1.2, base: '#2a2a2a',
-    /* büyük logo: genişlik en fazla ekranın %50'si (mobil %86), yükseklik en fazla %45'i */
-    logoW: { web: 0.5, mobile: 0.86 }, logoH: 0.45,
-    /* daire paleti (ROTA2 griler) */
-    dotPalette: ['#636D74', '#8B959B', '#B4BCC1', '#D5DADD', '#4A5157'],
-    /* opak, düz, keskin daireler: temel yarıçap logo yüksekliğinin %4'ü, 0.15–5 katı; kuvvet dağılımı
-       (çok sayıda küçük, az sayıda çok büyük); kalan boşlukları küçükler doldurur; yarıçapın %15'i kadar süzülür */
-    blobBase: 0.04, blobMin: 0.15, blobMax: 5, blobSkew: 4, blobFill: 1.2,
-    blobDrift: 0.15,
-    /* noktalar zamana bağlı: 0–1.8 sn rastgele gecikme, 0.6–1.4 sn büyüme; hepsi en fazla 2.4 sn, hızlanarak */
-    dotDelay: 1.8, dotGrowMin: 0.6, dotGrowMax: 1.4, dotTotal: 2.4,
-    /* ekran koruyucuya sert flaşla geçilir: 3 kare (~50 ms) düz beyaz, geçişsiz kesilir; akış 1.08'den,
-       logo 1.04'ten 0.6 sn'de (expo.out) oturur */
-    dotSat: 100, dotLight: 50, dotHueMerge: 12, flashHold: 0.05,
-    enterFlow: 1.08, enterLogo: 1.04, enterDur: 0.6,
+    background: '#000000', logoColor: '#FFFFFF',
+    count: { web: 14, mobile: 8 },
+    size: { web: [0.04, 0.16], mobile: [0.1, 0.34] }, sizeSkew: 2.2,
+    opacity: [0.45, 1], blur: 0.004,
+    speed: [0.01, 0.03], speedJitter: 0.15,
+    sway: { amp: 0.01, period: [6, 12] },
+    fadeIn: { total: 1.5, each: 0.5 },
+    exit: { dur: 0.9, ease: 'power3.inOut' },
+    qr: { size: 272, margin: 1 },
   },
-  /* Açılış ekran koruyucusu: 1 sn kesmeler, sabit ritim; web'de 4 oynatıcılık havuz; QR karesi */
-  screensaver: { cut: 1, variance: 0, pool: 4, qr: { web: 272, mobile: 192, margin: 1 } },
   /* QR kodunun göstereceği herkese açık adres (boşsa sayfanın kendi adresi) */
   site: { publicUrl: '' },
 
   /* Telefonda yatay ekran kapalı: yatay + dokunmatik + görünür yükseklik < 500px */
   rotate: { maxHeight: 500, icon: 0.28, turn: 1.6, hold: 1.2 },
 
-  /* Yükleme ekranının ekran koruyucu ağı: 4px aralık, yuvarlak delikler, siyah yüzey %30 (açık hâlin ağı gallery.mesh) */
+  /* Açık hâlin ağı (ROTA1 ile aynı): 4px aralık, yuvarlak delikler, siyah yüzey %30 */
   texture: {
     pitch: 4,
     cover: 0.3,
@@ -220,11 +214,6 @@ export const rota1: Identity = {
     soundIn: 2.5,
     soundOut: 0.5,
     autoReturn: 15,
-    /* ekran koruyucu: belirme, kararma */
-    ssIn: 0.6,
-    ssOut: 0.4,
-    /* çıkış: katman yukarı kayar */
-    ldExit: 1.0,
     /* kendi kendine sunum */
     presentIdle: 8,
     presentOpen: 5,

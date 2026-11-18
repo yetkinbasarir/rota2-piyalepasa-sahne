@@ -1,7 +1,7 @@
 /* Delikli doku (ROTA1'in tam ekran dokusuyla aynı): siyah yüzeyde kare ızgaraya dizilmiş yuvarlak delikler.
    Aralık p (id.texture.pitch), kaplama oranı; delik çapı d = p × √(4 × (1 − kaplama) / π). p ve d ekranın piksel
-   ızgarasına yuvarlanır (moiré olmasın); sonuç CSS değişkeni olarak yazılır (engine.css .holes-r). Kullanımlar:
-   açık hâlde videonun üstündeki ağ (.tex; arada başka katman yok) ve yükleme ekranının ekran koruyucusu. */
+   ızgarasına yuvarlanır (moiré olmasın); sonuç CSS değişkeni olarak yazılır (engine.css .holes-r). Açık hâlde
+   videonun üstündeki ağ (.tex; arada başka katman yok). */
 import { snapPx } from './state';
 import type { Identity } from './types';
 

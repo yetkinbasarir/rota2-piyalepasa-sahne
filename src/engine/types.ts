@@ -292,41 +292,32 @@ export interface Identity {
   screen: ScreenTokens;
   /** Sayaç biçimi: ayraç */
   counterFormat: { sep: string };
-  /** Fotoğrafı olmayan öğelerin rengi (yükleme ekranının nokta paleti) */
-  palette: string[];
   fonts: {
     stylesheets: string[];
   };
   /** Kapatma ikonu (×): kenar boşluğu (H oranı; yükleme ekranı da kullanır) ve çapı (px) */
   closeButton: { pad: number; size: number };
-  /** Yükleme ekranı: logo animasyonu (1: içi dolan, 2: nokta matrisi), en kısa görünme süresi (sn),
-      içi dolan logonun koyu zemini */
+  /** İlk ekran (loader.ts): zemin ve logo rengi; süzülen dairelerin sayısı, çap aralığı (W; web / mobil) ve
+      küçüklere eğilim (kuvvet üssü); derinlik: opaklık [en küçük, en büyük], en küçüğün bulanıklığı (W); hız
+      [en küçük, en büyük] (W/sn) ve rastgele sapma oranı; dik salınım genliği (W) ve periyot aralığı (sn); ilk
+      belirme toplam süresi ve her dairenin belirme süresi (sn); çıkış kayması; QR karesi (px) ve sessiz alanı */
   loader: {
-    logoAnim: 1 | 2; minTime: number; base: string;
-    /** Büyük logo: genişlik en fazla ekran genişliğinin oranı (web / mobil), yükseklik en fazla ekran yüksekliğinin oranı */
-    logoW: { web: number; mobile: number }; logoH: number;
-    /** Opak daireler: temel yarıçap (logo yüksekliğinin oranı), yarıçap katı aralığı ve küçüklere eğilim
-        (kuvvet üssü), ana daire sayısı çarpanı, süzülme (yarıçapın oranı) */
-    blobBase: number; blobMin: number; blobMax: number; blobSkew: number; blobFill: number;
-    blobDrift: number;
-    /** Nokta matrisi: her noktanın rastgele başlama gecikmesi (0..dotDelay sn) ve büyüme süresi (sn);
-        hepsi en fazla dotTotal sn içinde tamamlanır (ölçeklenir), büyüme hızlanarak (power2.in) */
-    dotDelay: number; dotGrowMin: number; dotGrowMax: number; dotTotal: number;
-    /** Verilirse dairelerin paleti doğrudan bu renkler (bilet renklerinden türetilmez) */
-    dotPalette?: string[];
-    dotSat: number; dotLight: number; dotHueMerge: number; flashHold: number;
-    enterFlow: number; enterLogo: number; enterDur: number;
+    background: string; logoColor: string;
+    count: { web: number; mobile: number };
+    size: { web: [number, number]; mobile: [number, number] }; sizeSkew: number;
+    opacity: [number, number]; blur: number;
+    speed: [number, number]; speedJitter: number;
+    sway: { amp: number; period: [number, number] };
+    fadeIn: { total: number; each: number };
+    exit: { dur: number; ease: string };
+    qr: { size: number; margin: number };
   };
-  /** Açılış ekran koruyucusu: kesme süresi (sn), ritim değişkenliği (0..1), web'de oynatıcı havuzu,
-      QR karesinin kenarı (px) */
-  screensaver: { cut: number; variance: number; pool: number; qr: { web: number; mobile: number; margin: number } };
   /** Sitenin herkese açık adresi (QR kodu); boşsa sayfanın kendi adresi */
   site: { publicUrl: string };
   /** Telefonda yatay ekran katmanı: koşul (yatay, dokunmatik, görünür yükseklik < maxHeight px),
       telefon simgesinin yüksekliği (ekran yüksekliğinin oranı), dönüş ve bekleme süreleri (sn) */
   rotate: { maxHeight: number; icon: number; turn: number; hold: number };
-  /** Delikli doku (ROTA1 ile aynı): siyah yüzey, kare ızgarada yuvarlak delikler; açık hâlin ağı ve yükleme
-      ekranının ekran koruyucusu */
+  /** Delikli doku (ROTA1 ile aynı): siyah yüzey, kare ızgarada yuvarlak delikler; açık hâlin ağı */
   texture: {
     /** Delik aralığı, merkezden merkeze (px) */
     pitch: number;
@@ -363,11 +354,6 @@ export interface Identity {
     soundOut: number;
     /** Video görünür olduktan bu kadar sn sonra kendiliğinden galeriye dönülür */
     autoReturn: number;
-    /** Ekran koruyucu: belirme, çıkışta kararma */
-    ssIn: number;
-    ssOut: number;
-    /** Yükleme / ekran koruyucu katmanının yukarı kayarak çıkması */
-    ldExit: number;
     /** Kendi kendine sunum: ilk başlama için hareketsizlik, ortaya gelen dairenin açılmadan önce bekleme,
         videosuz tam ekran fotoğraf süresi, etkileşimden sonra yeniden başlama */
     presentIdle: number;

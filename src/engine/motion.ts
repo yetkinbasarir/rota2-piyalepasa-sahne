@@ -28,7 +28,7 @@ export function createMotion(id: Identity): Motion {
     CustomEase.create(name, path);
     ease[k] = name;
   }
-  const NOT_SCALED: DurKey[] = ['videoIn', 'videoOut', 'videoTimeout', 'youtubeHold', 'soundIn', 'soundOut', 'autoReturn', 'ssIn', 'ssOut', 'ldExit', 'presentIdle', 'presentOpen', 'presentPhoto', 'presentResume', 'closeFade'];
+  const NOT_SCALED: DurKey[] = ['videoIn', 'videoOut', 'videoTimeout', 'youtubeHold', 'soundIn', 'soundOut', 'autoReturn', 'presentIdle', 'presentOpen', 'presentPhoto', 'presentResume', 'closeFade'];
   return {
     ease,
     reduced,
