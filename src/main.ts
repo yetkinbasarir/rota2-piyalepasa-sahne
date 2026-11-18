@@ -19,3 +19,34 @@ try {
   console.error('[rota2] açılış', e);
   window.setTimeout(rescue, 4000);
 }
+
+/* Vercel Web Analytics (yalnızca sayfa görüntüleme): siyah ilk ekran göründükten sonra, boşta yüklenir;
+   ayrı parça olarak gelir, açılışı asla bekletmez; hata olursa sessizce yutulur. */
+const loadAnalytics = () => {
+  try {
+    import('@vercel/analytics')
+      .then(({ inject }) => {
+        try {
+          inject();
+        } catch {
+          /* yok say */
+        }
+      })
+      .catch(() => {
+        /* yok say */
+      });
+  } catch {
+    /* yok say */
+  }
+};
+try {
+  const later = () => {
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    if (ric) ric(loadAnalytics, { timeout: 5000 });
+    else window.setTimeout(loadAnalytics, 1500);
+  };
+  // ilk boyamadan (siyah ilk ekran) sonra
+  window.requestAnimationFrame(() => window.setTimeout(later, 0));
+} catch {
+  /* yok say */
+}
