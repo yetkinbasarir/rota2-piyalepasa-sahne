@@ -79,8 +79,11 @@ img, video { -webkit-user-drag: none; }
 .lr-r { flex-direction: row-reverse; }
 .lr-r > i { margin-right: 0; margin-left: -.5px; }
 .lr-r > .dm { transform: scaleX(-1); }
-.gi .lr { margin-right: calc(-1 * var(--gi-out) - 2px); }
-.gi .lr-g { margin-top: var(--lr-gap); margin-bottom: var(--lr-gap); }
+.gi .lr, .gvb .lr { margin-right: calc(-1 * var(--gi-out) - 2px); }
+.gi .lr-g, .gvb .lr-g { margin-top: var(--lr-gap); margin-bottom: var(--lr-gap); }
+/* mobil açık hâl (video başlamadan): altta sola yaslı başlık bloğu, altı ×'in altıyla hizalı; beyaz */
+.gvb { position: absolute; left: var(--gi-left); width: var(--gi-w); bottom: var(--xcl-bottom); z-index: 1; pointer-events: none; opacity: 0; visibility: hidden; }
+.gvb .gdt { margin-bottom: 0; }
 .gr { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
 .gv { display: flex; flex-direction: column; align-items: flex-end; text-align: right; min-width: 0; }
 

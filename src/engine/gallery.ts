@@ -243,6 +243,12 @@ export function createGallery(o: {
     '<div class="gi"></div>' +
     `<div class="gc">${id.templates.circleButtons([['Bilet Al', 'ticket']], o.tctx()).replace('class="cb"', 'class="cb gtk"')}</div>`;
   const gInfo = dom.ui.querySelector<HTMLElement>('.gi')!;
+  // mobil açık hâlin alttaki başlık bloğu (yazıların üstünde, kaydırılmaz)
+  const gVid = document.createElement('div');
+  gVid.className = 'gvb';
+  dom.ui.after(gVid);
+  /** Mobil açık hâl: video oynamaya başladı (logo kısaldı, başlık bloğu kayboldu) */
+  let playing = false;
   // Bilet Al şimdilik işlevsiz; tıklama galeriye geçmez
   const ticket = dom.ui.querySelector<HTMLElement>('.gtk')!;
   ticket.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -627,6 +633,22 @@ export function createGallery(o: {
       img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
+  /** Uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo aynı yerde belirir (on); tersi */
+  function logoShort(tl: gsap.core.Timeline, on: boolean, t: number) {
+    const O = G.open;
+    const lg = { duration: O.colorDur * red, ease: O.logoEase, overwrite: 'auto' as const };
+    const cut = `inset(0px ${+(lgLong.dataset.clip ?? 0)}px 0px 0px)`;
+    tl.fromTo(lgLong, { clipPath: on ? 'inset(0px 0px 0px 0px)' : cut }, { clipPath: on ? cut : 'inset(0px 0px 0px 0px)', opacity: on ? 0 : 1, ...lg, immediateRender: false }, t);
+    tl.to(lgShort, { opacity: on ? 1 : 0, ...lg }, t);
+  }
+  /** Mobil açık hâl, ikinci evre: video gerçekten oynuyor — logo kısa logoya kısalır, başlık bloğu kaybolur */
+  function playStarted() {
+    if (!S.mobile || !S.full || playing) return;
+    playing = true;
+    const tl = gsap.timeline();
+    logoShort(tl, true, 0);
+    tl.to(gVid, { autoAlpha: 0, duration: G.mobile.videoFade * red, ease: 'none', overwrite: 'auto' }, 0);
+  }
   /** Açılma / kapanma. Açılış: t = 0'da daire büyümeye, yazılar ve logo geçişe başlar; videoAt'te video ve ağ
       belirir. Kapanış tam tersi: önce video ve ağ kaybolur, daire simetrik olarak küçülür */
   function moves(on: boolean) {
@@ -647,11 +669,20 @@ export function createGallery(o: {
     tl.to([dom.brand, gInfo, dom.close], { color: on ? O.color : T.text, duration: cd, ease: 'none', overwrite: 'auto' }, at(0, cd));
     // uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo aynı yerde belirir
     // (kapanışta kısa logo kaybolur, uzun logo kısa genişlikten tam genişliğe uzar)
-    {
-      const lg = { duration: cd, ease: O.logoEase, overwrite: 'auto' as const };
-      const cut = `inset(0px ${+(lgLong.dataset.clip ?? 0)}px 0px 0px)`;
-      tl.fromTo(lgLong, { clipPath: on ? 'inset(0px 0px 0px 0px)' : cut }, { clipPath: on ? cut : 'inset(0px 0px 0px 0px)', opacity: on ? 0 : 1, ...lg, immediateRender: false }, at(0, cd));
-      tl.to(lgShort, { opacity: on ? 1 : 0, ...lg }, at(0, cd));
+    // mobil: açılışta uzun logo kalır (video oynayınca kısalır: playStarted); kapanışta kısaldıysa geri uzar
+    if (!S.mobile || (!on && playing)) logoShort(tl, on, at(0, cd));
+    if (S.mobile) {
+      playing = false;
+      // galerideki başlık grubu açık hâlde gizli; altta beyaz başlık bloğu (video başlamadan)
+      tl.to(gInfo, { autoAlpha: on ? 0 : 1, duration: cd, ease: 'none', overwrite: 'auto' }, at(0, cd));
+      if (on) {
+        const show = openShow;
+        gVid.innerHTML = show ? id.templates.videoTitle(show, o.tctx()) : '';
+        fitTitle(gVid);
+        o.onCreate(gVid);
+        gsap.set(gVid, { color: O.color });
+      }
+      tl.to(gVid, { autoAlpha: on ? 1 : 0, duration: cd, ease: 'none', overwrite: 'auto' }, at(0, cd));
     }
     // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
@@ -757,7 +788,7 @@ export function createGallery(o: {
     }
     // sayaç künyede: yalnızca güncel içerik
     // sayaç künyede (mobilde ayrı künye): yalnızca güncel içerik
-    visibleEls = [gInfo.lastElementChild].filter((e): e is Element => !!e);
+    visibleEls = [gInfo.lastElementChild, S.full && S.mobile ? gVid : null].filter((e): e is Element => !!e);
   }
 
   const api: Gallery = {
@@ -775,6 +806,11 @@ export function createGallery(o: {
       openN = null;
       closeOn = false;
       gsap.killTweensOf([dom.close, ...layers(), gInfo, dom.members, gTicket, dom.brand, lgLong, lgShort, flow, scroll]);
+      gsap.killTweensOf(gVid);
+      gsap.set(gVid, { autoAlpha: 0 });
+      gVid.innerHTML = '';
+      playing = false;
+      gsap.set(gInfo, { autoAlpha: 1 });
       gsap.set(lgLong, { clipPath: 'inset(0px 0px 0px 0px)', opacity: 1 });
       gsap.set(lgShort, { opacity: 0 });
       scroll.v = 0;
@@ -822,7 +858,8 @@ export function createGallery(o: {
       clearAuto();
       o.video.start(show.fullVideo, () => {
         clearAuto();
-        if (S.mobile) return;
+        // mobil: oynatıcının gerçek "oynuyor" olayından sonra ikinci evre
+        if (S.mobile) return playStarted();
         autoTimer = gsap.delayedCall(motion.dur('autoReturn'), () => {
           if (S.full && openShow === show) api.close();
         });

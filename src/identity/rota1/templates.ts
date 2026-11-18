@@ -101,4 +101,9 @@ export const templates: Templates = {
   info,
   circleButtons,
   closeIcon,
+  /** Mobil açık hâl (video başlamadan): başlık, altında çizgi, altında tarih · saat ve sayaç */
+  videoTitle(s, ctx) {
+    const w = when(s, ctx);
+    return `<h2 class="gt">${txt(ctx, s.title)}</h2>${rule(true)}` + (w ? `<div class="gdt"><span class="num">${w.date}</span>${w.counter}</div>` : '');
+  },
 };

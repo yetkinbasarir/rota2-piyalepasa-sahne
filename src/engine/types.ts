@@ -103,6 +103,8 @@ export interface Templates {
       (+ sayaç) / SAHNE / YÖNETEN / OYUNCULAR). Satır satır geçiş için her satır .ln taşır; mobilde tanıtım ve
       oyuncular yok */
   info(show: Show, ctx: TemplateContext): string;
+  /** Mobil açık hâlde (video başlamadan) altta: başlık, logo çizgisi, tarih · saat ve sayaç */
+  videoTitle(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -199,9 +201,10 @@ export interface GalleryTokens {
       başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sağdan
       kırpılıp kısa logoya geçişi (colorDur sn, logoEase) */
   open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string; logoEase: string };
-  /** Mobil dikey sayfa: ana dairenin çapı (W), ana dairenin ekrandaki üstünün logonun altından uzaklığı (W), ana dairenin altı ile başlığın büyük harf üstü arası (W), sayfa kaydırmanın ataleti (bırakma hızının ileri izdüşüm süresi
+  /** Mobil dikey sayfa: ana dairenin çapı (W), ana dairenin ekrandaki üstünün logonun altından uzaklığı (W), ana dairenin altı ile başlığın büyük harf üstü arası (W), açık hâlde video oynayınca alttaki başlık bloğunun
+      kayboluşu (sn), sayfa kaydırmanın ataleti (bırakma hızının ileri izdüşüm süresi
       ve oturma süresi, sn) */
-  mobile: { mainD: number; logoGap: number; titleGap: number; throw: number; settle: number };
+  mobile: { mainD: number; logoGap: number; titleGap: number; throw: number; settle: number; videoFade: number };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */

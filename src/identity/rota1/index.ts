@@ -87,7 +87,9 @@ export const rota1: Identity = {
        komşular ona göre yerinde (sağdakiler üye düğmelerinin arkasına çıkabilir); ana dairenin altından 0.14W aşağıda
        başlığın büyük harf üstü; başlık, tarih + sayaç, tanıtım, künye (her zaman açık) ve sayfanın sonunda ortada Bilet Al;
        sayfa kaydırma ataleti 0.3 sn, 0.5 sn'de oturur */
-    mobile: { mainD: 0.82, logoGap: 0.08, titleGap: 0.14, throw: 0.3, settle: 0.5 },
+    /* mobil açık hâl iki evrede: önce uzun logo beyaz yerinde, altta beyaz başlık + çizgi + tarih / sayaç (altı ×'in
+       altıyla hizalı); video gerçekten oynayınca logo kısa logoya kısalır, başlık bloğu 0.5 sn'de kaybolur */
+    mobile: { mainD: 0.82, logoGap: 0.08, titleGap: 0.14, throw: 0.3, settle: 0.5, videoFade: 0.5 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
