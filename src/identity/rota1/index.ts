@@ -83,9 +83,10 @@ export const rota1: Identity = {
        0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
        aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
     open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
-    /* mobil dikey sayfa: logonun hemen altında daire şeridi, ana daire 0.82W ortada; altında Bilet Al, başlık,
-       tanıtım ve künye (her zaman açık); sayfa kaydırma ataleti 0.3 sn, 0.5 sn'de oturur */
-    mobile: { mainD: 0.82, throw: 0.3, settle: 0.5 },
+    /* mobil dikey sayfa: daire şeridi logonun altında (en yüksek dairenin ekrandaki üstü logonun / düğmelerin
+       altından 0.04W aşağıda), ana daire 0.82W ortada; altında başlık, tarih + sayaç, tanıtım ve künye (her zaman
+       açık); Bilet Al ekranın altında sabit; sayfa kaydırma ataleti 0.3 sn, 0.5 sn'de oturur */
+    mobile: { mainD: 0.82, logoGap: 0.04, throw: 0.3, settle: 0.5 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
@@ -145,8 +146,8 @@ export const rota1: Identity = {
     button: { fill: '#FFFFFF', fit: 0.68 },
     /* uzun ve kısa logo sol üstte, sol kenarı ekranın sol kenarında, aynı yükseklikte (0.216H), üstten 0.04H.
        0.012W kenar boşluğu: sağ sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan, × sağdan */
-    /* mobil: uzun logo sol üstte, 0.52W genişlikte, üstten 0.02H */
-    logo: { h: 0.216, top: 0.04, letter: 0.012, mobileW: 0.52, mobileTop: 0.02 },
+    /* mobil: uzun logo sol üstte, 0.40W genişlikte, üstten 0.02H */
+    logo: { h: 0.216, top: 0.04, letter: 0.012, mobileW: 0.4, mobileTop: 0.02 },
     /* Üye Ol / Giriş: masaüstünde sol altta (soldan logonun harf boşluğu, alttan Bilet Al'ınki); mobilde sağ üstte */
     members: { d: 0.09, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },
@@ -205,6 +206,8 @@ export const rota1: Identity = {
        ve QR 0.6 sn'de 0.04W dışa kayarak kaybolur; galeri 0.6 sn'de başlayıp 0.5 sn'de belirir */
     exit: { dur: 1.0, ease: 'power2.inOut', lightScale: 4, fade: 0.6, drift: 0.04, galleryAt: 0.6, galleryDur: 0.5 },
     qr: { margin: 1 },
+    /* mobil: logo ekran genişliğinde, üye düğmeleri yok */
+    mobileLogoW: 1,
   },
   /* QR kodunun göstereceği herkese açık adres (boşsa sayfanın kendi adresi) */
   site: { publicUrl: '' },

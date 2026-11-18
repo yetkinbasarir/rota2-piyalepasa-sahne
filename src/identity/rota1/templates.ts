@@ -36,7 +36,9 @@ const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowe
 function info(s: Show, ctx: TemplateContext) {
   const desc = s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
   const rows = credits(s, ctx);
-  let rest = '';
+  // mobil: tarih · saat ve altında sayaç, başlığın çizgisi ile tanıtım arasında (künyede TARİH satırı yok)
+  const w = ctx.mobile ? when(s, ctx) : null;
+  let rest = w ? `<div class="gdt ln"><span class="num">${w.date}</span>${w.counter}</div>` : '';
   if (desc) rest += desc + (rows.length ? rule(true) : '');
   rest += rows.join(rule());
   return `<h2 class="gt ln">${txt(ctx, s.title)}</h2>${rule(true)}<div class="gi-rest">${rest}</div>`;
@@ -51,15 +53,21 @@ const STAGE: Record<string, string> = {
 const initials = (v: string) =>
   v.toLocaleLowerCase('tr').replace(/(^|[\s\-/(])(\S)/g, (_m, a: string, b: string) => a + b.toLocaleUpperCase('tr'));
 const row = (label: string, value: string, cls = '') => `<div class="gr ln"><span class="lb">${label}</span><span class="gv${cls}">${value}</span></div>`;
+/** Sıradaki temsilin tarihi · saati ve sayacı */
+function when(s: Show, ctx: TemplateContext) {
+  const at = nextAt(s);
+  if (!at) return null;
+  const d = new Date(at);
+  return {
+    date: `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`,
+    counter: `<span class="gcd"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></span>`,
+  };
+}
 function credits(s: Show, ctx: TemplateContext): string[] {
   const rows: string[] = [];
   if (present(s.genre)) rows.push(row('Tür', txt(ctx, initials(s.genre))));
-  const at = nextAt(s);
-  if (at) {
-    const d = new Date(at);
-    const date = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-    rows.push(row('Tarih', `<span class="num">${date}</span><span class="gcd"><span class="cd" data-cd="${s.k}">${counterChars(s, ctx)}</span></span>`));
-  }
+  const w = ctx.mobile ? null : when(s, ctx);
+  if (w) rows.push(row('Tarih', `<span class="num">${w.date}</span>${w.counter}`));
   const stage = STAGE[s.stage];
   if (stage) rows.push(row('Sahne', txt(ctx, stage)));
   const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');

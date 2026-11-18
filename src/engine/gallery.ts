@@ -355,8 +355,19 @@ export function createGallery(o: {
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
-    mainH = restBox(0, mx, my - lift).h;
-    // mobil: daire şeridi logonun hemen altında
+    // daire şeridinin ekrandaki en üst ve en alt kenarı (duruşta, süzülme payıyla)
+    stripTop = Infinity;
+    stripBottom = -Infinity;
+    for (let k = -3; k <= 3; k++) {
+      const p = P.get(k);
+      if (!p) continue;
+      const b = restBox(k, p[0], p[1]);
+      stripTop = Math.min(stripTop, b.cy - b.h / 2);
+      stripBottom = Math.max(stripBottom, b.bottom);
+    }
+    stripTop -= G.float.y * H;
+    stripBottom += G.float.y * H;
+    // mobil: daire şeridi logonun / düğmelerin altında
     flowTo();
     // daireler yeni çapla yeniden kurulur
     items.forEach(drop);
@@ -542,41 +553,37 @@ export function createGallery(o: {
     autoTimer = null;
   };
   /* ---------- mobil dikey sayfa ----------
-     Sayfa: üstte logo ve üye düğmeleri; logonun hemen altında daire şeridi (ana daire ortada), ana dairenin hemen
-     altında Bilet Al; onun altında başlık, tanıtım ve künye (.gi; her zaman açık). Dikey kaydırma sanal: yazılar,
-     logo ve düğmeler --scroll kadar yukarı kayar, daireler aynı kadar yukarıda çizilir. */
+     Sayfa: üstte logo ve üye düğmeleri; altında daire şeridi (ana daire ortada; en yüksek dairenin ekrandaki üstü
+     logonun / düğmelerin altından mobile.logoGap·W aşağıda); şeridin altında başlık, tarih + sayaç, tanıtım ve
+     künye (.gi; her zaman açık). Bilet Al ekranın altında sabit. Dikey kaydırma sanal: yazılar, logo ve düğmeler
+     --scroll kadar yukarı kayar, daireler aynı kadar yukarıda çizilir. */
   const flow = { v: 0 };
   const scroll = { v: 0 };
-  let mainH = 0;
+  /** Duruştaki dairelerin (p = −3 … +3, süzülme payıyla) ekrandaki en üst ve en alt kenarı (flow'suz) */
+  let stripTop = 0;
+  let stripBottom = 0;
   /** Güncel başlık / tanıtım / künye yüksekliği (yazı değişince ölçülür) */
   let giH = 0;
   let lastScroll = -1;
   const rootStyle = document.documentElement.style;
+  const rootCss = (k: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(k)) || 0;
   const shiftY = () => (S.mobile ? flow.v - scroll.v : 0);
   const pagePad = () => T.info.mobilePad * S.vh;
-  /** Sayfadaki yerler: ana dairenin (sınır kutusu) üstü, Bilet Al'ın ve başlığın üstü */
-  function pageMarks() {
-    const H = S.vh;
-    const discTop = flow.v + H / 2 - mainH / 2;
-    const gcTop = discTop + mainH + pagePad();
-    const giTop = gcTop + T.ticket.d * H + pagePad();
-    return { discTop, gcTop, giTop };
-  }
-  /** Sayfanın en çok kaydırılması: künyenin altına kadar */
+  /** Başlığın sayfadaki üstü: daire şeridinin altı */
+  const giTop = () => stripBottom + flow.v + pagePad();
+  /** Sayfanın en çok kaydırılması: künyenin son satırı ekranın altındaki sabit Bilet Al'ın üstünde kalır */
   function maxScroll() {
-    return Math.max(0, pageMarks().giTop + giH + pagePad() + S.safeBottom - S.vh);
+    const tail = rootCss('--gc-bottom') + T.ticket.d * S.vh + pagePad();
+    return Math.max(0, giTop() + giH + tail - S.vh);
   }
-  /** Daire şeridini logonun hemen altına yerleştir (mobil; yazıdan bağımsız, sabit) */
+  /** Daire şeridini logonun / düğmelerin altına yerleştir (mobil; yazıdan bağımsız, sabit) */
   function flowTo() {
     if (!S.mobile) {
       flow.v = 0;
       return;
     }
-    const logoBottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--logo-bottom')) || 0;
-    flow.v = logoBottom + pagePad() + mainH / 2 - S.vh / 2;
-    const m = pageMarks();
-    rootStyle.setProperty('--gc-top', `${m.gcTop.toFixed(1)}px`);
-    rootStyle.setProperty('--gi-top', `${m.giTop.toFixed(1)}px`);
+    flow.v = rootCss('--head-bottom') + G.mobile.logoGap * S.vw - stripTop;
+    rootStyle.setProperty('--gi-top', `${giTop().toFixed(1)}px`);
   }
   /** Her karede (mobil): sayfa kaydırması */
   function mobileFrame() {

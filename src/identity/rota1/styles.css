@@ -43,6 +43,10 @@ button:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 3px; }
 .lb { line-height: 1; flex: none; }
 .gv > span { white-space: nowrap; }
 .gcd { line-height: 1; }
+/* mobil: tarih · saat, altında sayaç; sola yaslı, okuma metni boyunda (sayılar büyük harf yüksekliğiyle);
+   altında başlığın çizgisiyle tanıtım arasındaki boşluk */
+.gdt { display: flex; flex-direction: column; align-items: flex-start; font-size: var(--fs-body); line-height: var(--lh-body); margin-bottom: var(--lr-gap); }
+.gdt .gcd { line-height: var(--lh-body); }
 /* daire düğmeler: düz beyaz, yazı metin renginde */
 .cb { background: var(--c-btn); color: var(--c-text); }
 @media (hover: hover) {
