@@ -9,8 +9,9 @@
    - web: sağ altta logoyla tek blok: beyaz karede QR (kenarı logonun yüksekliği), sağında alt alta Üye Ol / Giriş
      (çap (logo yüksekliği − g) / 2; g düğmeler arası boşluk; kare ile düğmeler arası da g). Bloğun üstü logonun
      üstü, altı logonun altı; sağ kenarı sağ sütunun sağ boşluğunda;
-   - mobil: uzun logo ekran genişliğinde (alt boşluk aynı); üye düğmeleri ve QR yok (düğmeler çıkışta galerideki
-     yerlerinde belirir); çıkışta logo galerideki yerine ve boyuna küçülür.
+   - mobil: uzun logo üstte (sayacın masaüstündeki üst kenarında), sağ ucu sağ kenardan 0.04W içeride; sayaç ve
+     etiketleri altta (etiketlerin altı galerideki alt boşlukta); üye düğmeleri ve QR yok (düğmeler çıkışta
+     galerideki yerlerinde belirir); çıkışta logo galerideki yerine ve boyuna küçülür.
 
    Işık: zemine düşen ışık; ekranın altında, perspektifle görülen geniş, yassı, hafif çapraz bir elips (altta ve
    yanlarda ekran dışına taşar). Merkez tepesi yok: içte eşit parlaklıkta düz plato (galeri grisinin `level`
@@ -382,8 +383,8 @@ export function createLoader(o: {
     rt = window.setTimeout(() => {
       if (exited) return;
       build(false);
-      arrange();
       fitCd();
+      arrange();
     }, 200);
   };
   addEventListener('resize', onResize);
@@ -476,10 +477,23 @@ export function createLoader(o: {
     const css = getComputedStyle(document.documentElement);
     const line = (parseFloat(css.getPropertyValue('--safe-top')) || 0) + id.screen.logo.top * innerHeight;
     const role = { family: id.screen.type.number.family, weight: CD.wght };
-    cd.style.top = `${(line - capOffset(role, fs, 1)).toFixed(2)}px`;
+    topLine = line - capOffset(role, fs, 1);
+    if (isMobile()) {
+      // mobil: altta; etiketlerin altı galerideki Üye Ol / Giriş alt boşluğunda (iPhone ana çubuğu dahil)
+      const label = cd.querySelector<HTMLElement>('.ld-cd-l');
+      const lh = label?.getBoundingClientRect().height ?? 0;
+      const bottom = innerHeight - (parseFloat(css.getPropertyValue('--gc-bottom')) || 0);
+      cd.style.top = `${(bottom - lh - CD.labelGap - fs).toFixed(2)}px`;
+    } else cd.style.top = `${topLine.toFixed(2)}px`;
   }
+  /** Sayacın (masaüstündeki) üst kenarı: mobilde logo buraya oturur */
+  let topLine = 0;
   fitCd();
-  document.fonts?.ready.then(() => !exited && fitCd());
+  document.fonts?.ready.then(() => {
+    if (exited) return;
+    fitCd();
+    if (ready) arrange();
+  });
 
   /* ---------- QR (yalnızca web): sağ altta beyaz kare ---------- */
   const isLocal = (h: string) =>
@@ -536,11 +550,11 @@ export function createLoader(o: {
     gsap.set([o.brand, ...btns], { x: 0, y: 0, scale: 1 });
     const lg = o.brand.querySelector<HTMLElement>('.lg-l')?.getBoundingClientRect();
     if (!lg) return;
-    // logo: sol altta, alt boşluğu galerideki Üye Ol / Giriş'inki; mobilde ekran genişliğinde (mobileLogoW·W),
-    // sol üst köşesinden büyütülür
+    // logo: web'de sol altta, alt boşluğu galerideki Üye Ol / Giriş'inki; mobilde üstte (sayacın üst kenarında),
+    // sağ ucu dahil ekrana sığar (genişliği mobileLogoW·W), sol üst köşesinden büyütülür
     const bottom = H - (parseFloat(css.getPropertyValue('--gc-bottom')) || 0);
     const k = mob ? (LD.mobileLogoW * W) / Math.max(1, lg.width) : 1;
-    const top = bottom - lg.height * k;
+    const top = mob ? topLine : bottom - lg.height * k;
     gsap.set(o.brand, { y: top - lg.top, scale: k, transformOrigin: `0px ${lg.top}px` });
     const g = parseFloat(css.getPropertyValue('--cb-gap')) || 0;
     const rects = btns.map((b) => b.getBoundingClientRect());

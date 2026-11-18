@@ -66,8 +66,9 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--gi-left', giLeft);
   // mobil: başlığın üstünü galeri verir (Bilet Al'ın altı); logonun altı daire şeridinin üstü
   if (!S.mobile) px('--gi-top', logoTop - capOffset(T.type.title, titleFs, T.info.titleLh));
-  // mobil: üst sıranın (logo, üye düğmeleri) altı; daire şeridi bunun altında başlar
-  px('--head-bottom', Math.max(logoTop + logoH, S.mobile ? logoTop + d : 0));
+  // mobil: logonun altı ve sağ ucu; logonun yatay aralığındaki daireler logonun altında başlar
+  px('--head-bottom', logoTop + logoH);
+  px('--logo-right', S.mobile ? T.logo.mobileW * W : 0);
   px('--gi-w', giW);
   // sütundaki çizgiler sağda ekran kenarını geçer: sütunun sağ kenarından ekranın sağ kenarına
   px('--gi-out', W - giLeft - giW);

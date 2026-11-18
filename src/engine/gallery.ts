@@ -355,16 +355,19 @@ export function createGallery(o: {
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
-    // daire şeridinin ekrandaki en üst ve en alt kenarı (duruşta, süzülme payıyla)
+    // daire şeridi: logonun yatay aralığındaki dairelerin ekrandaki en üst kenarı ve bütün dairelerin en alt kenarı
+    // (duruşta, süzülme payıyla); sağdakiler daha yükseğe çıkabilir (üye düğmeleri üstte kalır)
+    const logoRight = css('--logo-right');
     stripTop = Infinity;
     stripBottom = -Infinity;
     for (let k = -3; k <= 3; k++) {
       const p = P.get(k);
       if (!p) continue;
       const b = restBox(k, p[0], p[1]);
-      stripTop = Math.min(stripTop, b.cy - b.h / 2);
+      if (b.cx - b.w / 2 < logoRight) stripTop = Math.min(stripTop, b.cy - b.h / 2);
       stripBottom = Math.max(stripBottom, b.bottom);
     }
+    if (!Number.isFinite(stripTop)) stripTop = restBox(0, P.get(0)![0], P.get(0)![1]).cy - restBox(0, P.get(0)![0], P.get(0)![1]).h / 2;
     stripTop -= G.float.y * H;
     stripBottom += G.float.y * H;
     // mobil: daire şeridi logonun / düğmelerin altında
@@ -529,7 +532,16 @@ export function createGallery(o: {
     const ctx = o.tctx();
     swap(gInfo, id.templates.info(show, ctx), animate);
     // mobil: sayfanın altı (künyenin altı) yeni yazıya göre
-    giH = (gInfo.lastElementChild as HTMLElement | null)?.offsetHeight ?? 0;
+    const cur = gInfo.lastElementChild as HTMLElement | null;
+    giH = cur?.offsetHeight ?? 0;
+    // künye satırları arası: satırın üst + alt iç boşluğu ve aradaki çizgi
+    const row = cur?.querySelector<HTMLElement>('.gr');
+    const rl = cur?.querySelector<HTMLElement>('.gr + .lr');
+    if (row) {
+      const cs = getComputedStyle(row);
+      rowGap = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + (rl?.offsetHeight ?? 0);
+    }
+    if (S.mobile) rootStyle.setProperty('--gc-top', `${gcTop().toFixed(1)}px`);
   }
 
   /* ---------- × ---------- */
@@ -554,8 +566,9 @@ export function createGallery(o: {
   };
   /* ---------- mobil dikey sayfa ----------
      Sayfa: üstte logo ve üye düğmeleri; altında daire şeridi (ana daire ortada; en yüksek dairenin ekrandaki üstü
-     logonun / düğmelerin altından mobile.logoGap·W aşağıda); şeridin altında başlık, tarih + sayaç, tanıtım ve
-     künye (.gi; her zaman açık). Bilet Al ekranın altında sabit. Dikey kaydırma sanal: yazılar, logo ve düğmeler
+     logonun yatay aralığındaki dairelerde logonun altından mobile.logoGap·W aşağıda); şeridin altında başlık,
+     tarih + sayaç, tanıtım ve künye (.gi; her zaman açık); sayfanın sonunda, künyenin son satırının hemen altında
+     ortada Bilet Al. Dikey kaydırma sanal: yazılar, logo ve düğmeler
      --scroll kadar yukarı kayar, daireler aynı kadar yukarıda çizilir. */
   const flow = { v: 0 };
   const scroll = { v: 0 };
@@ -571,10 +584,13 @@ export function createGallery(o: {
   const pagePad = () => T.info.mobilePad * S.vh;
   /** Başlığın sayfadaki üstü: daire şeridinin altı */
   const giTop = () => stripBottom + flow.v + pagePad();
-  /** Sayfanın en çok kaydırılması: künyenin son satırı ekranın altındaki sabit Bilet Al'ın üstünde kalır */
+  /** Künye satırları arası boşluk (Bilet Al ile künyenin son satırı arası da bu) */
+  let rowGap = 0;
+  /** Bilet Al'ın sayfadaki üstü: künyenin son satırının altında */
+  const gcTop = () => giTop() + giH + rowGap;
+  /** Sayfanın en çok kaydırılması: Bilet Al'ın altında olağan alt boşluk (iPhone ana çubuğu dahil) */
   function maxScroll() {
-    const tail = rootCss('--gc-bottom') + T.ticket.d * S.vh + pagePad();
-    return Math.max(0, giTop() + giH + tail - S.vh);
+    return Math.max(0, gcTop() + T.ticket.d * S.vh + rootCss('--gc-bottom') - S.vh);
   }
   /** Daire şeridini logonun / düğmelerin altına yerleştir (mobil; yazıdan bağımsız, sabit) */
   function flowTo() {
@@ -584,6 +600,7 @@ export function createGallery(o: {
     }
     flow.v = rootCss('--head-bottom') + G.mobile.logoGap * S.vw - stripTop;
     rootStyle.setProperty('--gi-top', `${giTop().toFixed(1)}px`);
+    rootStyle.setProperty('--gc-top', `${gcTop().toFixed(1)}px`);
   }
   /** Her karede (mobil): sayfa kaydırması */
   function mobileFrame() {
