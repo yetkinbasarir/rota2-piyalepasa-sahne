@@ -2,8 +2,9 @@
    görünür; motor onu yüzeyin içine, galerinin ve yazıların üstüne, sitenin logosu ve Üye Ol / Giriş düğmelerinin
    altına taşır. Bütün sayılar kimliğin `loader` token'ları.
 
-   Logo ve Üye Ol / Giriş: sitenin kendi öğeleri, galerideki yerlerinde ve boylarında (logo beyaz). Sağ üstte
-   (yalnızca web) beyaz karede QR kodu: sağdan sağ sütunun boşluğu, üstten logonun üstü.
+   Logo ve Üye Ol / Giriş: sitenin kendi öğeleri, galerideki yerlerinde ve boylarında (logo beyaz). Sol altta
+   (yalnızca web), Üye Ol / Giriş'in hemen üstünde beyaz karede QR kodu: iki düğme (aradaki boşluk dahil) kadar
+   geniş, düğmelerle arası düğmeler arası boşluk kadar.
 
    Süzülen daireler: düz (eğimsiz), her biri farklı bir gösterinin görseli, tam renkli, galeri daireleriyle aynı
    odak / kırpımla. Çaplar rastgele [min, max]·W (az büyük, çok küçük); küçükler uzakta: opaklık ve bulanıklık
@@ -184,11 +185,12 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
   };
   addEventListener('resize', onResize);
 
-  /* ---------- QR (yalnızca web): sağ üstte beyaz kare ---------- */
+  /* ---------- QR (yalnızca web): sol altta, Üye Ol / Giriş'in üstünde beyaz kare ---------- */
   const isLocal = (h: string) =>
     h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.local') ||
     /^(10|127)\./.test(h) || /^192\.168\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
   let qrBox: HTMLElement | null = null;
+  let qrSide = 0;
   function syncQr() {
     const url = id.site.publicUrl || (isLocal(location.hostname) ? '' : location.origin);
     if (isMobile() || !url) {
@@ -196,10 +198,17 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
       qrBox = null;
       return;
     }
-    const css = getComputedStyle(document.documentElement);
-    const right = id.screen.logo.letter * innerWidth;
-    const top = (parseFloat(css.getPropertyValue('--safe-top')) || 0) + id.screen.logo.top * innerHeight;
-    const side = LD.qr.size;
+    // kare: sol kenarı Üye Ol'un sol kenarı, sağ kenarı Giriş'in sağ kenarı; altı düğmelerin üstünden düğmeler
+    // arası boşluk kadar yukarıda
+    const b = o.members.getBoundingClientRect();
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cb-gap')) || 0;
+    const side = b.width;
+    if (qrBox && Math.abs(side - qrSide) > 0.5) {
+      // ölçü değişti: QR yeni kareye göre yeniden üretilir
+      qrBox.remove();
+      qrBox = null;
+    }
+    qrSide = side;
     if (!qrBox) {
       const box = document.createElement('div');
       box.className = 'ld-qr';
@@ -222,7 +231,7 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
           if (qrBox === box) qrBox = null;
         });
     }
-    qrBox.style.cssText = `right:${right.toFixed(2)}px;top:${top.toFixed(2)}px;width:${side}px;height:${side}px`;
+    qrBox.style.cssText = `left:${b.left.toFixed(2)}px;top:${(b.top - gap - side).toFixed(2)}px;width:${side.toFixed(2)}px;height:${side.toFixed(2)}px`;
   }
 
   /* ---------- çıkış ---------- */

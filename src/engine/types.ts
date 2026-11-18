@@ -300,7 +300,8 @@ export interface Identity {
   /** İlk ekran (loader.ts): zemin ve logo rengi; süzülen dairelerin sayısı, çap aralığı (W; web / mobil) ve
       küçüklere eğilim (kuvvet üssü); derinlik: opaklık [en küçük, en büyük], en küçüğün bulanıklığı (W); hız
       [en küçük, en büyük] (W/sn) ve rastgele sapma oranı; dik salınım genliği (W) ve periyot aralığı (sn); ilk
-      belirme toplam süresi ve her dairenin belirme süresi (sn); çıkış kayması; QR karesi (px) ve sessiz alanı */
+      belirme toplam süresi ve her dairenin belirme süresi (sn); çıkış kayması; QR'ın sessiz alanı (modül; kare
+      Üye Ol / Giriş kadar geniş, üstlerinde) */
   loader: {
     background: string; logoColor: string;
     count: { web: number; mobile: number };
@@ -310,7 +311,7 @@ export interface Identity {
     sway: { amp: number; period: [number, number] };
     fadeIn: { total: number; each: number };
     exit: { dur: number; ease: string };
-    qr: { size: number; margin: number };
+    qr: { margin: number };
   };
   /** Sitenin herkese açık adresi (QR kodu); boşsa sayfanın kendi adresi */
   site: { publicUrl: string };
