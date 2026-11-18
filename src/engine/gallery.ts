@@ -47,7 +47,7 @@ import { gsap } from './motion';
 import type { Motion } from './motion';
 import type { Media } from './media';
 import { clamp, mod, type State } from './state';
-import { fitTitles } from './screen';
+import { fitTitles, capOffset } from './screen';
 import type { Identity, Show, TemplateContext } from './types';
 import type { FullVideoPlayer } from './fullVideo';
 import type { Dom } from './theme';
@@ -355,21 +355,15 @@ export function createGallery(o: {
     // bütün grup lift·H yukarı: aralık ve ölçüler aynı
     const lift = (S.mobile ? GL.lift.mobile : GL.lift.web) * H;
     P.forEach((v) => (v[1] -= lift));
-    // daire şeridi: logonun yatay aralığındaki dairelerin ekrandaki en üst kenarı ve bütün dairelerin en alt kenarı
-    // (duruşta, süzülme payıyla); sağdakiler daha yükseğe çıkabilir (üye düğmeleri üstte kalır)
-    const logoRight = css('--logo-right');
-    stripTop = Infinity;
-    stripBottom = -Infinity;
-    for (let k = -3; k <= 3; k++) {
-      const p = P.get(k);
-      if (!p) continue;
-      const b = restBox(k, p[0], p[1]);
-      if (b.cx - b.w / 2 < logoRight) stripTop = Math.min(stripTop, b.cy - b.h / 2);
-      stripBottom = Math.max(stripBottom, b.bottom);
+    // mobil: ana dairenin ekrandaki üst ve alt kenarı; duruşta düzleşmiş (flat.scale) ya da eğik hâli (süzülme
+    // payıyla), hangisi daha dışarıdaysa. Komşular ana daireye göre yerinde kalır
+    {
+      const p0 = P.get(0)!;
+      const b = restBox(0, p0[0], p0[1]);
+      const fr = (D * scaleAt(0) * G.flat.scale) / 2;
+      stripTop = Math.min(b.cy - b.h / 2 - G.float.y * H, p0[1] - fr);
+      stripBottom = Math.max(b.bottom + G.float.y * H, p0[1] + fr);
     }
-    if (!Number.isFinite(stripTop)) stripTop = restBox(0, P.get(0)![0], P.get(0)![1]).cy - restBox(0, P.get(0)![0], P.get(0)![1]).h / 2;
-    stripTop -= G.float.y * H;
-    stripBottom += G.float.y * H;
     // mobil: daire şeridi logonun / düğmelerin altında
     flowTo();
     // daireler yeni çapla yeniden kurulur
@@ -565,25 +559,26 @@ export function createGallery(o: {
     autoTimer = null;
   };
   /* ---------- mobil dikey sayfa ----------
-     Sayfa: üstte logo ve üye düğmeleri; altında daire şeridi (ana daire ortada; en yüksek dairenin ekrandaki üstü
-     logonun yatay aralığındaki dairelerde logonun altından mobile.logoGap·W aşağıda); şeridin altında başlık,
+     Sayfa: üstte logo ve üye düğmeleri; altında daire şeridi (ana daire ortada; ekrandaki üstü logonun altından
+     mobile.logoGap·W aşağıda); ana dairenin altından mobile.titleGap·W aşağıda başlığın büyük harf üstü; başlık,
      tarih + sayaç, tanıtım ve künye (.gi; her zaman açık); sayfanın sonunda, künyenin son satırının hemen altında
      ortada Bilet Al. Dikey kaydırma sanal: yazılar, logo ve düğmeler
      --scroll kadar yukarı kayar, daireler aynı kadar yukarıda çizilir. */
   const flow = { v: 0 };
   const scroll = { v: 0 };
-  /** Duruştaki dairelerin (p = −3 … +3, süzülme payıyla) ekrandaki en üst ve en alt kenarı (flow'suz) */
+  /** Ana dairenin ekrandaki en üst ve en alt kenarı (flow'suz; eğik / düz, süzülme payıyla) */
   let stripTop = 0;
   let stripBottom = 0;
+  /** Başlık kutusunun üstünden büyük harf üstüne uzaklık (px) */
+  let titleCap = 0;
   /** Güncel başlık / tanıtım / künye yüksekliği (yazı değişince ölçülür) */
   let giH = 0;
   let lastScroll = -1;
   const rootStyle = document.documentElement.style;
   const rootCss = (k: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(k)) || 0;
   const shiftY = () => (S.mobile ? flow.v - scroll.v : 0);
-  const pagePad = () => T.info.mobilePad * S.vh;
   /** Başlığın sayfadaki üstü: daire şeridinin altı */
-  const giTop = () => stripBottom + flow.v + pagePad();
+  const giTop = () => stripBottom + flow.v + G.mobile.titleGap * S.vw - titleCap;
   /** Künye satırları arası boşluk (Bilet Al ile künyenin son satırı arası da bu) */
   let rowGap = 0;
   /** Bilet Al'ın sayfadaki üstü: künyenin son satırının altında */
@@ -599,6 +594,7 @@ export function createGallery(o: {
       return;
     }
     flow.v = rootCss('--head-bottom') + G.mobile.logoGap * S.vw - stripTop;
+    titleCap = capOffset(T.type.title, T.info.title.mobile * S.vw, T.info.titleLh);
     rootStyle.setProperty('--gi-top', `${giTop().toFixed(1)}px`);
     rootStyle.setProperty('--gc-top', `${gcTop().toFixed(1)}px`);
   }

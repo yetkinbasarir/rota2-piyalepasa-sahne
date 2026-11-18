@@ -83,11 +83,11 @@ export const rota1: Identity = {
        0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
        aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
     open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
-    /* mobil dikey sayfa: daire şeridi logonun altında (logonun yatay aralığındaki dairelerin ekrandaki üstü logonun
-       altından 0.03W aşağıda; sağdakiler daha yükseğe, üye düğmelerinin arkasına çıkabilir), ana daire 0.82W
-       ortada; altında başlık, tarih + sayaç, tanıtım, künye (her zaman açık) ve sayfanın sonunda ortada Bilet Al;
+    /* mobil dikey sayfa: ana daire 0.82W ortada, ekrandaki üstü logonun (en alt çizgisinin) altından 0.08W aşağıda;
+       komşular ona göre yerinde (sağdakiler üye düğmelerinin arkasına çıkabilir); ana dairenin altından 0.14W aşağıda
+       başlığın büyük harf üstü; başlık, tarih + sayaç, tanıtım, künye (her zaman açık) ve sayfanın sonunda ortada Bilet Al;
        sayfa kaydırma ataleti 0.3 sn, 0.5 sn'de oturur */
-    mobile: { mainD: 0.82, logoGap: 0.03, throw: 0.3, settle: 0.5 },
+    mobile: { mainD: 0.82, logoGap: 0.08, titleGap: 0.14, throw: 0.3, settle: 0.5 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
