@@ -415,6 +415,9 @@ export function createLoader(o: {
     l.style.marginTop = `${CD.labelGap}px`;
   }
   ui.append(cd);
+  // sayaç süzülen dairelerin üstünde
+  ui.style.zIndex = '2';
+  field.style.zIndex = '1';
   const nums = groups.map((g) => g.firstElementChild as HTMLElement);
   /** Bir anın verilen saat dilimindeki duvar saati (UTC alanlarında) */
   const fmt = new Intl.DateTimeFormat('en-US', {
@@ -479,13 +482,27 @@ export function createLoader(o: {
     const role = { family: id.screen.type.number.family, weight: CD.wght };
     const topLine = line - capOffset(role, fs, 1);
     if (isMobile()) {
-      // mobil: altta; etiketlerin altı galerideki Üye Ol / Giriş alt boşluğunda (iPhone ana çubuğu dahil)
+      // mobil: görünür alanın altına oturur; etiketlerin altı ile görünür alanın altı arası, dizinin sağ / sol
+      // boşluğu kadar. Etiketler kutunun içinde (alt iç boşluk), kutu alttan konumlanır; siyah (aydınlık zeminde)
       const label = cd.querySelector<HTMLElement>('.ld-cd-l');
       const lh = label?.getBoundingClientRect().height ?? 0;
-      const bottom = innerHeight - (parseFloat(css.getPropertyValue('--gc-bottom')) || 0);
-      cd.style.top = `${(bottom - lh - CD.labelGap - fs).toFixed(2)}px`;
-    } else cd.style.top = `${topLine.toFixed(2)}px`;
+      cd.style.top = 'auto';
+      cd.style.bottom = `${m.toFixed(2)}px`;
+      cd.style.paddingBottom = `${(CD.labelGap + lh).toFixed(2)}px`;
+      cd.style.color = CD.mobileColor;
+    } else {
+      cd.style.bottom = cd.style.paddingBottom = '';
+      cd.style.top = `${topLine.toFixed(2)}px`;
+      cd.style.color = CD.color;
+    }
   }
+  /* görünür alan yüksekliği: 100dvh desteklenmiyorsa visualViewport */
+  const dvh = typeof CSS !== 'undefined' && CSS.supports?.('height', '100dvh');
+  const fitHeight = () => {
+    if (!dvh && window.visualViewport) root.style.height = `${window.visualViewport.height}px`;
+  };
+  fitHeight();
+  window.visualViewport?.addEventListener('resize', fitHeight);
   fitCd();
   document.fonts?.ready.then(() => {
     if (exited) return;

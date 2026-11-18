@@ -327,10 +327,10 @@ export interface Identity {
     };
     grain: { opacity: number; frequency: number; tile: number };
     /** Açılış sayacı: hedef (duvar saati "YYYY-MM-DDTHH:MM") ve saat dilimi, rakamların ve etiketlerin "wght"
-        değeri, etiketlerin rakamlarla arası (px), etiketler (ay, gün, saat, dakika, saniye), renk */
+        değeri, etiketlerin rakamlarla arası (px), etiketler (ay, gün, saat, dakika, saniye), renk (web / mobil) */
     countdown: {
       openingDate: string; timeZone: string; wght: number; labelWght: number; labelGap: number;
-      labels: [string, string, string, string, string]; color: string;
+      labels: [string, string, string, string, string]; color: string; mobileColor: string;
     };
     shadow: { below: number; softSmall: number };
     exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };

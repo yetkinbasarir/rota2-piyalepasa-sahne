@@ -201,7 +201,8 @@ export const rota1: Identity = {
        beyaz, ekran genişliğinde (kenar boşlukları 0.012W); altında etiketler wght 700, künye etiketi boyunda, 6px arayla */
     countdown: {
       openingDate: '2027-05-18T20:00', timeZone: 'Europe/Istanbul', wght: 200, labelWght: 700, labelGap: 6,
-      labels: ['Ay', 'Gün', 'Saat', 'Dakika', 'Saniye'], color: '#FFFFFF',
+      /* mobil: görünür alanın altında (100dvh), etiketlerin altı alttan kenar boşluğu kadar; saf siyah */
+      labels: ['Ay', 'Gün', 'Saat', 'Dakika', 'Saniye'], color: '#FFFFFF', mobileColor: '#000000',
     },
     /* gölge: dairenin 0.6 çap altında, galeri gölgesi gibi; en küçük dairede bulanıklık 0.6 kat (daha küçük, yumuşak) */
     shadow: { below: 0.6, softSmall: 0.6 },

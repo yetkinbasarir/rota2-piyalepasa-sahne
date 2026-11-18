@@ -28,7 +28,8 @@
     <style>html,body{background:#ECEBE8;margin:0;overscroll-behavior:none}</style>
     <style>
       /* ilk ekran (JS paketini beklemeden görünür): tam ekran düz siyah; motor içine daireleri, QR'ı yerleştirir */
-      #ld { position: fixed; inset: 0; z-index: 3000; background: #000; overflow: hidden; touch-action: none; cursor: default; }
+      /* görünür alan yüksekliğinde (100dvh; iOS Safari'nin araç çubuğu boşluk bırakmasın) */
+      #ld { position: fixed; left: 0; right: 0; top: 0; height: 100vh; height: 100dvh; z-index: 3000; background: #000; overflow: hidden; touch-action: none; cursor: default; }
       #ld-c, #ld-ui { position: absolute; inset: 0; pointer-events: none; }
     </style>
   </head>
