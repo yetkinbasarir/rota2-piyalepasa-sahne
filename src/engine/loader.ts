@@ -250,7 +250,7 @@ export function createLoader(o: {
       el.style.width = el.style.height = `${d.toFixed(1)}px`;
       const ar = show.photo ? show.photo.w / show.photo.h : 1;
       const fr = frame(show, d, ar);
-      el.innerHTML = media!.img(show, { width: fr.w, height: fr.h, aspect: ar }) + '<i class="ldc-dim"></i>';
+      el.innerHTML = media!.img(show, { width: fr.w, height: fr.h, aspect: ar, priority: 'high' }) + '<i class="ldc-dim"></i>';
       const img = el.querySelector<HTMLImageElement>('img');
       if (img) img.style.transform = `translate(${fr.x.toFixed(1)}px,${fr.y.toFixed(1)}px)`;
       const dim = el.querySelector<HTMLElement>('.ldc-dim')!;

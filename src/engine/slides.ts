@@ -29,6 +29,8 @@ export interface Slides {
   open(): void;
   close(): void;
   toggle(): void;
+  /** Masaüstü, galeri görünür ve tarayıcı boştayken: görseller arka planda sırayla, düşük öncelikle yüklenir */
+  warm(): void;
 }
 
 export function createSlides(o: {
@@ -115,24 +117,78 @@ export function createSlides(o: {
     return l;
   };
   const W = () => el.clientWidth || innerWidth;
+  /* yükleme: her görsel bir kez; tamamlanınca (decode dahil) hazır. Düşük öncelikli istek sonra yüksek önceliğe
+     çıkarılabilir (aynı adres yüksek öncelikle yeniden istenir) */
+  const ready = new Set<string>();
+  const loads = new Map<string, Promise<void>>();
+  const bumped = new Set<string>();
+  function fetchImg(url: string, high: boolean): Promise<void> {
+    const run = (prio: 'high' | 'low') => {
+      const im = new Image();
+      im.decoding = 'async';
+      try {
+        (im as HTMLImageElement & { fetchPriority?: string }).fetchPriority = prio;
+      } catch {
+        /* desteklenmiyor */
+      }
+      const p = new Promise<void>((res) => {
+        im.onload = () => res();
+        im.onerror = () => res();
+      });
+      im.src = url;
+      return p.then(() => (typeof im.decode === 'function' ? im.decode().catch(() => {}) : undefined)).then(() => {
+        ready.add(url);
+      });
+    };
+    const have = loads.get(url);
+    if (have) {
+      if (high && !ready.has(url) && !bumped.has(url)) {
+        bumped.add(url);
+        const p = Promise.race([have, run('high')]);
+        loads.set(url, p);
+        return p;
+      }
+      return have;
+    }
+    if (high) bumped.add(url);
+    const p = run(high ? 'high' : 'low');
+    loads.set(url, p);
+    return p;
+  }
   function img(k: number) {
+    const url = list[mod(k, list.length)];
     const e = document.createElement('img');
     e.className = 'sl-i';
     e.alt = '';
     e.draggable = false;
     e.decoding = 'async';
-    e.src = list[mod(k, list.length)];
+    // henüz yüklenmediyse siyah zemin kalır, görsel gelince fadeIn sn'de belirir (yüksek öncelik)
+    if (!ready.has(url)) {
+      e.style.opacity = '0';
+      fetchImg(url, true).then(() => gsap.to(e, { opacity: 1, duration: T.fadeIn, ease: 'none' }));
+    }
+    e.src = url;
     track.append(e);
     return e;
   }
   function preload() {
     if (list.length < 2) return;
-    for (const d of [-1, 1]) new Image().src = list[mod(i + d, list.length)];
+    for (const d of [1, -1]) fetchImg(list[mod(i + d, list.length)], true);
   }
+  /** Kendiliğinden ilerleme: sıradaki görsel hazır değilse boş kare yerine onu bekler */
+  let armSeq = 0;
   function arm() {
     timer?.kill();
     timer = null;
-    if (isOpen && playing && list.length > 1) timer = gsap.delayedCall(T.interval, () => step(1));
+    const seq = ++armSeq;
+    if (isOpen && playing && list.length > 1)
+      timer = gsap.delayedCall(T.interval, () => {
+        const next = list[mod(i + 1, list.length)];
+        if (ready.has(next)) return step(1);
+        fetchImg(next, true).then(() => {
+          if (seq === armSeq && isOpen && playing) step(1);
+        });
+      });
   }
   function show(k: number) {
     anim?.kill();
@@ -201,6 +257,11 @@ export function createSlides(o: {
       o.hold(false);
     },
     toggle: () => (isOpen ? api.close() : api.open()),
+    warm() {
+      if (document.documentElement.classList.contains('is-mobile')) return;
+      // sırayla, düşük öncelikle: biri bitince sonraki
+      WEB.reduce<Promise<void>>((p, url) => p.then(() => fetchImg(url, false)), Promise.resolve()).catch(() => {});
+    },
   };
 
   /* ---------- denetimler ---------- */

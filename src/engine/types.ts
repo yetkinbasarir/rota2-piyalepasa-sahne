@@ -260,6 +260,8 @@ export interface ScreenTokens {
 export interface SlidesTokens {
   /** Kendiliğinden ilerleme (sn) */
   interval: number;
+  /** Görsel henüz yüklenmediyse geldiğinde belirme süresi (sn) */
+  fadeIn: number;
   /** Yatay itme geçişi: süre (sn), eğri */
   dur: number;
   ease: string;

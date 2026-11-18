@@ -399,7 +399,8 @@ export function createGallery(o: {
     el.style.cssText = `width:${f(D)}px;height:${f(D)}px;left:${f(-D / 2)}px;top:${f(-D / 2)}px`;
     const ar = show.photo ? show.photo.w / show.photo.h : 1;
     const fr = discFrame(show, ar);
-    el.innerHTML = media.img(show, { width: fr.w, height: fr.h, aspect: ar });
+    // ilk ekranın daireleri yüksek öncelikle; sonradan gelenler tembel
+    el.innerHTML = media.img(show, { width: fr.w, height: fr.h, aspect: ar, priority: firstScreen ? 'high' : undefined });
     const im = el.querySelector<HTMLElement>('img');
     if (im) im.style.transform = `translate(${f(fr.x)}px,${f(fr.y)}px)`;
     dom.stage.append(el);
@@ -638,7 +639,7 @@ export function createGallery(o: {
     const ar = show.photo ? show.photo.w / show.photo.h : 1;
     const fr = discFrame(show, ar);
     const g = fullScale(n);
-    dom.top.innerHTML = media.img(show, { width: fr.w * g.s, height: fr.h * g.s, aspect: ar });
+    dom.top.innerHTML = media.img(show, { width: fr.w * g.s, height: fr.h * g.s, aspect: ar, priority: 'high' });
     const img = dom.top.querySelector<HTMLImageElement>('img');
     if (img) {
       img.sizes = `${Math.round(Math.max(S.vw, fr.w * g.s))}px`;
@@ -726,6 +727,8 @@ export function createGallery(o: {
 
   /* ---------- video ön yüklemesi ---------- */
   let preloadOn = false;
+  /** İlk ekran sürerken kurulan daireler (görselleri yüksek öncelikli) */
+  let firstScreen = true;
   let restAt: number | null = null;
   let restFor: number | null = null;
 
@@ -949,6 +952,7 @@ export function createGallery(o: {
     },
     preload(on) {
       preloadOn = on;
+      if (on) firstScreen = false;
       restAt = null;
     },
     hold(on) {

@@ -103,6 +103,8 @@ export const rota1: Identity = {
      yan üçgenler 84px, duraklat 48px; sol altta dönüş oku 60px (görünmez 12px tıklama payı); açıkken site logosu gizli */
   slides: {
     interval: 5,
+    /* görsel henüz yüklenmediyse siyah zemin, gelince 0.3 sn'de belirir */
+    fadeIn: 0.3,
     dur: 0.8,
     ease: 'power2.inOut',
     fade: 0.5,

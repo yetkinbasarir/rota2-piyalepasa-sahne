@@ -246,6 +246,18 @@ export async function startEngine(id: Identity, shows: Show[]) {
     camera.autoplay(true);
     // ana dairenin videosu duruşta önceden hazırlanır
     gallery.preload(true);
+    // masaüstü: slayt görselleri tarayıcı boştayken arka planda, sırayla, düşük öncelikle
+    if (!S.mobile && slides) {
+      const warm = () => {
+        try {
+          slides?.warm();
+        } catch (e) {
+          console.error('[rota2] slayt görselleri', e);
+        }
+      };
+      if (typeof (window as any).requestIdleCallback === 'function') (window as any).requestIdleCallback(warm, { timeout: 3000 });
+      else window.setTimeout(warm, 3000);
+    }
     presenter = startPresentation({ S, camera, gallery, cmd, motion, id });
   });
 

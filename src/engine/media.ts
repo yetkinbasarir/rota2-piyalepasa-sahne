@@ -3,7 +3,8 @@ import type { Photo, Show } from './types';
 
 export interface Media {
   /** Doğal oranında görsel (yerleşim transform ile): taban yüksekliği px, en-boy oranı */
-  img(show: Show, opts: { width: number; height: number; aspect: number }): string;
+  /** priority: 'high' ilk görünen görseller (fetchpriority="high"); yoksa tembel (loading="lazy"); hepsi decoding="async" */
+  img(show: Show, opts: { width: number; height: number; aspect: number; priority?: 'high' }): string;
   /** Verilen gösterim genişliği için tüm A fotoğraflarını yükleyip decode eder */
   preload(shows: Show[], cssWidth: number): Promise<void>;
 }
@@ -48,7 +49,8 @@ export async function createMedia(base = '/img/'): Promise<Media> {
       const p = show.photo;
       if (!p) return '';
       const w = o.height * o.aspect;
-      return `<img class="ph phn" style="width:${w.toFixed(1)}px;height:${o.height.toFixed(1)}px;transform-origin:${show.focus.x}% ${show.focus.y}%" srcset="${srcset(p)}" sizes="${sizes(Math.max(o.width, w))}" src="${fallback(p)}" alt="" draggable="false">`;
+      const load = o.priority === 'high' ? 'fetchpriority="high"' : 'loading="lazy"';
+      return `<img class="ph phn" style="width:${w.toFixed(1)}px;height:${o.height.toFixed(1)}px;transform-origin:${show.focus.x}% ${show.focus.y}%" srcset="${srcset(p)}" sizes="${sizes(Math.max(o.width, w))}" src="${fallback(p)}" alt="" draggable="false" decoding="async" ${load}>`;
     },
 
     async preload(shows, cssWidth) {
