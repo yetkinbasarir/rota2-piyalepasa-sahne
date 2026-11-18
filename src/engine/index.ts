@@ -24,8 +24,11 @@ export async function startEngine(id: Identity, shows: Show[]) {
   const dom = buildDom(id);
   const S = createState();
   measure(S, id);
-  // ilk ekran (index.html'de satır içi siyah katman): galerinin üstünde, sitenin logosu ve üye düğmelerinin altında
-  const loader = createLoader({ id, motion, surface: dom.surface, brand: dom.brand, members: dom.members });
+  // ilk ekran (index.html'de satır içi siyah katman): galeri gizli, sitenin logosu ve üye düğmeleri üstünde
+  const loader = createLoader({
+    id, motion, surface: dom.surface, brand: dom.brand, members: dom.members,
+    gallery: [dom.shadows, dom.stage, dom.ui],
+  });
 
   const media = await createMedia();
   let visible: () => Iterable<Element> = () => [];

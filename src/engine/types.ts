@@ -300,8 +300,11 @@ export interface Identity {
   /** İlk ekran (loader.ts): zemin ve logo rengi; süzülen dairelerin sayısı, çap aralığı (W; web / mobil) ve
       küçüklere eğilim (kuvvet üssü); derinlik: opaklık [en küçük, en büyük], en küçüğün bulanıklığı (W); hız
       [en küçük, en büyük] (W/sn) ve rastgele sapma oranı; dik salınım genliği (W) ve periyot aralığı (sn); ilk
-      belirme toplam süresi ve her dairenin belirme süresi (sn); çıkış kayması; QR'ın sessiz alanı (modül; kare
-      kenarı logonun yüksekliği, sağ altta) */
+      belirme toplam süresi ve her dairenin belirme süresi (sn); eğim (°: temel aralıklar, ±salınım, periyot);
+      ışık havuzu (merkez W / H, yarıçaplar web / mobil, düşüş eğrisi üssü, nefes [en az, en çok] ve döngü sn,
+      sıfırlandığı uzaklık (elips yarıçapının katı), karanlıkta örtünün en fazla opaklığı); gölgenin dairenin altında
+      uzaklığı (çapın katı) ve en küçük dairede bulanıklık katı; çıkış (ışıkla: süre, eğri, ışığın büyüme katı,
+      dairelerin kayboluşu sn ve dışa kayması W, galerinin belirme başlangıcı ve süresi); QR'ın sessiz alanı */
   loader: {
     background: string; logoColor: string;
     count: { web: number; mobile: number };
@@ -310,7 +313,13 @@ export interface Identity {
     speed: [number, number]; speedJitter: number;
     sway: { amp: number; period: [number, number] };
     fadeIn: { total: number; each: number };
-    exit: { dur: number; ease: string };
+    tilt: { x: [number, number]; y: [number, number]; z: [number, number]; sway: number; period: [number, number] };
+    light: {
+      x: number; y: number; rx: { web: number; mobile: number }; ry: { web: number; mobile: number };
+      curve: number; breathe: [number, number]; cycle: number; falloff: number; dim: number;
+    };
+    shadow: { below: number; softSmall: number };
+    exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };
     qr: { margin: number };
   };
   /** Sitenin herkese açık adresi (QR kodu); boşsa sayfanın kendi adresi */

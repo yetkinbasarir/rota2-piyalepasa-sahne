@@ -164,7 +164,7 @@ export const rota1: Identity = {
   /* ilk ekran: düz siyah, logo beyaz (galerideki yerinde). Süzülen daireler: web 14 (0.04–0.16W), mobil 8
      (0.10–0.34W), az büyük çok küçük; opaklık 0.45 (en küçük) – 1 (en büyük), bulanıklık 0.004W – 0; hız
      0.01–0.03W/sn (büyükler hızlı, ±%15), dik salınım 0.01W, 6–12 sn; 1.5 sn içinde rastgele sırayla 0.5 sn'de
-     belirir. Çıkış: zemin, daireler ve QR 0.9 sn power3.inOut yukarı kayar. Logo sol altta (alt boşluğu galerideki Üye Ol / Giriş'inki); web: sağ altta logoyla aynı üst ve
+     belirir. Çıkış ışıkla (aşağıda). Logo sol altta (alt boşluğu galerideki Üye Ol / Giriş'inki); web: sağ altta logoyla aynı üst ve
      altta QR (kenarı logonun yüksekliği, 1 modül sessiz alan) ve sağında alt alta Üye Ol / Giriş (çap (logo − g) / 2,
      g düğmeler arası boşluk); mobil: düğmeler yan yana sağ altta, kısa logonun üstüyle hizalı. Çıkışta logo ve
      düğmeler aynı sürede galerideki yerlerine (düğmeler galerideki boyuna) gider */
@@ -176,7 +176,18 @@ export const rota1: Identity = {
     speed: [0.01, 0.03], speedJitter: 0.15,
     sway: { amp: 0.01, period: [6, 12] },
     fadeIn: { total: 1.5, each: 0.5 },
-    exit: { dur: 0.9, ease: 'power3.inOut' },
+    /* eğik daireler (galerinin eğimi ve perspektifi): temel eğim rastgele rotateX 20–34°, rotateY −30…−14°,
+       rotateZ −12…−4°; açılar ±15° sinüsle, 10–20 sn periyot, rastgele fazla salınır */
+    tilt: { x: [20, 34], y: [-30, -14], z: [-12, -4], sway: 15, period: [10, 20] },
+    /* ışık havuzu: merkez 0.50W, 0.60H; yarıçap 0.45W × 0.22H (mobil 0.60W × 0.30H), galeri köşegeni açısında;
+       merkezde zemin grisi, (1 − t²)² ile siyaha; yoğunluk 0.92–1, 8 sn döngü. Işık katsayısı elipste 1, yarıçapın
+       1.8 katında 0; karanlıktaki daire siyah örtüyle (en fazla 0.65) %35 parlaklığa */
+    light: { x: 0.5, y: 0.6, rx: { web: 0.45, mobile: 0.6 }, ry: { web: 0.22, mobile: 0.3 }, curve: 2, breathe: [0.92, 1], cycle: 8, falloff: 1.8, dim: 0.65 },
+    /* gölge: dairenin 0.6 çap altında, galeri gölgesi gibi; en küçük dairede bulanıklık 0.6 kat (daha küçük, yumuşak) */
+    shadow: { below: 0.6, softSmall: 0.6 },
+    /* çıkış ışıkla: 1.0 sn power2.inOut ışık 4 katına büyüyüp yataylaşır, her yer griye döner; daireler, gölgeler
+       ve QR 0.6 sn'de 0.04W dışa kayarak kaybolur; galeri 0.6 sn'de başlayıp 0.5 sn'de belirir */
+    exit: { dur: 1.0, ease: 'power2.inOut', lightScale: 4, fade: 0.6, drift: 0.04, galleryAt: 0.6, galleryDur: 0.5 },
     qr: { margin: 1 },
   },
   /* QR kodunun göstereceği herkese açık adres (boşsa sayfanın kendi adresi) */
