@@ -30,7 +30,7 @@ export const rota1: Identity = {
       mainX: { web: 0.54, mobile: 0.5 },
       mainY: { web: 0.518, mobile: 0.608 },
       /* bütün grup (daireler ve gölgeleri) 0.04H yukarıda; aralık ve ölçüler aynı */
-      lift: { web: 0.04, mobile: 0.04 },
+      lift: { web: 0.04, mobile: 0 },
       /* temel çap: üye düğmelerinin altı ile Bilet Al'ın üstündeki alt sınır arasında 0.03H boşlukla en büyük, en
          fazla 0.48W (mobil 0.82W); ana daire bunun %15 büyüğü */
       gap: 0.03,
@@ -83,6 +83,9 @@ export const rota1: Identity = {
        0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
        aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
     open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
+    /* mobil dikey sayfa: ana daire 0.82W, ortada, tanıtımın çizgisinin hemen altında; metin değişince daireler
+       0.5 sn'de yeni yerine kayar; künye ilk dokunuşta 0.5 sn power2.out açılır; sayfa kaydırma ataleti 0.3 sn */
+    mobile: { mainD: 0.82, flow: { dur: 0.5, ease: 'power2.out' }, kunye: { dur: 0.5, ease: 'power2.out' }, throw: 0.3 },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
   },
@@ -132,7 +135,7 @@ export const rota1: Identity = {
        0.0064W (mobilde 0.015W). Başlığın büyük harf üstü logonun üstüyle aynı çizgide. Açık hâlde başlık ve altındaki
        çizgi yerinde kalıp beyaza döner, sütunun geri kalanı kaybolur */
     info: {
-      width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.075 }, titleLh: 1.05,
+      width: 0.21, minWidth: 300, title: { web: 0.028, mobile: 0.064 }, titleLh: 1.05,
       titleLines: 2, ruleGap: { web: 0.0064, mobile: 0.015 }, mobilePad: 0.02,
     },
     stage: { gap: 0.015 },
@@ -142,7 +145,8 @@ export const rota1: Identity = {
     button: { fill: '#FFFFFF', fit: 0.68 },
     /* uzun ve kısa logo sol üstte, sol kenarı ekranın sol kenarında, aynı yükseklikte (0.216H), üstten 0.04H.
        0.012W kenar boşluğu: sağ sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan, × sağdan */
-    logo: { h: 0.216, top: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
+    /* mobil: uzun logo sol üstte, 0.52W genişlikte, üstten 0.02H */
+    logo: { h: 0.216, top: 0.04, letter: 0.012, mobileW: 0.52, mobileTop: 0.02 },
     /* Üye Ol / Giriş: masaüstünde sol altta (soldan logonun harf boşluğu, alttan Bilet Al'ınki); mobilde sağ üstte */
     members: { d: 0.09, gap: 0.012, pad: 0.02, mobileD: 0.11 },
     swap: { shift: 8, stagger: 0.04, total: 0.6 },

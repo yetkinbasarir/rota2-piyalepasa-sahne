@@ -34,10 +34,11 @@ const present = (v: string) => !!v && v !== '—' && v !== '-' && v.toLocaleLowe
    boşluk (.lr-g). Açık hâlde başlık ve altındaki çizgi yerinde kalır (beyaza döner), geri kalanı (.gi-rest)
    kaybolup kapanır */
 function info(s: Show, ctx: TemplateContext) {
-  const desc = !ctx.mobile && s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
-  const rows = credits(s, ctx);
+  const desc = s.intro ? `<p class="gdesc ln">${txt(ctx, s.intro)}</p>` : '';
+  // mobilde künye ayrı (ana dairenin altında, dokununca açılır): burada yalnızca tanıtım ve altındaki çizgi
+  const rows = ctx.mobile ? [] : credits(s, ctx);
   let rest = '';
-  if (desc) rest += desc + (rows.length ? rule(true) : '');
+  if (desc) rest += desc + (rows.length || ctx.mobile ? rule(true) : '');
   rest += rows.join(rule());
   return `<h2 class="gt ln">${txt(ctx, s.title)}</h2>${rule(true)}<div class="gi-rest">${rest}</div>`;
 }
@@ -64,7 +65,7 @@ function credits(s: Show, ctx: TemplateContext): string[] {
   if (stage) rows.push(row('Sahne', txt(ctx, stage)));
   const director = s.credits.find((r) => r.field.toLocaleLowerCase('tr') === 'yöneten');
   if (director) rows.push(row('Yöneten', txt(ctx, director.people.join(', '))));
-  if (!ctx.mobile && s.cast.length) {
+  if (s.cast.length) {
     const names = s.cast.slice(0, SURFACE.castMax).map((c) => `<span>${txt(ctx, c.name)}</span>`).join('');
     rows.push(row('Oyuncular', names, ' gv-col'));
   }
@@ -93,4 +94,9 @@ export const templates: Templates = {
   info,
   circleButtons,
   closeIcon,
+  /** Mobil künye: her satırın üstünde aynalı logo çizgisi */
+  credits: (s, ctx) => {
+    const rows = credits(s, ctx);
+    return rows.length ? rule() + rows.join(rule()) : '';
+  },
 };

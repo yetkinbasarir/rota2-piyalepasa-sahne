@@ -4,12 +4,12 @@
    `loader` token'ları.
 
    Yerleşim: logo ve düğmeler sitenin kendi öğeleri, transform ile başka yerde (logo beyaz):
-   - logo (web uzun, mobil kısa) sol altta, sol kenarı x = 0, galerideki boyunda; alt boşluğu galerideki
+   - uzun logo (mobilde 0.52W) sol altta, sol kenarı x = 0, galerideki boyunda; alt boşluğu galerideki
      Üye Ol / Giriş'inki;
    - web: sağ altta logoyla tek blok: beyaz karede QR (kenarı logonun yüksekliği), sağında alt alta Üye Ol / Giriş
      (çap (logo yüksekliği − g) / 2; g düğmeler arası boşluk; kare ile düğmeler arası da g). Bloğun üstü logonun
      üstü, altı logonun altı; sağ kenarı sağ sütunun sağ boşluğunda;
-   - mobil (QR yok): düğmeler yan yana sağ altta, üstleri kısa logonun üstüyle hizalı.
+   - mobil (QR yok): düğmeler yan yana sağ altta, üstleri logonun üstüyle hizalı.
 
    Işık: zemine düşen ışık; ekranın altında, perspektifle görülen geniş, yassı, hafif çapraz bir elips (altta ve
    yanlarda ekran dışına taşar). Merkez tepesi yok: içte eşit parlaklıkta düz plato (galeri grisinin `level`
@@ -533,7 +533,7 @@ export function createLoader(o: {
     const btns = buttons();
     // galerideki yerler: transform'lar kaldırılıp ölçülür
     gsap.set([o.brand, ...btns], { x: 0, y: 0, scale: 1 });
-    const lg = o.brand.querySelector<HTMLElement>(mob ? '.lg-s' : '.lg-l')?.getBoundingClientRect();
+    const lg = o.brand.querySelector<HTMLElement>('.lg-l')?.getBoundingClientRect();
     if (!lg) return;
     // logo: sol altta, alt boşluğu galerideki Üye Ol / Giriş'inki
     const bottom = H - (parseFloat(css.getPropertyValue('--gc-bottom')) || 0);

@@ -43,7 +43,7 @@ export function measure(S: State, id: Identity) {
   S.vw = innerWidth;
   S.vh = innerHeight;
   // mobil (n = 1): dikey dar ekran; görünür alan yüksekliği (100dvh / visualViewport)
-  S.mobile = S.vw < S.vh && S.vw < 760;
+  S.mobile = S.vw < S.vh && S.vw < 768;
   S.safeTop = S.safeBottom = 0;
   if (S.mobile) {
     const vp = viewportMetrics();

@@ -103,6 +103,8 @@ export interface Templates {
       (+ sayaç) / SAHNE / YÖNETEN / OYUNCULAR). Satır satır geçiş için her satır .ln taşır; mobilde tanıtım ve
       oyuncular yok */
   info(show: Show, ctx: TemplateContext): string;
+  /** Mobil künye (ana dairenin ve Bilet Al'ın altında, dokununca açılır): her satırın üstünde aynalı logo çizgisi */
+  credits(show: Show, ctx: TemplateContext): string;
   /** Daire düğmeler: [etiket, data-act] çiftleri */
   circleButtons(items: [string, string][], ctx: TemplateContext): string;
   /** Kapatma ikonu: daire içinde × (tek inline SVG) */
@@ -199,6 +201,11 @@ export interface GalleryTokens {
       başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sağdan
       kırpılıp kısa logoya geçişi (colorDur sn, logoEase) */
   open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string; logoEase: string };
+  /** Mobil dikey sayfa: ana dairenin çapı (W), metin değişince dairelerin yeni yerine kayması, künyenin açılması
+      (sn, eğri), sayfa kaydırmanın ataleti (bırakma hızının ileri izdüşüm süresi, sn) */
+  mobile: {
+    mainD: number; flow: { dur: number; ease: string }; kunye: { dur: number; ease: string }; throw: number;
+  };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
   /** Tekerlek: bir adım için kaydırma (H oranı); duruşta son yöne eğilim (adım) */
@@ -234,9 +241,9 @@ export interface ScreenTokens {
   /** Daire düğmeler: dolgu; yazı tek satırda en fazla çapın `fit` oranı genişlikte (rahat iç boşluk) */
   button: { fill: string; fit: number };
   /** Logo: masaüstünde sol üstte (sol kenarı x = 0) uzun ve kısa logonun yüksekliği, üst boşluk; `letter`: kenar
-      boşluğu (W; sağ sütunun sağdan, Üye Ol / Giriş'in soldan, ×'in sağdan uzaklığı); mobilde sol altta kısa logo
-      yüksekliği ve alt boşluğu */
-  logo: { h: number; top: number; letter: number; mobileH: number; mobileBottom: number };
+      boşluğu (W; sağ sütunun sağdan, Üye Ol / Giriş'in soldan, ×'in sağdan uzaklığı); mobilde uzun logonun
+      genişliği (W) ve üst boşluğu (H) */
+  logo: { h: number; top: number; letter: number; mobileW: number; mobileTop: number };
   /** Üye Ol / Giriş: çap, aralık; mobilde sağ üstte üst ve sağ boşluk, çap (W oranı); masaüstünde sol altta
       (logo.letter, ticket.bottom); yazı boyu etiket boyu */
   members: { d: number; gap: number; pad: number; mobileD: number };

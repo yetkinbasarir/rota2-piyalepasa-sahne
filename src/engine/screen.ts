@@ -2,8 +2,9 @@
    Bütün ölçüler kimliğin `screen` token'ları (H'nin, belirtilenler W'nin oranı).
    Masaüstü: uzun logo sol üstte, sol kenarı ekranın sol kenarında (SVG'nin çizgileri kenardan başlar); açık
    hâlde uzun logo sağdan kısa logonun genişliğine kırpılırken kısa logo aynı yerde, aynı yükseklikte belirir. Sağda başlık / tanıtım / künye sütunu, sol altta Üye Ol / Giriş.
-   Mobil: yalnızca kısa logo (sol altta); üye düğmeleri sağ üstte, altlarında başlık ve künye. */
-import { pickLogo, layoutLogo, logoVbHeight } from './logo';
+   Mobil (dikey sayfa): sol üstte uzun logo (0.52W), sağ üstte üye düğmeleri; altta başlık ve tanıtım, sonra daire
+   şeridi, Bilet Al ve dokununca açılan künye (gallery.ts). */
+import { layoutLogo, logoVbHeight, logoWidth } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
 import type { Identity, TemplateContext, TypeRole } from './types';
@@ -34,8 +35,13 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--cb-d', d);
   px('--cb-gap', T.members.gap * H);
   const ms = dom.members.style;
+  // logo: masaüstünde yüksekliği logo.h·H; mobilde uzun logo logo.mobileW·W genişlikte (yükseklik orandan)
+  const L = id.logo;
+  const logoH = S.mobile ? (T.logo.mobileW * W * logoVbHeight(L.long)) / logoWidth(L.long, logoVbHeight(L.long)) : T.logo.h * H;
+  const logoTop = S.safeTop + (S.mobile ? T.logo.mobileTop : T.logo.top) * H;
   if (S.mobile) {
-    ms.top = `${(pad + S.safeTop).toFixed(2)}px`;
+    // mobil: sağ üstte, üstleri logonun üstüyle hizalı
+    ms.top = `${logoTop.toFixed(2)}px`;
     ms.right = `${pad.toFixed(2)}px`;
     ms.left = ms.bottom = '';
   } else {
@@ -53,13 +59,12 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   px('--fit-top', S.safeTop + (S.mobile ? pad + d : id.gallery.layout.fitTop * H));
 
   /* başlık, tanıtım ve künye sütunu: masaüstünde sağda (sağ kenarı sağdan logonun ilk harfi kadar), başlığın büyük
-     harf üstü logonun üstüyle aynı çizgide; mobilde sol üstte üye düğmelerinin altında (üstünü galeri verir) */
+     harf üstü logonun üstüyle aynı çizgide; mobilde logonun altında tam genişlikte */
   const titleFs = (S.mobile ? T.info.title.mobile : T.info.title.web) * W;
-  const logoTop = S.safeTop + T.logo.top * H;
   const giW = S.mobile ? W - 2 * mpad : Math.max(T.info.width * W, T.info.minWidth);
   const giLeft = S.mobile ? mpad : W - letterX - giW;
   px('--gi-left', giLeft);
-  if (!S.mobile) px('--gi-top', logoTop - capOffset(T.type.title, titleFs, T.info.titleLh));
+  px('--gi-top', S.mobile ? logoTop + logoH + mpad : logoTop - capOffset(T.type.title, titleFs, T.info.titleLh));
   px('--gi-w', giW);
   // sütundaki çizgiler sağda ekran kenarını geçer: sütunun sağ kenarından ekranın sağ kenarına
   px('--gi-out', W - giLeft - giW);
@@ -69,7 +74,7 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
 
   /* logo çizgisi (başlığın ve tanıtımın altında, künyede aynası): kalınlığı ve elması uzun logonun ekrandaki
      ölçeğinde (thick / viewBox yüksekliği × uzun logonun yüksekliği); üstünde ve altında ruleGap */
-  const lk = (T.logo.h * H) / logoVbHeight(id.logo.long);
+  const lk = logoH / logoVbHeight(id.logo.long);
   px('--lr-t', id.logo.long.thick * lk);
   px('--lr-d', DIAMOND_H * lk);
   px('--lr-gap', (S.mobile ? T.info.ruleGap.mobile : T.info.ruleGap.web) * W);
@@ -94,19 +99,10 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
     el.style.height = `${h}px`;
     el.style.top = `${snapPx(top)}px`;
   };
-  const L = id.logo;
-  if (S.mobile) {
-    const h = T.logo.mobileH * H;
-    // sol kenarı ekranın sol kenarında (x = 0); SVG'nin çizgileri kenardan başlar
-    const lay = layoutLogo(pickLogo(id, h, W, true), h, 0);
-    place(short, lay.html, lay.width, h, H - S.safeBottom - T.logo.mobileBottom * H - h);
-    long.innerHTML = '';
-    long.style.display = 'none';
-    short.style.opacity = '1';
-  } else {
-    // uzun ve kısa logo: sol kenarları ekranın sol kenarında (x = 0), aynı üst y ve aynı yükseklikte; SVG'lerin
-    // çizgileri kenardan başlar (uzantı yok)
-    const h = T.logo.h * H;
+  {
+    // uzun ve kısa logo (mobilde de): sol kenarları ekranın sol kenarında (x = 0), aynı üst y ve aynı yükseklikte;
+    // SVG'lerin çizgileri kenardan başlar (uzantı yok). Kısa logo yalnızca açık hâlde
+    const h = logoH;
     const lay = layoutLogo(L.long, h, 0);
     place(long, lay.html, lay.width, h, logoTop);
     const lays = layoutLogo(L.short, h, 0);
