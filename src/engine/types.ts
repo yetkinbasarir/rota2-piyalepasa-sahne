@@ -320,6 +320,12 @@ export interface Identity {
       fade: number; topFade: number; level: number; resolution: number; breathe: [number, number]; cycle: number; dim: number;
     };
     grain: { opacity: number; frequency: number; tile: number };
+    /** Açılış sayacı: hedef (duvar saati "YYYY-MM-DDTHH:MM") ve saat dilimi, rakamların ve etiketlerin "wght"
+        değeri, etiketlerin rakamlarla arası (px), etiketler (ay, gün, saat, dakika, saniye), renk */
+    countdown: {
+      openingDate: string; timeZone: string; wght: number; labelWght: number; labelGap: number;
+      labels: [string, string, string, string, string]; color: string;
+    };
     shadow: { below: number; softSmall: number };
     exit: { dur: number; ease: string; lightScale: number; fade: number; drift: number; galleryAt: number; galleryDur: number };
     qr: { margin: number };

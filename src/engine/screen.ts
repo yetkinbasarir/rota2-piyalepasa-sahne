@@ -151,7 +151,7 @@ export function fitTitles(root: ParentNode, lines: number, lh: number) {
 
 /** Bir yazı rolünün satır kutusunun üstünden ilk satırın büyük harf ("H") üstüne uzaklık (px): yarım satır
     aralığı + fontun üst payı − büyük harf yüksekliği (canvas measureText) */
-function capOffset(role: TypeRole, fs: number, lh: number) {
+export function capOffset(role: TypeRole, fs: number, lh: number) {
   const c = document.createElement('canvas').getContext('2d');
   if (!c) return 0;
   c.font = `${role.style ?? 'normal'} ${role.weight} ${fs}px ${role.family}`;

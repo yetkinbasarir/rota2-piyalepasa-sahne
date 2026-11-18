@@ -25,6 +25,12 @@
    siyah örtüyle (opaklık en fazla dim) kararır. Her dairenin zemine düşen bulanık eliptik gölgesi (galeri
    gölgeleri gibi) dairenin altında, eğimini izler; opaklığı galeri gölge opaklığı × gölgenin yerindeki ışık.
 
+   Açılış sayacı: üstte, venue açılışına (countdown.openingDate, countdown.timeZone) takvimle ay, sonra gün, saat,
+   dakika, saniye; AA.GG.SS.DD.SS, saniye saniye. config-mono-vf en ince ağırlıkta, beyaz; bütün dizi kenar
+   boşluğundan kenar boşluğuna ekran genişliğini kaplar (yazı boyu genişliğe sığdırılır), büyük harf üstü galerinin
+   logo / başlık üst çizgisinde. Her ikili grubun altında ortalı etiket (AY, GÜN, SAAT, DAKİKA, SANİYE). Dairelerin
+   ve ışığın üstünde; çıkışta QR ile birlikte kaybolur.
+
    Çıkış (düğmeler ve QR dışında tıklama / dokunma ya da tuş): ışık büyüyüp yataylaşarak ekranı kaplar ve her yer
    galeri grisine döner; daireler, gölgeleri ve QR hafifçe dışa kayarak kaybolur; logo ve düğmeler galerideki
    yerlerine gider (logo beyazdan siyaha); ardından galerinin daireleri, gölgeleri ve yazıları grinin üstünde
@@ -34,6 +40,7 @@ import { gsap } from './motion';
 import type { Motion } from './motion';
 import type { Media } from './media';
 import type { Identity, Show } from './types';
+import { capOffset } from './screen';
 
 export interface Loader {
   /** Galeri hazır: daireler başlar, çıkış açılır */
@@ -375,9 +382,103 @@ export function createLoader(o: {
       if (exited) return;
       build(false);
       arrange();
+      fitCd();
     }, 200);
   };
   addEventListener('resize', onResize);
+
+  /* ---------- açılış sayacı ---------- */
+  const CD = LD.countdown;
+  const cd = document.createElement('div');
+  cd.className = 'ld-cd';
+  cd.style.color = CD.color;
+  const groups = CD.labels.map((label) => {
+    const g = document.createElement('span');
+    g.className = 'ld-cd-g';
+    g.innerHTML = `<span class="ld-cd-n">00</span><span class="ld-cd-l">${label}</span>`;
+    return g;
+  });
+  groups.forEach((g, i) => {
+    if (i) {
+      const dot = document.createElement('span');
+      dot.className = 'ld-cd-n';
+      dot.textContent = '.';
+      cd.append(dot);
+    }
+    cd.append(g);
+  });
+  cd.style.fontVariationSettings = `"wght" ${CD.wght}`;
+  for (const l of cd.querySelectorAll<HTMLElement>('.ld-cd-l')) {
+    l.style.fontVariationSettings = `"wght" ${CD.labelWght}`;
+    l.style.marginTop = `${CD.labelGap}px`;
+  }
+  ui.append(cd);
+  const nums = groups.map((g) => g.firstElementChild as HTMLElement);
+  /** Bir anın verilen saat dilimindeki duvar saati (UTC alanlarında) */
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: CD.timeZone, hourCycle: 'h23',
+    year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+  });
+  const wallOf = (ms: number) => {
+    const p: Record<string, number> = {};
+    for (const x of fmt.formatToParts(new Date(ms))) if (x.type !== 'literal') p[x.type] = +x.value;
+    return new Date(Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second));
+  };
+  // hedef: openingDate, o saat diliminin duvar saati olarak
+  const tp = /^(\d+)-(\d+)-(\d+)[T ](\d+):(\d+)(?::(\d+))?/.exec(CD.openingDate)!;
+  const target = Date.UTC(+tp[1], +tp[2] - 1, +tp[3], +tp[4], +tp[5], +(tp[6] ?? 0));
+  /** a'ya takvimle n ay ekle (ayın son gününe sıkıştırarak) */
+  const addMonths = (a: Date, n: number) => {
+    const y = a.getUTCFullYear();
+    const m = a.getUTCMonth() + n;
+    const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    return Date.UTC(y, m, Math.min(a.getUTCDate(), last), a.getUTCHours(), a.getUTCMinutes(), a.getUTCSeconds());
+  };
+  const pad = (v: number) => String(Math.max(0, Math.min(99, v))).padStart(2, '0');
+  function tickCd() {
+    const now = wallOf(Date.now());
+    let mo = 0;
+    let d = 0, h = 0, mi = 0, s = 0;
+    if (now.getTime() < target) {
+      const t = new Date(target);
+      mo = (t.getUTCFullYear() - now.getUTCFullYear()) * 12 + (t.getUTCMonth() - now.getUTCMonth());
+      while (mo > 0 && addMonths(now, mo) > target) mo--;
+      let rem = Math.floor((target - addMonths(now, mo)) / 1000);
+      d = Math.floor(rem / 86400);
+      rem -= d * 86400;
+      h = Math.floor(rem / 3600);
+      rem -= h * 3600;
+      mi = Math.floor(rem / 60);
+      s = rem - mi * 60;
+    }
+    [mo, d, h, mi, s].forEach((v, i) => (nums[i].textContent = pad(v)));
+  }
+  tickCd();
+  let cdTimer = 0;
+  const armCd = () => {
+    clearTimeout(cdTimer);
+    // saniye sınırına hizalı
+    cdTimer = window.setTimeout(() => {
+      tickCd();
+      armCd();
+    }, 1000 - (Date.now() % 1000) + 5);
+  };
+  armCd();
+  /** Yazı boyu: dizi kenar boşluğundan kenar boşluğuna; büyük harf üstü galerinin logo / başlık üst çizgisinde */
+  function fitCd() {
+    const m = id.screen.logo.letter * innerWidth;
+    cd.style.fontSize = '100px';
+    cd.style.left = `${m.toFixed(2)}px`;
+    const w = cd.getBoundingClientRect().width;
+    const fs = w > 0 ? (100 * (innerWidth - 2 * m)) / w : 100;
+    cd.style.fontSize = `${fs.toFixed(3)}px`;
+    const css = getComputedStyle(document.documentElement);
+    const line = (parseFloat(css.getPropertyValue('--safe-top')) || 0) + id.screen.logo.top * innerHeight;
+    const role = { family: id.screen.type.number.family, weight: CD.wght };
+    cd.style.top = `${(line - capOffset(role, fs, 1)).toFixed(2)}px`;
+  }
+  fitCd();
+  document.fonts?.ready.then(() => !exited && fitCd());
 
   /* ---------- QR (yalnızca web): sağ altta beyaz kare ---------- */
   const isLocal = (h: string) =>
@@ -489,6 +590,7 @@ export function createLoader(o: {
     const tl = gsap.timeline({
       onComplete: () => {
         gone = true;
+        clearTimeout(cdTimer);
         run(false);
         document.removeEventListener('visibilitychange', onVis);
         removeEventListener('resize', onResize);
@@ -507,6 +609,8 @@ export function createLoader(o: {
     // daireler, gölgeleri ve QR hafifçe dışa kayarak kaybolur
     tl.to(out, { v: 1, duration: X.fade * k, ease: 'power1.in' }, 0);
     if (qrBox) tl.to(qrBox, { opacity: 0, duration: X.fade * k, ease: 'none' }, 0);
+    // açılış sayacı QR ile birlikte kaybolur
+    tl.to(cd, { opacity: 0, duration: X.fade * k, ease: 'none' }, 0);
     // logo galerideki yerine (sol üst), yolda beyazdan siyaha; düğmeler galerideki yerlerine ve boylarına
     tl.to(o.brand, { y: 0, color: id.screen.text, ...main }, 0);
     tl.to(btns, { x: 0, y: 0, scale: 1, ...main }, 0);

@@ -189,6 +189,12 @@ export const rota1: Identity = {
     },
     /* zemin greni: ince tek renkli gürültü, %5 opaklık, bütün ekranda (aydınlık alanda görünür) */
     grain: { opacity: 0.05, frequency: 0.9, tile: 200 },
+    /* açılış sayacı: 18 Mayıs 2027 20:00 (İstanbul) açılışına AA.GG.SS.DD.SS; config-mono-vf en ince (wght 100),
+       beyaz, ekran genişliğinde (kenar boşlukları 0.012W); altında etiketler wght 700, künye etiketi boyunda, 6px arayla */
+    countdown: {
+      openingDate: '2027-05-18T20:00', timeZone: 'Europe/Istanbul', wght: 100, labelWght: 700, labelGap: 6,
+      labels: ['Ay', 'Gün', 'Saat', 'Dakika', 'Saniye'], color: '#FFFFFF',
+    },
     /* gölge: dairenin 0.6 çap altında, galeri gölgesi gibi; en küçük dairede bulanıklık 0.6 kat (daha küçük, yumuşak) */
     shadow: { below: 0.6, softSmall: 0.6 },
     /* çıkış ışıkla: 1.0 sn power2.inOut ışık 4 katına büyüyüp yataylaşır, her yer griye döner; daireler, gölgeler

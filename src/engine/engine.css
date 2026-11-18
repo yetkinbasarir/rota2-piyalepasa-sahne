@@ -132,6 +132,17 @@ img, video { -webkit-user-drag: none; }
 .ldc img { position: absolute; left: 0; top: 0; max-width: none; display: block; }
 /* karanlıkta kararma: siyah örtü (opaklık) */
 .ldc-dim { position: absolute; inset: 0; opacity: 0; pointer-events: none; will-change: opacity; }
+/* açılış sayacı: ikili gruplar ve noktalar tek satırda, eşit genişlikte rakamlar; etiketler grubun altında ortalı */
+.ld-cd {
+  position: absolute; display: flex; align-items: flex-start; white-space: nowrap; line-height: 1; pointer-events: none;
+  font-family: var(--t-number-family); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1;
+}
+.ld-cd-n { display: block; line-height: 1; }
+.ld-cd-g { position: relative; display: block; }
+.ld-cd-l {
+  position: absolute; left: 50%; top: 100%; transform: translateX(-50%); white-space: nowrap; line-height: 1;
+  font-family: var(--t-label-family); font-size: var(--fs-label); letter-spacing: var(--ls-label); text-transform: uppercase;
+}
 .ld-qr { position: absolute; background: #fff; pointer-events: auto; line-height: 0; display: flex; align-items: center; justify-content: center; }
 
 /* ---------- × ---------- */
