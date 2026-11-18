@@ -301,7 +301,7 @@ export interface Identity {
       küçüklere eğilim (kuvvet üssü); derinlik: opaklık [en küçük, en büyük], en küçüğün bulanıklığı (W); hız
       [en küçük, en büyük] (W/sn) ve rastgele sapma oranı; dik salınım genliği (W) ve periyot aralığı (sn); ilk
       belirme toplam süresi ve her dairenin belirme süresi (sn); çıkış kayması; QR'ın sessiz alanı (modül; kare
-      Üye Ol / Giriş kadar geniş, üstlerinde) */
+      kenarı logonun yüksekliği, sağ altta) */
   loader: {
     background: string; logoColor: string;
     count: { web: number; mobile: number };

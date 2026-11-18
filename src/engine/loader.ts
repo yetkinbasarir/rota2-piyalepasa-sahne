@@ -2,9 +2,14 @@
    görünür; motor onu yüzeyin içine, galerinin ve yazıların üstüne, sitenin logosu ve Üye Ol / Giriş düğmelerinin
    altına taşır. Bütün sayılar kimliğin `loader` token'ları.
 
-   Logo ve Üye Ol / Giriş: sitenin kendi öğeleri, galerideki yerlerinde ve boylarında (logo beyaz). Sol altta
-   (yalnızca web), Üye Ol / Giriş'in hemen üstünde beyaz karede QR kodu: iki düğme (aradaki boşluk dahil) kadar
-   geniş, düğmelerle arası düğmeler arası boşluk kadar.
+   Logo ve Üye Ol / Giriş: sitenin kendi öğeleri, ilk ekranda transform ile başka yerde (logo beyaz):
+   - logo (web uzun, mobil kısa) sol altta, sol kenarı x = 0, galerideki boyunda; alt boşluğu galerideki
+     Üye Ol / Giriş'inki;
+   - web: sağ altta logoyla tek blok: beyaz karede QR (kenarı logonun yüksekliği), sağında alt alta Üye Ol / Giriş
+     (çap (logo yüksekliği − g) / 2; g düğmeler arası boşluk; kare ile düğmeler arası da g). Bloğun üstü logonun
+     üstü, altı logonun altı; sağ kenarı sağ sütunun sağ boşluğunda;
+   - mobil (QR yok): düğmeler yan yana sağ altta, üstleri kısa logonun üstüyle hizalı.
+   Çıkışta logo ve düğmeler kayma ile aynı sürede galerideki yerlerine (ve düğmeler galerideki boylarına) gider.
 
    Süzülen daireler: düz (eğimsiz), her biri farklı bir gösterinin görseli, tam renkli, galeri daireleriyle aynı
    odak / kırpımla. Çaplar rastgele [min, max]·W (az büyük, çok küçük); küçükler uzakta: opaklık ve bulanıklık
@@ -55,6 +60,8 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
   root.style.zIndex = '1';
   root.style.background = LD.background;
   gsap.set(o.brand, { color: LD.logoColor });
+  // logo ve düğmeler ilk ekrandaki yerlerine konana kadar gizli
+  gsap.set([o.brand, o.members], { autoAlpha: 0 });
   const field = root.querySelector<HTMLElement>('#ld-c')!;
   const ui = root.querySelector<HTMLElement>('#ld-ui')!;
 
@@ -180,29 +187,25 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
     rt = window.setTimeout(() => {
       if (exited) return;
       build(false);
-      syncQr();
+      arrange();
     }, 200);
   };
   addEventListener('resize', onResize);
 
-  /* ---------- QR (yalnızca web): sol altta, Üye Ol / Giriş'in üstünde beyaz kare ---------- */
+  /* ---------- QR (yalnızca web): sağ altta beyaz kare ---------- */
   const isLocal = (h: string) =>
     h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.local') ||
     /^(10|127)\./.test(h) || /^192\.168\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
   let qrBox: HTMLElement | null = null;
   let qrSide = 0;
-  function syncQr() {
+  function syncQr(q: { left: number; top: number; side: number } | null) {
     const url = id.site.publicUrl || (isLocal(location.hostname) ? '' : location.origin);
-    if (isMobile() || !url) {
+    if (!q || !url) {
       qrBox?.remove();
       qrBox = null;
       return;
     }
-    // kare: sol kenarı Üye Ol'un sol kenarı, sağ kenarı Giriş'in sağ kenarı; altı düğmelerin üstünden düğmeler
-    // arası boşluk kadar yukarıda
-    const b = o.members.getBoundingClientRect();
-    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cb-gap')) || 0;
-    const side = b.width;
+    const side = q.side;
     if (qrBox && Math.abs(side - qrSide) > 0.5) {
       // ölçü değişti: QR yeni kareye göre yeniden üretilir
       qrBox.remove();
@@ -231,7 +234,45 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
           if (qrBox === box) qrBox = null;
         });
     }
-    qrBox.style.cssText = `left:${b.left.toFixed(2)}px;top:${(b.top - gap - side).toFixed(2)}px;width:${side.toFixed(2)}px;height:${side.toFixed(2)}px`;
+    qrBox.style.cssText = `left:${q.left.toFixed(2)}px;top:${q.top.toFixed(2)}px;width:${side.toFixed(2)}px;height:${side.toFixed(2)}px`;
+  }
+
+  /* ---------- ilk ekran yerleşimi: logo ve düğmeler galerideki yerlerinden transform ile ---------- */
+  const buttons = () => [...o.members.querySelectorAll<HTMLElement>('.cb')];
+  function arrange() {
+    const mob = isMobile();
+    const W = innerWidth;
+    const H = innerHeight;
+    const css = getComputedStyle(document.documentElement);
+    const btns = buttons();
+    // galerideki yerler: transform'lar kaldırılıp ölçülür
+    gsap.set([o.brand, ...btns], { x: 0, y: 0, scale: 1 });
+    const lg = o.brand.querySelector<HTMLElement>(mob ? '.lg-s' : '.lg-l')?.getBoundingClientRect();
+    if (!lg) return;
+    // logo: sol altta, alt boşluğu galerideki Üye Ol / Giriş'inki
+    const bottom = H - (parseFloat(css.getPropertyValue('--gc-bottom')) || 0);
+    const top = bottom - lg.height;
+    gsap.set(o.brand, { y: top - lg.top });
+    const g = parseFloat(css.getPropertyValue('--cb-gap')) || 0;
+    const rects = btns.map((b) => b.getBoundingClientRect());
+    if (!rects.length) return syncQr(null);
+    if (mob) {
+      // yan yana sağ altta (galerideki sağ boşluğuyla), üstleri kısa logonun üstüyle hizalı
+      const m = o.members.getBoundingClientRect();
+      btns.forEach((b) => gsap.set(b, { x: 0, y: top - m.top }));
+      return syncQr(null);
+    }
+    // web: QR + alt alta düğmeler, logoyla aynı üst ve alt; sağ kenarı sağ sütunun sağ boşluğunda
+    const right = W - id.screen.logo.letter * W;
+    const h = lg.height;
+    const dd = (h - g) / 2;
+    const cx = right - dd / 2;
+    btns.forEach((b, i) => {
+      const r = rects[i];
+      const cy = top + dd / 2 + i * (dd + g);
+      gsap.set(b, { x: cx - (r.left + r.width / 2), y: cy - (r.top + r.height / 2), scale: dd / Math.max(1, r.width) });
+    });
+    syncQr({ left: right - dd - g - h, top, side: h });
   }
 
   /* ---------- çıkış ---------- */
@@ -258,16 +299,20 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
     window.setTimeout(release, 400);
     const X = LD.exit;
     const dur = motion.reduced ? 0.25 : X.dur;
+    const btns = buttons();
     const gone = () => {
       run(false);
       document.removeEventListener('visibilitychange', onVis);
       removeEventListener('resize', onResize);
       root!.remove();
-      gsap.set(o.brand, { clearProps: 'color' });
+      gsap.set(o.brand, { clearProps: 'color,transform' });
+      gsap.set(btns, { clearProps: 'transform' });
       goneCb();
     };
-    // logo yerinde kalır, kayma boyunca beyazdan siyaha döner
-    gsap.to(o.brand, { color: id.screen.text, duration: dur, ease: X.ease });
+    // logo galerideki yerine (sol üst) gider, yolda beyazdan siyaha döner; düğmeler galerideki yerlerine ve
+    // boylarına; ikisi de kayma ile aynı sürede ve eğride
+    gsap.to(o.brand, { y: 0, color: id.screen.text, duration: dur, ease: X.ease });
+    gsap.to(btns, { x: 0, y: 0, scale: 1, duration: dur, ease: X.ease });
     if (motion.reduced) gsap.to(root, { autoAlpha: 0, duration: dur, ease: 'none', onComplete: gone });
     // siyah zemin, daireler ve QR birlikte yukarı kayar
     else gsap.to(root, { yPercent: -100, duration: dur, ease: X.ease, onComplete: gone });
@@ -280,7 +325,8 @@ export function createLoader(o: { id: Identity; motion: Motion; surface: HTMLEle
       // her daire farklı bir gösteri (görseli olanlar), rastgele
       picked = s.shows.filter((x) => x.photo).sort(() => Math.random() - 0.5);
       build(true);
-      syncQr();
+      arrange();
+      gsap.set([o.brand, o.members], { autoAlpha: 1 });
       run(!document.hidden);
       ready = true;
     },

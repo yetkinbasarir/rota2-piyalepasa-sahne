@@ -164,8 +164,10 @@ export const rota1: Identity = {
   /* ilk ekran: düz siyah, logo beyaz (galerideki yerinde). Süzülen daireler: web 14 (0.04–0.16W), mobil 8
      (0.10–0.34W), az büyük çok küçük; opaklık 0.45 (en küçük) – 1 (en büyük), bulanıklık 0.004W – 0; hız
      0.01–0.03W/sn (büyükler hızlı, ±%15), dik salınım 0.01W, 6–12 sn; 1.5 sn içinde rastgele sırayla 0.5 sn'de
-     belirir. Çıkış: zemin, daireler ve QR 0.9 sn power3.inOut yukarı kayar. QR (yalnızca web): sol altta Üye Ol / Giriş'in üstünde, iki düğme kadar geniş beyaz kare; arası
-     düğmeler arası boşluk; 1 modül sessiz alan */
+     belirir. Çıkış: zemin, daireler ve QR 0.9 sn power3.inOut yukarı kayar. Logo sol altta (alt boşluğu galerideki Üye Ol / Giriş'inki); web: sağ altta logoyla aynı üst ve
+     altta QR (kenarı logonun yüksekliği, 1 modül sessiz alan) ve sağında alt alta Üye Ol / Giriş (çap (logo − g) / 2,
+     g düğmeler arası boşluk); mobil: düğmeler yan yana sağ altta, kısa logonun üstüyle hizalı. Çıkışta logo ve
+     düğmeler aynı sürede galerideki yerlerine (düğmeler galerideki boyuna) gider */
   loader: {
     background: '#000000', logoColor: '#FFFFFF',
     count: { web: 14, mobile: 8 },
