@@ -635,6 +635,13 @@ export function createGallery(o: {
       img.style.transform = `translate(${f(g.x + (fr.x - D / 2) * g.s)}px,${f(g.y + (fr.y - D / 2) * g.s)}px)`;
     }
   }
+  /** Bilet Al: açık hâlde gizli ve tıklanamaz (kök sınıfı is-video); açık hâl tamamen kapanınca geri gelir */
+  function showTicket(on: boolean) {
+    document.documentElement.classList.toggle('is-video', !on);
+    gsap.killTweensOf(gTicket);
+    if (on) gsap.to(gTicket, { autoAlpha: 1, duration: G.open.colorDur * red, ease: 'none', onStart: () => gsap.set(gTicket, { clearProps: 'pointerEvents' }) });
+    else gsap.set(gTicket, { pointerEvents: 'none' });
+  }
   /** Uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo aynı yerde belirir (on); tersi */
   function logoShort(tl: gsap.core.Timeline, on: boolean, t: number) {
     const O = G.open;
@@ -689,7 +696,10 @@ export function createGallery(o: {
     // sütunda başlık ve altındaki çizgi dışındaki her şey (tanıtım, künye) kaybolup kapanır; başlık yerinde kalır
     const rest = gInfo.lastElementChild?.querySelector<HTMLElement>('.gi-rest');
     if (rest) tl.to(rest, { height: on ? 0 : 'auto', autoAlpha: on ? 0 : 1, ...all }, t0);
-    tl.to([dom.members, gTicket], { autoAlpha: on ? 0 : 1, ...all }, t0);
+    tl.to(dom.members, { autoAlpha: on ? 0 : 1, ...all }, t0);
+    // Bilet Al açık hâlde hiç görünmez: açılışta t = 0'da kaybolur (tıklanamaz); kapanışta ancak açık hâl tamamen
+    // kapandıktan sonra döner (showTicket())
+    if (on) tl.to(gTicket, { autoAlpha: 0, ...all }, 0);
     // ekranı kaplayan keskin görsel: büyüme bitince altına girer; kapanışta küçülme başlarken kalkar
     tl.set(dom.top, { autoAlpha: on ? 1 : 0 }, on ? dur : t0);
     // video ve ağ
@@ -837,7 +847,8 @@ export function createGallery(o: {
       gsap.set([dom.brand, gInfo, dom.close], { clearProps: 'color' });
       gsap.set(dom.close, { autoAlpha: 0 });
       gsap.set(layers(), { autoAlpha: 0 });
-      gsap.set([dom.members, gTicket], { autoAlpha: 1 });
+      gsap.set([dom.members, gTicket], { autoAlpha: 1, clearProps: 'pointerEvents' });
+      document.documentElement.classList.remove('is-video');
       dom.top.innerHTML = '';
       items.forEach(drop);
       items.clear();
@@ -867,6 +878,7 @@ export function createGallery(o: {
       hover(null);
       S.open = true;
       S.full = true;
+      showTicket(false);
       const show = it.show;
       openShow = show;
       openN = it.n;
@@ -905,6 +917,8 @@ export function createGallery(o: {
         openN = null;
         S.open = false;
         exiting = false;
+        // açık hâl tamamen kapandı: Bilet Al geri gelir
+        showTicket(true);
       });
     },
     videoActive: () => o.video.active(),

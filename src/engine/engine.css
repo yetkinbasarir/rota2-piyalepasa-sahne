@@ -94,6 +94,8 @@ img, video { -webkit-user-drag: none; }
 /* Üye Ol / Giriş: sağ üst */
 .bnd { position: absolute; z-index: 1; display: flex; gap: var(--cb-gap); pointer-events: none; }
 .bnd button, .gc button { pointer-events: auto; }
+/* açık hâlde (video) Bilet Al hiç görünmez ve tıklanamaz */
+.is-video .gc, .is-video .gc button { pointer-events: none !important; }
 /* daire düğme: düz dolgu, kontursuz; yazı tek satır ortada */
 .cb {
   width: var(--cb-d); height: var(--cb-d); flex: none; border-radius: 50%; border: 0; font-size: var(--cb-fs, var(--fs-label));
