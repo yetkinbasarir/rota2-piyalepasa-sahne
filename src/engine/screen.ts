@@ -1,10 +1,9 @@
 /* Ekran çerçevesi: yazıların ölçüleri (CSS değişkenleri, px), logolar ve Üye Ol / Giriş düğmeleri.
    Bütün ölçüler kimliğin `screen` token'ları (H'nin, belirtilenler W'nin oranı).
-   Masaüstü: uzun logo sol üstte, ilk harfi soldan `letter`·W'de, çizgilerin başı ekranın sol kenarında
-   kesilir; açık hâlde ona çapraz geçen kısa logo aynı sol üst noktaya oturur ve çizgi aralığı uzun
-   logonunkine eşittir. Sağda başlık / tanıtım / künye sütunu, sol altta Üye Ol / Giriş.
+   Masaüstü: uzun logo sol üstte, sol kenarı ekranın sol kenarında (SVG'nin çizgileri kenardan başlar); açık
+   hâlde uzun logo sağdan kısa logonun genişliğine kırpılırken kısa logo aynı yerde, aynı yükseklikte belirir. Sağda başlık / tanıtım / künye sütunu, sol altta Üye Ol / Giriş.
    Mobil: yalnızca kısa logo (sol altta); üye düğmeleri sağ üstte, altlarında başlık ve künye. */
-import { pickLogo, layoutLogo, letterStart, ruleSpacing, logoVbHeight, logoWidth } from './logo';
+import { pickLogo, layoutLogo, logoVbHeight } from './logo';
 import { snapPx, type State } from './state';
 import type { Dom } from './theme';
 import type { Identity, TemplateContext, TypeRole } from './types';
@@ -98,26 +97,22 @@ export function layoutScreen(S: State, id: Identity, dom: Dom, tctx: TemplateCon
   const L = id.logo;
   if (S.mobile) {
     const h = T.logo.mobileH * H;
-    const lay = layoutLogo(pickLogo(id, h, W, true), h, snapPx(mpad));
+    // sol kenarı ekranın sol kenarında (x = 0); SVG'nin çizgileri kenardan başlar
+    const lay = layoutLogo(pickLogo(id, h, W, true), h, 0);
     place(short, lay.html, lay.width, h, H - S.safeBottom - T.logo.mobileBottom * H - h);
     long.innerHTML = '';
     long.style.display = 'none';
     short.style.opacity = '1';
   } else {
-    const top = logoTop;
-    const x = letterX;
-    // uzun logo: ilk harf x'te; çizgilerin başı sol kenarda kesilir
+    // uzun ve kısa logo: sol kenarları ekranın sol kenarında (x = 0), aynı üst y ve aynı yükseklikte; SVG'lerin
+    // çizgileri kenardan başlar (uzantı yok)
     const h = T.logo.h * H;
-    const vh = logoVbHeight(L.long);
-    const lay = layoutLogo(L.long, h, x - letterStart(L.long) * (h / vh));
-    place(long, lay.html, lay.width, h, top);
-    // açık hâlde uzun logo harf bloğunun genişliği kadar sola kayarak kaybolur
-    long.dataset.slide = String(logoWidth(L.long, h) - letterStart(L.long) * (h / vh));
-    // kısa logo (açık hâl): uzun logoyla aynı ölçek (çizgi aralığı eşit), ilk harfi aynı x'te, üst çizgisi aynı y'de
-    const hs = h * (ruleSpacing(L.long) / vh) / (ruleSpacing(L.short) / logoVbHeight(L.short));
-    const ss = hs / logoVbHeight(L.short);
-    const lays = layoutLogo(L.short, hs, x - letterStart(L.short) * ss);
-    place(short, lays.html, lays.width, hs, top + L.long.lines[0] * (h / vh) - L.short.lines[0] * ss);
+    const lay = layoutLogo(L.long, h, 0);
+    place(long, lay.html, lay.width, h, logoTop);
+    const lays = layoutLogo(L.short, h, 0);
+    place(short, lays.html, lays.width, h, logoTop);
+    // açık hâlde uzun logo sağdan kısa logonun genişliğine kırpılır
+    long.dataset.clip = String(Math.max(0, lay.width - lays.width));
     long.style.display = '';
     long.style.opacity = '1';
     short.style.opacity = '0';

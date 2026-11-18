@@ -196,8 +196,8 @@ export interface GalleryTokens {
   /** Açık hâlin ağı: ROTA1'in tam ekran dokusu (id.texture: siyah yüzey, yuvarlak delikler); opaklık */
   mesh: { opacity: number };
   /** Açılma: ana dairenin ekranı kaplayana kadar büyüme süresi ve eğrisi (kapanışta aynısı), videonun belirme
-      başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sola
-      kayıp kısa logoya geçişi (colorDur sn, logoEase) */
+      başlangıcı ve süresi (sn); logo, başlık ve ×'in renk geçişi (açılışın başında) ve rengi; uzun logonun sağdan
+      kırpılıp kısa logoya geçişi (colorDur sn, logoEase) */
   open: { dur: number; ease: string; videoAt: number; videoDur: number; colorDur: number; color: string; logoEase: string };
   /** Atalet: bırakma hızının ileri izdüşüm süresi (sn) ve en fazla adım */
   throw: { time: number; max: number };
@@ -233,8 +233,9 @@ export interface ScreenTokens {
   ticket: { d: number; bottom: number };
   /** Daire düğmeler: dolgu; yazı tek satırda en fazla çapın `fit` oranı genişlikte (rahat iç boşluk) */
   button: { fill: string; fit: number };
-  /** Logo: masaüstünde sol üstte uzun logo yüksekliği, üst boşluk, ilk harfin soldan uzaklığı (W; sağ sütunun
-      sağdan ve Üye Ol / Giriş'in soldan uzaklığı da bu); mobilde sol altta kısa logo yüksekliği ve alt boşluğu */
+  /** Logo: masaüstünde sol üstte (sol kenarı x = 0) uzun ve kısa logonun yüksekliği, üst boşluk; `letter`: kenar
+      boşluğu (W; sağ sütunun sağdan, Üye Ol / Giriş'in soldan, ×'in sağdan uzaklığı); mobilde sol altta kısa logo
+      yüksekliği ve alt boşluğu */
   logo: { h: number; top: number; letter: number; mobileH: number; mobileBottom: number };
   /** Üye Ol / Giriş: çap, aralık; mobilde sağ üstte üst ve sağ boşluk, çap (W oranı); masaüstünde sol altta
       (logo.letter, ticket.bottom); yazı boyu etiket boyu */

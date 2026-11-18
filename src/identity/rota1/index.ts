@@ -80,8 +80,8 @@ export const rota1: Identity = {
     mesh: { opacity: 1 },
     /* açılma: ana daire düzleşip yerinden ekranı kaplayana kadar büyür (0.9 sn power3.inOut), diğer daireler yerinde;
        video ve ağ 0.6 sn'de başlayıp 0.5 sn'de belirir. Logo, başlık ve altındaki çizgi ile × açılışla birlikte
-       0.5 sn'de beyaza döner; aynı anda uzun logo harf bloğu kadar sola kayarak kaybolur, kısa logo aynı ölçekte
-       aynı sol üst noktada belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
+       0.5 sn'de beyaza döner; aynı anda uzun logo sağdan kısa logonun genişliğine kırpılarak kaybolur, kısa logo
+       aynı yerde belirir (power2.inOut). Bilet Al sütunla birlikte kaybolur. Kapanma tam tersi */
     open: { dur: 0.9, ease: 'power3.inOut', videoAt: 0.6, videoDur: 0.5, colorDur: 0.5, color: '#FFFFFF', logoEase: 'power2.inOut' },
     throw: { time: 0.3, max: 4 },
     wheel: { step: 0.25, bias: 0.3, idle: 0.16 },
@@ -140,9 +140,8 @@ export const rota1: Identity = {
        (masaüstü). × açık hâlde sağ altta (sağdan sütunun sağ boşluğu, alttan Üye Ol / Giriş'inki) */
     ticket: { d: 0.09, bottom: 0.04 },
     button: { fill: '#FFFFFF', fit: 0.68 },
-    /* uzun logo sol üstte (0.216H, üstten 0.04H); açık hâlde yerinde kalır, beyaza döner; ilk harfi soldan 0.012W, çizgiler sol kenarda kesilir. Sağ
-       sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan aynı 0.012W */
-    /* uzun logo %25 büyük (0.1728 → 0.216H) */
+    /* uzun ve kısa logo sol üstte, sol kenarı ekranın sol kenarında, aynı yükseklikte (0.216H), üstten 0.04H.
+       0.012W kenar boşluğu: sağ sütunun sağ kenarı sağdan, Üye Ol / Giriş soldan, × sağdan */
     logo: { h: 0.216, top: 0.04, letter: 0.012, mobileH: 0.11, mobileBottom: 0.03 },
     /* Üye Ol / Giriş: masaüstünde sol altta (soldan logonun harf boşluğu, alttan Bilet Al'ınki); mobilde sağ üstte */
     members: { d: 0.09, gap: 0.012, pad: 0.02, mobileD: 0.11 },
@@ -234,11 +233,11 @@ export const rota1: Identity = {
     closeFade: 0.3,
   },
 
-  /* iki parçalı logo: çizgiler x = 0'dan başlar, sola uzar. Uzun logo hedef yükseklikte kullanılabilir
+  /* iki parçalı logo (Rota2_long / Rota2_short): çizgiler x = 0'dan başlar; aynı yükseklik. Uzun logo hedef yükseklikte kullanılabilir
      genişliğin %70'ine sığıyorsa uzun, değilse kısa; mobilde hep kısa */
   logo: {
     long: { svg: logoLong, lines: [14.31, 169.18, 324.05, 478.92], thick: 3.94 },
-    short: { svg: logoShort, lines: [14.53, 169.53, 324.53, 479.53, 634.53], thick: 4 },
+    short: { svg: logoShort, lines: [14.532, 169.532, 324.532, 479.532], thick: 4 },
     longFit: 0.7,
   },
   templates,
